@@ -5,6 +5,7 @@ import { loginSuccess } from './store/slices/authSlice'
 import Layout from './components/layout/Layout'
 import ProtectedRoute from './components/common/ProtectedRoute'
 import AdminRoute from './components/common/AdminRoute'
+import ScrollToTop from './components/common/ScrollToTop'
 
 // Public pages
 import Home from './pages/Home'
@@ -57,7 +58,9 @@ function App() {
   }, [dispatch])
 
   return (
-    <Routes>
+    <>
+      <ScrollToTop />
+      <Routes>
       {/* Public Routes */}
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
@@ -97,6 +100,7 @@ function App() {
       {/* 404 */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   )
 }
 

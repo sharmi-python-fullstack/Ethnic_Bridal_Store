@@ -494,6 +494,27 @@ export default function Checkout() {
                   </div>
                 ))}
               </div>
+
+              {/* Razorpay Test Payment Guidance Box */}
+              {paymentMethod === 'RAZORPAY' && (
+                <div className="mt-4 p-4 bg-gradient-to-br from-amber-50 to-orange-50/60 border border-amber-200/80 rounded-2xl text-xs text-amber-950 space-y-2 animate-fade-in shadow-sm">
+                  <div className="flex items-center gap-2 font-bold text-brand-deep-red text-sm">
+                    <span>💡</span> Razorpay Test Mode Card & Payment Guide
+                  </div>
+                  <p className="text-amber-800">
+                    Your Razorpay account is in domestic India mode. Use these <strong>Domestic Test Cards</strong> to pay smoothly without international card errors:
+                  </p>
+                  <div className="bg-white/90 p-3 rounded-xl border border-amber-200 font-mono text-[12px] space-y-1">
+                    <p>• <strong>Visa Test Card:</strong> <span className="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-bold">4012 0000 0000 0002</span></p>
+                    <p>• <strong>Mastercard:</strong> <span className="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-bold">5123 4500 0000 0008</span></p>
+                    <p>• <strong>RuPay:</strong> <span className="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-bold">5085 0000 0000 0003</span></p>
+                    <p className="text-[11px] text-gray-600 font-sans mt-1">Expiry: Any future date (e.g. <strong>12/28</strong>) | CVV: <strong>123</strong> | OTP: <strong>123456</strong></p>
+                  </div>
+                  <div className="flex items-center gap-2 pt-1 text-[11px] text-amber-900">
+                    <span>⚡</span> <em>Tip: You can also choose <strong>Netbanking</strong> in Razorpay → pick SBI or HDFC → click "Success" for instant 1-second approval!</em>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

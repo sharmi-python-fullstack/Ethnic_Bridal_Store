@@ -17,6 +17,126 @@ const SORT_OPTIONS = [
   { label: 'Top Rated', value: '-average_rating' },
 ]
 
+/**
+ * Filter panel defined OUTSIDE ProductList so its component identity
+ * remains constant across re-renders, preventing input focus loss when typing.
+ */
+function FilterPanel({ filters, updateFilter, clearFilters, categories, setFilters }) {
+  return (
+    <div className="space-y-6">
+      {/* Search */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">Search</label>
+        <div className="relative">
+          <input
+            type="text"
+            value={filters.search}
+            onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value, page: 1 }))}
+            placeholder="Search products…"
+            className="input-field text-sm pr-8"
+          />
+          {filters.search && (
+            <button
+              type="button"
+              onClick={() => setFilters((f) => ({ ...f, search: '', page: 1 }))}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Category */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+        <select value={filters.category} onChange={(e) => updateFilter('category', e.target.value)} className="input-field text-sm">
+          <option value="">All Categories</option>
+          {categories.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
+        </select>
+      </div>
+
+      {/* Occasion */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">Occasion</label>
+        <div className="flex flex-wrap gap-2">
+          {OCCASIONS.map((o) => (
+            <button
+              key={o}
+              type="button"
+              onClick={() => updateFilter('occasion', filters.occasion === o ? '' : o)}
+              className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+                filters.occasion === o
+                  ? 'bg-brand-deep-red text-white border-brand-deep-red'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-brand-deep-red'
+              }`}
+            >
+              {o.charAt(0).toUpperCase() + o.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Price Range */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">Price Range (₹)</label>
+        <div className="flex gap-2">
+          <input
+            type="number"
+            value={filters.min_price}
+            onChange={(e) => updateFilter('min_price', e.target.value)}
+            placeholder="Min ₹"
+            className="input-field text-sm w-1/2"
+          />
+          <input
+            type="number"
+            value={filters.max_price}
+            onChange={(e) => updateFilter('max_price', e.target.value)}
+            placeholder="Max ₹"
+            className="input-field text-sm w-1/2"
+          />
+        </div>
+      </div>
+
+      {/* Color */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">Color</label>
+        <div className="flex flex-wrap gap-2">
+          {COLORS.map((c) => (
+            <button
+              key={c}
+              type="button"
+              onClick={() => updateFilter('color', filters.color === c ? '' : c)}
+              className={`px-3 py-1 rounded-full text-xs font-medium border transition-all capitalize ${
+                filters.color === c
+                  ? 'bg-brand-deep-red text-white border-brand-deep-red'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-brand-deep-red'
+              }`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* In Stock */}
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input type="checkbox" checked={filters.in_stock} onChange={(e) => updateFilter('in_stock', e.target.checked)} className="accent-brand-deep-red w-4 h-4" />
+        <span className="text-sm font-medium text-gray-700">In Stock Only</span>
+      </label>
+
+      {/* Clear */}
+      <button
+        type="button"
+        onClick={clearFilters}
+        className="w-full py-2.5 border-2 border-gray-200 text-gray-600 rounded-lg text-sm font-medium hover:border-brand-deep-red hover:text-brand-deep-red transition-all"
+      >
+        Clear All Filters
+      </button>
+    </div>
+  )
+}
+
 export default function ProductList() {
   const dispatch = useDispatch()
   const { products, pagination, isLoading, categories } = useSelector((s) => s.products)
@@ -24,7 +144,7 @@ export default function ProductList() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [gridView, setGridView] = useState(true)
 
-  // Filter state from URL
+  // Filter state
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
     category: searchParams.get('category') || '',
@@ -37,7 +157,47 @@ export default function ProductList() {
     page: parseInt(searchParams.get('page') || '1', 10),
   })
 
-  const debouncedSearch = useDebounce(filters.search, 500)
+  // Keep filters in sync when URL changes (e.g., from top Navbar search or category links)
+  useEffect(() => {
+    const urlSearch = searchParams.get('search') || ''
+    const urlCategory = searchParams.get('category') || ''
+    const urlOccasion = searchParams.get('occasion') || ''
+    const urlColor = searchParams.get('color') || ''
+    const urlMinPrice = searchParams.get('min_price') || ''
+    const urlMaxPrice = searchParams.get('max_price') || ''
+    const urlInStock = searchParams.get('in_stock') === 'true'
+    const urlOrdering = searchParams.get('ordering') || '-created_at'
+    const urlPage = parseInt(searchParams.get('page') || '1', 10)
+
+    setFilters((prev) => {
+      if (
+        prev.search === urlSearch &&
+        prev.category === urlCategory &&
+        prev.occasion === urlOccasion &&
+        prev.color === urlColor &&
+        prev.min_price === urlMinPrice &&
+        prev.max_price === urlMaxPrice &&
+        prev.in_stock === urlInStock &&
+        prev.ordering === urlOrdering &&
+        prev.page === urlPage
+      ) {
+        return prev
+      }
+      return {
+        search: urlSearch,
+        category: urlCategory,
+        occasion: urlOccasion,
+        color: urlColor,
+        min_price: urlMinPrice,
+        max_price: urlMaxPrice,
+        in_stock: urlInStock,
+        ordering: urlOrdering,
+        page: urlPage,
+      }
+    })
+  }, [searchParams])
+
+  const debouncedSearch = useDebounce(filters.search, 400)
 
   const fetchProducts = useCallback(async (f) => {
     const params = {}
@@ -65,7 +225,7 @@ export default function ProductList() {
 
   useEffect(() => {
     fetchProducts({ ...filters, search: debouncedSearch })
-    // Sync URL
+    // Sync URL without wiping out other search params
     const params = {}
     if (debouncedSearch) params.search = debouncedSearch
     if (filters.category) params.category = filters.category
@@ -76,96 +236,11 @@ export default function ProductList() {
     if (filters.in_stock) params.in_stock = 'true'
     params.ordering = filters.ordering
     if (filters.page > 1) params.page = filters.page
-    setSearchParams(params)
+    setSearchParams(params, { replace: true })
   }, [debouncedSearch, filters.category, filters.occasion, filters.color, filters.min_price, filters.max_price, filters.in_stock, filters.ordering, filters.page, fetchProducts, setSearchParams])
 
   const updateFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value, page: 1 }))
   const clearFilters = () => setFilters({ search: '', category: '', occasion: '', color: '', min_price: '', max_price: '', in_stock: false, ordering: '-created_at', page: 1 })
-
-  const FilterPanel = () => (
-    <div className="space-y-6">
-      {/* Search */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Search</label>
-        <input
-          type="text"
-          value={filters.search}
-          onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value, page: 1 }))}
-          placeholder="Search products…"
-          className="input-field text-sm"
-        />
-      </div>
-
-      {/* Category */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
-        <select value={filters.category} onChange={(e) => updateFilter('category', e.target.value)} className="input-field text-sm">
-          <option value="">All Categories</option>
-          {categories.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
-        </select>
-      </div>
-
-      {/* Occasion */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Occasion</label>
-        <div className="flex flex-wrap gap-2">
-          {OCCASIONS.map((o) => (
-            <button
-              key={o}
-              onClick={() => updateFilter('occasion', filters.occasion === o ? '' : o)}
-              className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
-                filters.occasion === o
-                  ? 'bg-brand-deep-red text-white border-brand-deep-red'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-brand-deep-red'
-              }`}
-            >
-              {o.charAt(0).toUpperCase() + o.slice(1)}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Price Range */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Price Range</label>
-        <div className="flex gap-2">
-          <input type="number" value={filters.min_price} onChange={(e) => updateFilter('min_price', e.target.value)} placeholder="Min ₹" className="input-field text-sm w-1/2" />
-          <input type="number" value={filters.max_price} onChange={(e) => updateFilter('max_price', e.target.value)} placeholder="Max ₹" className="input-field text-sm w-1/2" />
-        </div>
-      </div>
-
-      {/* Color */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Color</label>
-        <div className="flex flex-wrap gap-2">
-          {COLORS.map((c) => (
-            <button
-              key={c}
-              onClick={() => updateFilter('color', filters.color === c ? '' : c)}
-              className={`px-3 py-1 rounded-full text-xs font-medium border transition-all capitalize ${
-                filters.color === c
-                  ? 'bg-brand-deep-red text-white border-brand-deep-red'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-brand-deep-red'
-              }`}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* In Stock */}
-      <label className="flex items-center gap-2 cursor-pointer">
-        <input type="checkbox" checked={filters.in_stock} onChange={(e) => updateFilter('in_stock', e.target.checked)} className="accent-brand-deep-red w-4 h-4" />
-        <span className="text-sm font-medium text-gray-700">In Stock Only</span>
-      </label>
-
-      {/* Clear */}
-      <button onClick={clearFilters} className="w-full py-2.5 border-2 border-gray-200 text-gray-600 rounded-lg text-sm font-medium hover:border-brand-deep-red hover:text-brand-deep-red transition-all">
-        Clear All Filters
-      </button>
-    </div>
-  )
 
   const activeFilterCount = [filters.search, filters.category, filters.occasion, filters.color, filters.min_price, filters.in_stock].filter(Boolean).length
 
@@ -221,7 +296,13 @@ export default function ProductList() {
                   </button>
                 )}
               </div>
-              <FilterPanel />
+              <FilterPanel
+                filters={filters}
+                updateFilter={updateFilter}
+                clearFilters={clearFilters}
+                categories={categories}
+                setFilters={setFilters}
+              />
             </div>
           </aside>
 
@@ -234,7 +315,13 @@ export default function ProductList() {
                   <h3 className="font-heading font-bold text-xl">Filters</h3>
                   <button onClick={() => setSidebarOpen(false)}><FiX size={22} /></button>
                 </div>
-                <FilterPanel />
+                <FilterPanel
+                filters={filters}
+                updateFilter={updateFilter}
+                clearFilters={clearFilters}
+                categories={categories}
+                setFilters={setFilters}
+              />
                 <button onClick={() => setSidebarOpen(false)} className="btn-primary w-full mt-4">Apply Filters</button>
               </div>
             </div>
