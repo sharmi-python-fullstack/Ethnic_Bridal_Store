@@ -26,6 +26,8 @@ CSRF_TRUSTED_ORIGINS = config(
 
 # Application definition
 INSTALLED_APPS = [
+    # Custom user app must be loaded before auth and admin
+    'accounts',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,7 +41,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     # Local apps
-    'accounts',
     'products',
     'orders',
     'coupons',
