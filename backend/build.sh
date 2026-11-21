@@ -7,7 +7,7 @@ pip install -r requirements.txt
 
 python manage.py collectstatic --no-input
 python fix_migrations.py
-python manage.py migrate --fake-initial
+python manage.py migrate
 python create_admin.py
 python manage.py seed_images
 

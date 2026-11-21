@@ -1,7 +1,7 @@
 """
-Fix InconsistentMigrationHistory on Render/PostgreSQL deployments.
-Ensures that if 'admin' or 'auth' migrations were prematurely recorded
-in django_migrations before 'accounts.0001_initial', the history is repaired automatically.
+Fix InconsistentMigrationHistory and Ghost Tables on Render/PostgreSQL deployments.
+Cleans up partial/corrupted ghost tables on initial deployments so Django can
+run fresh, consistent migrations.
 """
 import os
 import sys
@@ -11,45 +11,37 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django.setup()
 
 from django.db import connection
-from django.utils import timezone
 
 def run():
+    vendor = connection.vendor
+    print(f"[fix_migrations] Database vendor: {vendor}")
+
     try:
         table_names = connection.introspection.table_names()
-        if 'django_migrations' not in table_names:
-            print("[fix_migrations] django_migrations table does not exist yet. Safe to run initial migrations.")
+        print(f"[fix_migrations] Existing tables: {len(table_names)} found.")
+
+        # Check if user table exists
+        has_user_table = 'accounts_customuser' in table_names
+
+        # If accounts_customuser does NOT exist, but ghost tables exist (like django_content_type),
+        # this indicates a corrupted/interrupted initial database on Render.
+        if not has_user_table and len(table_names) > 0:
+            print("[fix_migrations] Detected corrupt/ghost tables before initial migration. Cleaning public schema...")
+            if vendor == 'postgresql':
+                with connection.cursor() as cursor:
+                    cursor.execute("""
+                        DO $$ DECLARE
+                            r RECORD;
+                        BEGIN
+                            FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+                                EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
+                            END LOOP;
+                        END $$;
+                    """)
+                print("[fix_migrations] PostgreSQL public schema successfully wiped clean of ghost tables.")
             return
 
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT COUNT(*) FROM django_migrations WHERE app = 'accounts' AND name = '0001_initial';")
-            accounts_migrated = cursor.fetchone()[0] > 0
-
-            cursor.execute("SELECT COUNT(*) FROM django_migrations WHERE app = 'admin' AND name = '0001_initial';")
-            admin_migrated = cursor.fetchone()[0] > 0
-
-            customuser_table_exists = 'accounts_customuser' in table_names
-
-            if admin_migrated and not accounts_migrated:
-                print("[fix_migrations] Found InconsistentMigrationHistory: admin applied before accounts!")
-                if customuser_table_exists:
-                    print("[fix_migrations] accounts_customuser table exists. Registering accounts.0001_initial...")
-                    now = timezone.now()
-                    cursor.execute(
-                        "INSERT INTO django_migrations (app, name, applied) VALUES (%s, %s, %s);",
-                        ['accounts', '0001_initial', now]
-                    )
-                else:
-                    print("[fix_migrations] accounts_customuser table does not exist. Clearing premature migration records...")
-                    cursor.execute("DELETE FROM django_migrations WHERE app IN ('admin', 'auth', 'contenttypes', 'sessions', 'token_blacklist');")
-                    # If Postgres, drop any empty auth/admin tables to avoid collision
-                    vendor = connection.vendor
-                    drop_cascade = " CASCADE" if vendor == 'postgresql' else ""
-                    for tbl in ['django_admin_log', 'auth_permission', 'auth_group_permissions', 'auth_group']:
-                        if tbl in table_names:
-                            cursor.execute(f"DROP TABLE IF EXISTS {tbl}{drop_cascade};")
-                print("[fix_migrations] Migration history successfully repaired!")
-            else:
-                print("[fix_migrations] Migration history is consistent.")
+        print("[fix_migrations] Database is consistent and ready.")
     except Exception as e:
         print(f"[fix_migrations] Warning during check: {e}")
 
