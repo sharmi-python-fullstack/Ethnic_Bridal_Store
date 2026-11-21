@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #FFF8F0;
+    color: #1A1A1A;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-brand-deep-red text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-800 transition-all duration-300 shadow-red hover:shadow-lg active:scale-95;
+  }
+  .btn-gold {
+    @apply bg-brand-gold text-brand-charcoal px-6 py-3 rounded-lg font-semibold hover:bg-yellow-500 transition-all duration-300 shadow-gold hover:shadow-lg active:scale-95;
+  }
+  .btn-outline {
+    @apply border-2 border-brand-deep-red text-brand-deep-red px-6 py-3 rounded-lg font-semibold hover:bg-brand-deep-red hover:text-white transition-all duration-300 active:scale-95;
+  }
+  .card {
+    @apply bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300;
+  }
+  .input-field {
+    @apply w-full border border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-transparent transition-all duration-200 bg-white;
+  }
+  .gradient-text {
+    @apply bg-gradient-to-r from-brand-deep-red via-brand-red to-brand-gold bg-clip-text text-transparent;
+  }
+  .section-title {
+    @apply font-heading text-3xl md:text-4xl font-bold text-brand-charcoal mb-2;
+  }
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FFF8F0;
+}
+::-webkit-scrollbar-thumb {
+  background: #9B1313;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #DC143C;
+}
+
+/* Swiper customization */
+.swiper-pagination-bullet-active {
+  background-color: #D4AF37 !important;
+}
+.swiper-button-next,
+.swiper-button-prev {
+  color: #D4AF37 !important;
+}
+
+/* Page transition */
+.page-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Admin sidebar */
+.admin-sidebar-link {
+  @apply flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200;
+}
+.admin-sidebar-link.active {
+  @apply bg-brand-deep-red text-white;
+}
+.admin-sidebar-link:not(.active) {
+  @apply text-gray-600 hover:bg-red-50 hover:text-brand-deep-red;
+}
+
+/* Skeleton loading */
+.skeleton {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+/* Price styling */
+.price-original {
+  @apply line-through text-gray-400 text-sm;
+}
+.price-discounted {
+  @apply text-brand-deep-red font-bold text-lg;
+}
+
+/* Star rating */
+.star-filled {
+  color: #D4AF37;
+}
+.star-empty {
+  color: #E5E7EB;
+}

@@ -1,0 +1,55 @@
+# ── Python / Django ──────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.manifest
+*.spec
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+backend/.env
+backend/staticfiles/
+# backend/media/ is tracked so all bridal images are deployed to Render
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# ── Node / React ─────────────────────────────────────────────────────────────
+node_modules/
+frontend/dist/
+frontend/.env.local
+frontend/.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp
+.pnp.js
+
+# ── IDE ───────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Misc ──────────────────────────────────────────────────────────────────────
+*.zip
+*.tar.gz
+*.rar
