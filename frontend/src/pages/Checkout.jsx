@@ -156,52 +156,70 @@ export default function Checkout() {
         const orderRes = await createOrder(payload)
         const order    = orderRes.data.order
         const rpRes    = await createRazorpayOrder({ order_id: order.id })
-        const { razorpay_order_id, amount, currency, key, is_simulated } = rpRes.data
+        const { razorpay_order_id, amount, currency, key } = rpRes.data
 
-        // If simulated test mode or Razorpay SDK not available
-        if (is_simulated || !window.Razorpay) {
-          setTestModalData({ order, razorpay_order_id, amount, currency, shippingAddr })
-          setShowTestModal(true)
-          setLoading(false)
-          return
-        }
+        // If Razorpay SDK is available, always open the official Razorpay checkout modal
+        if (window.Razorpay) {
+          try {
+            const isRealServerOrder = razorpay_order_id && !razorpay_order_id.startsWith('order_test_')
 
-        try {
-          const options = {
-            key, amount, currency,
-            name:        'Shaaz Ethnicwear',
-            description: `Order ${order.order_number}`,
-            order_id:    razorpay_order_id,
-            handler: async (response) => {
-              try {
-                await verifyPayment(response)
-                dispatch(clearCart())
-                toast.success('Payment successful! Order confirmed.')
-                navigate(`/orders/${order.id}`)
-              } catch { toast.error('Payment verification failed') }
-            },
-            prefill: { name: shippingAddr.name, contact: shippingAddr.phone, email: user?.email },
-            theme: { color: '#9B1313' },
-            modal: {
-              ondismiss: () => {
-                toast('Payment window closed. You can retry anytime.', { icon: 'ℹ️' })
+            const options = {
+              key: key || 'rzp_test_TqeE3jTwsnidKS',
+              amount,
+              currency: currency || 'INR',
+              name: 'Shaaz Ethnicwear',
+              description: `Order #${order.order_number} - Bridal Collection`,
+              ...(isRealServerOrder ? { order_id: razorpay_order_id } : {}),
+              handler: async (response) => {
+                try {
+                  await verifyPayment({
+                    order_id: order.id,
+                    razorpay_order_id: response.razorpay_order_id || razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature || '',
+                  })
+                  dispatch(clearCart())
+                  toast.success('Payment successful! Order confirmed. 🎉')
+                  navigate(`/orders/${order.id}`)
+                } catch {
+                  toast.error('Payment verification failed. Please contact support.')
+                }
+              },
+              prefill: {
+                name: shippingAddr.name,
+                contact: shippingAddr.phone,
+                email: user?.email || '',
+              },
+              notes: {
+                order_number: order.order_number,
+                address: shippingAddr.address_line1,
+              },
+              theme: { color: '#9B1313' },
+              modal: {
+                ondismiss: () => {
+                  toast('Payment window closed. You can retry anytime from Order History.', { icon: 'ℹ️' })
+                  navigate(`/orders/${order.id}`)
+                }
               }
             }
+
+            const rzp = new window.Razorpay(options)
+            rzp.on('payment.failed', function (response) {
+              toast.error(response?.error?.description || 'Payment failed')
+            })
+            rzp.open()
+            setLoading(false)
+            return
+          } catch (popupErr) {
+            console.warn('Razorpay popup error, opening confirmation modal:', popupErr)
           }
-          const rzp = new window.Razorpay(options)
-          rzp.on('payment.failed', function (response) {
-            toast.error(response?.error?.description || 'Payment failed')
-          })
-          rzp.open()
-          setLoading(false)
-          return
-        } catch (popupErr) {
-          // Fall back gracefully to test confirmation modal
-          setTestModalData({ order, razorpay_order_id, amount, currency, shippingAddr })
-          setShowTestModal(true)
-          setLoading(false)
-          return
         }
+
+        // Graceful fallback to confirmation modal if popup was blocked
+        setTestModalData({ order, razorpay_order_id, amount, currency, shippingAddr })
+        setShowTestModal(true)
+        setLoading(false)
+        return
       }
 
       // COD

@@ -16,8 +16,8 @@ const HERO_SLIDES = [
     bg: 'from-rose-950 via-rose-900 to-pink-900',
     cta: 'Shop Bridal', link: '/category/bridal-lehengas',
     accent: 'bg-brand-gold',
-    leftDress: { color: '#c0392b', accent: '#f39c12' },
-    rightDress: { color: '#8e1a1a', accent: '#e74c3c' },
+    leftImg: '/images/hero-bride-left.jpg',
+    rightImg: '/images/hero-bride.jpg',
   },
   {
     title: 'Royal Wedding Collection',
@@ -25,8 +25,8 @@ const HERO_SLIDES = [
     bg: 'from-purple-950 via-purple-900 to-indigo-900',
     cta: 'Explore Collection', link: '/products?occasion=wedding',
     accent: 'bg-yellow-400',
-    leftDress: { color: '#6c3483', accent: '#f1c40f' },
-    rightDress: { color: '#4a235a', accent: '#9b59b6' },
+    leftImg: '/images/hero-mehndi.jpg',
+    rightImg: '/images/hero-right.jpg',
   },
   {
     title: 'Festive Elegance 2025',
@@ -34,8 +34,8 @@ const HERO_SLIDES = [
     bg: 'from-orange-950 via-orange-900 to-amber-900',
     cta: 'View Festive Wear', link: '/products?occasion=festive',
     accent: 'bg-white',
-    leftDress: { color: '#c0392b', accent: '#f39c12' },
-    rightDress: { color: '#d35400', accent: '#e67e22' },
+    leftImg: '/images/hero-bride.jpg',
+    rightImg: '/images/hero-bride-left.jpg',
   },
 ]
 
@@ -54,125 +54,25 @@ const OCCASION_TAGS = [
   { label: '☀️ Casual',    color: 'bg-blue-100 text-blue-700',     value: 'casual' },
 ]
 
-/* ─── Animated Bridal Dress SVG ───────────────────────────────────────────── */
-function BridalDressSVG({ color, accent, flip = false, size = 220 }) {
+/* ─── Real Bridal Photo Component (Replaced SVG doll) ───────────────────────── */
+function BridalHeroImage({ src, alt = "Shaaz Bridal Collection", size = 260, rounded = "rounded-3xl" }) {
   return (
-    <svg
-      width={size} height={size * 1.6}
-      viewBox="0 0 200 320"
-      style={{ transform: flip ? 'scaleX(-1)' : 'none' }}
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {/* glow */}
-      <defs>
-        <radialGradient id={`glow-${color.replace('#','')}`} cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor={accent} stopOpacity="0.3"/>
-          <stop offset="100%" stopColor={color} stopOpacity="0"/>
-        </radialGradient>
-        <filter id="blur-glow">
-          <feGaussianBlur stdDeviation="3" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-
-      {/* glow circle */}
-      <ellipse cx="100" cy="230" rx="90" ry="80"
-        fill={`url(#glow-${color.replace('#','')})`} opacity="0.5"/>
-
-      {/* lehenga skirt — full flared */}
-      <path d="M 70 140 Q 20 200 10 310 L 190 310 Q 180 200 130 140 Z"
-        fill={color} opacity="0.95"/>
-
-      {/* skirt embroidery layers */}
-      <path d="M 60 170 Q 20 220 12 300 L 50 300 Q 55 230 80 185 Z"
-        fill={accent} opacity="0.25"/>
-      <path d="M 140 170 Q 180 220 188 300 L 150 300 Q 145 230 120 185 Z"
-        fill={accent} opacity="0.25"/>
-
-      {/* skirt border bottom */}
-      <path d="M 10 300 Q 100 285 190 300 L 190 310 L 10 310 Z"
-        fill={accent} opacity="0.6"/>
-
-      {/* skirt embroidery dots */}
-      {[40,60,80,100,120,140,160].map((x,i) => (
-        <circle key={i} cx={x} cy={260 + (i%2)*15} r="3"
-          fill={accent} opacity="0.7"/>
-      ))}
-      {[55,75,95,115,135].map((x,i) => (
-        <circle key={i} cx={x} cy={235 + (i%2)*10} r="2"
-          fill={accent} opacity="0.5"/>
-      ))}
-
-      {/* waist band */}
-      <rect x="68" y="135" width="64" height="12" rx="4"
-        fill={accent} opacity="0.8"/>
-      {/* waist dots */}
-      {[76,88,100,112,124].map((x,i) => (
-        <circle key={i} cx={x} cy="141" r="2" fill={color} opacity="0.9"/>
-      ))}
-
-      {/* blouse */}
-      <path d="M 72 90 L 65 138 L 135 138 L 128 90 Q 100 80 72 90 Z"
-        fill={color} opacity="0.9"/>
-      {/* blouse embroidery */}
-      <path d="M 78 100 Q 100 95 122 100 L 120 120 Q 100 115 80 120 Z"
-        fill={accent} opacity="0.3"/>
-
-      {/* neck */}
-      <ellipse cx="100" cy="88" rx="18" ry="10"
-        fill="#f5cba7" opacity="0.9"/>
-
-      {/* head */}
-      <ellipse cx="100" cy="68" rx="20" ry="22"
-        fill="#f5cba7" opacity="0.95"/>
-
-      {/* hair */}
-      <path d="M 80 56 Q 100 42 120 56 L 122 68 Q 100 60 78 68 Z"
-        fill="#2c1810" opacity="0.9"/>
-      {/* hair bun / maangtika */}
-      <ellipse cx="100" cy="47" rx="12" ry="8" fill="#2c1810" opacity="0.9"/>
-      <circle cx="100" cy="40" r="4" fill={accent} opacity="0.95"/>
-      <line x1="100" y1="44" x2="100" y2="58" stroke={accent} strokeWidth="1.5" opacity="0.8"/>
-      <circle cx="100" cy="58" r="3" fill={accent} opacity="0.9"/>
-
-      {/* dupatta — flowing */}
-      <path d="M 78 92 Q 50 110 30 150 Q 20 180 25 220 L 35 215 Q 32 185 48 155 Q 62 118 85 105 Z"
-        fill={accent} opacity="0.4"/>
-      <path d="M 122 92 Q 150 110 170 150 Q 180 180 175 220 L 165 215 Q 168 185 152 155 Q 138 118 115 105 Z"
-        fill={accent} opacity="0.3"/>
-
-      {/* arms */}
-      <path d="M 70 100 Q 50 125 48 150" stroke="#f5cba7" strokeWidth="12"
-        fill="none" strokeLinecap="round"/>
-      <path d="M 130 100 Q 150 125 152 150" stroke="#f5cba7" strokeWidth="12"
-        fill="none" strokeLinecap="round"/>
-
-      {/* bangles */}
-      <circle cx="50" cy="148" r="7" fill="none" stroke={accent} strokeWidth="3"/>
-      <circle cx="150" cy="148" r="7" fill="none" stroke={accent} strokeWidth="3"/>
-
-      {/* necklace */}
-      <path d="M 83 95 Q 100 105 117 95" stroke={accent} strokeWidth="2"
-        fill="none" strokeLinecap="round"/>
-      {[88,94,100,106,112].map((x,i) => (
-        <circle key={i} cx={x} cy={97 + Math.abs(i-2)*2} r="2"
-          fill={accent} opacity="0.9"/>
-      ))}
-
-      {/* earrings */}
-      <line x1="81" y1="76" x2="78" y2="88" stroke={accent} strokeWidth="1.5"/>
-      <circle cx="77" cy="90" r="3" fill={accent} opacity="0.9"/>
-      <line x1="119" y1="76" x2="122" y2="88" stroke={accent} strokeWidth="1.5"/>
-      <circle cx="123" cy="90" r="3" fill={accent} opacity="0.9"/>
-
-      {/* sparkles */}
-      <circle cx="30"  cy="130" r="2" fill={accent} opacity="0.7"/>
-      <circle cx="170" cy="140" r="2" fill={accent} opacity="0.7"/>
-      <circle cx="45"  cy="90"  r="1.5" fill="white" opacity="0.6"/>
-      <circle cx="160" cy="95"  r="1.5" fill="white" opacity="0.6"/>
-      <circle cx="90"  cy="280" r="2" fill={accent} opacity="0.5"/>
-      <circle cx="115" cy="295" r="2" fill={accent} opacity="0.5"/>
-    </svg>
+    <div className={`relative overflow-hidden ${rounded} shadow-2xl border-2 border-brand-gold/40 group`} style={{ width: size, height: size * 1.35 }}>
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+        onError={(e) => {
+          e.target.src = '/images/hero-bride.jpg'
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute bottom-3 left-3 right-3 text-center">
+        <span className="bg-black/50 backdrop-blur-sm text-brand-gold border border-brand-gold/40 px-3 py-1 rounded-full text-xs font-semibold">
+          ✨ Premium Bridal
+        </span>
+      </div>
+    </div>
   )
 }
 
