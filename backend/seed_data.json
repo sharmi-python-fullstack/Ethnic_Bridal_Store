@@ -1,0 +1,2111 @@
+[
+{
+  "model": "products.category",
+  "pk": 1,
+  "fields": {
+    "name": "Bridal Lehengas",
+    "slug": "bridal-lehengas",
+    "description": "Exquisite bridal lehengas for your wedding day",
+    "image": "categories/bridal-lehengas.webp",
+    "parent": null,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.218Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 2,
+  "fields": {
+    "name": "Designer Sarees",
+    "slug": "designer-sarees",
+    "description": "Handcrafted designer sarees for every occasion",
+    "image": "categories/designer-sarees.png",
+    "parent": null,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.224Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 3,
+  "fields": {
+    "name": "Anarkali Suits",
+    "slug": "anarkali-suits",
+    "description": "Elegant Anarkali suits for festive occasions",
+    "image": "categories/anarkali-suits.png",
+    "parent": null,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.246Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 4,
+  "fields": {
+    "name": "Wedding Kurtis",
+    "slug": "wedding-kurtis",
+    "description": "Beautiful kurtis for wedding functions",
+    "image": "categories/wedding-kurtis.png",
+    "parent": null,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.266Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 5,
+  "fields": {
+    "name": "Sharara Sets",
+    "slug": "sharara-sets",
+    "description": "Stunning Sharara sets for celebrations",
+    "image": "categories/sharara-sets.png",
+    "parent": null,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.285Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 6,
+  "fields": {
+    "name": "Ethnic Gowns",
+    "slug": "ethnic-gowns",
+    "description": "Indo-western gowns for modern brides",
+    "image": "categories/ethnic-gowns.png",
+    "parent": null,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.303Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 7,
+  "fields": {
+    "name": "Dupatta Collection",
+    "slug": "dupatta-collection",
+    "description": "Handcrafted dupattas and stoles",
+    "image": "categories/dupatta-collection.png",
+    "parent": null,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.310Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 8,
+  "fields": {
+    "name": "Accessories",
+    "slug": "accessories",
+    "description": "Jewellery and bridal accessories",
+    "image": "categories/accessories.png",
+    "parent": null,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.328Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 9,
+  "fields": {
+    "name": "Sherwanis",
+    "slug": "sherwanis",
+    "description": "Royal sherwanis for grooms — embroidered, silk, and designer",
+    "image": "categories/sherwanis.png",
+    "parent": null,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.606Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 10,
+  "fields": {
+    "name": "Kurta Pajama Sets",
+    "slug": "kurta-pajama-sets",
+    "description": "Classic kurta pajama sets for weddings and festivals",
+    "image": "categories/kurta-pajama-sets.png",
+    "parent": null,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.630Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 11,
+  "fields": {
+    "name": "Indo-Western Menswear",
+    "slug": "indo-western-menswear",
+    "description": "Modern Indo-western jackets, bandhgalas and jodhpuri suits",
+    "image": "categories/indo-western-menswear.jpg",
+    "parent": null,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.650Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 12,
+  "fields": {
+    "name": "Bridal Accessories",
+    "slug": "bridal-accessories",
+    "description": "Jewellery, maang tikka, kalire, mojaris and bridal essentials",
+    "image": "categories/bridal-accessories.png",
+    "parent": null,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.666Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 1,
+  "fields": {
+    "name": "Royal Red Bridal Lehenga with Gold Embroidery",
+    "slug": "royal-red-bridal-lehenga-with-gold-embroidery",
+    "category": 1,
+    "description": "A magnificent bridal lehenga crafted in pure silk with intricate gold zari embroidery. Features heavy work blouse and dupatta. Perfect for your special wedding day.",
+    "price": "45000.00",
+    "discount_price": "38000.00",
+    "stock": 9,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.353Z",
+    "updated_at": "2026-11-21T05:47:33.353Z",
+    "fabric": "Pure Silk",
+    "care_instructions": "Dry clean only. Store in a cool, dry place.",
+    "occasion": "bridal",
+    "color": "red",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 2,
+  "fields": {
+    "name": "Maroon Silk Bridal Lehenga Set",
+    "slug": "maroon-silk-bridal-lehenga-set",
+    "category": 1,
+    "description": "Stunning maroon silk lehenga with intricate thread work and mirror detailing. Comes with matching blouse and dupatta.",
+    "price": "55000.00",
+    "discount_price": "48000.00",
+    "stock": 7,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.375Z",
+    "updated_at": "2026-11-21T05:47:33.375Z",
+    "fabric": "Banarasi Silk",
+    "care_instructions": "Dry clean recommended.",
+    "occasion": "bridal",
+    "color": "maroon",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 3,
+  "fields": {
+    "name": "Pink Floral Anarkali Suit",
+    "slug": "pink-floral-anarkali-suit",
+    "category": 3,
+    "description": "Beautiful pink floral Anarkali suit with chiffon dupatta. Perfect for wedding functions and festivals.",
+    "price": "8500.00",
+    "discount_price": "6999.00",
+    "stock": 24,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.396Z",
+    "updated_at": "2026-11-21T05:47:33.397Z",
+    "fabric": "Georgette",
+    "care_instructions": "Hand wash in cold water.",
+    "occasion": "festive",
+    "color": "pink",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 4,
+  "fields": {
+    "name": "Blue Banarasi Designer Saree",
+    "slug": "blue-banarasi-designer-saree",
+    "category": 2,
+    "description": "Exquisite royal blue Banarasi saree with gold zari border. Comes with unstitched blouse piece.",
+    "price": "18000.00",
+    "discount_price": "15000.00",
+    "stock": 15,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.417Z",
+    "updated_at": "2026-11-21T05:47:33.417Z",
+    "fabric": "Banarasi Silk",
+    "care_instructions": "Dry clean only.",
+    "occasion": "wedding",
+    "color": "blue",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 5,
+  "fields": {
+    "name": "Green Chanderi Silk Saree",
+    "slug": "green-chanderi-silk-saree",
+    "category": 2,
+    "description": "Elegant green Chanderi silk saree with golden border and floral prints throughout.",
+    "price": "7500.00",
+    "discount_price": "6200.00",
+    "stock": 20,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.439Z",
+    "updated_at": "2026-11-21T05:47:33.439Z",
+    "fabric": "Chanderi Silk",
+    "care_instructions": "Dry clean recommended.",
+    "occasion": "festive",
+    "color": "green",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 6,
+  "fields": {
+    "name": "Purple Sharara Set with Embroidered Kurti",
+    "slug": "purple-sharara-set-with-embroidered-kurti",
+    "category": 5,
+    "description": "Trendy purple sharara set with embroidered short kurti and matching dupatta. Perfect party wear.",
+    "price": "5999.00",
+    "discount_price": "4800.00",
+    "stock": 30,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.468Z",
+    "updated_at": "2026-11-21T05:47:33.468Z",
+    "fabric": "Net with Cotton lining",
+    "care_instructions": "Gentle hand wash.",
+    "occasion": "party",
+    "color": "purple",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 7,
+  "fields": {
+    "name": "Gold Tissue Lehenga for Sangeet",
+    "slug": "gold-tissue-lehenga-for-sangeet",
+    "category": 1,
+    "description": "Shimmering gold tissue lehenga perfect for sangeet and mehendi ceremonies. Light weight with beautiful pleats.",
+    "price": "22000.00",
+    "discount_price": "18500.00",
+    "stock": 12,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.489Z",
+    "updated_at": "2026-11-21T05:47:33.489Z",
+    "fabric": "Tissue Silk",
+    "care_instructions": "Dry clean only.",
+    "occasion": "wedding",
+    "color": "gold",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 8,
+  "fields": {
+    "name": "Orange Embroidered Wedding Kurti Set",
+    "slug": "orange-embroidered-wedding-kurti-set",
+    "category": 4,
+    "description": "Vibrant orange kurti set with heavy embroidery work. Comes with palazzo pants and dupatta.",
+    "price": "4500.00",
+    "discount_price": "3750.00",
+    "stock": 40,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.511Z",
+    "updated_at": "2026-11-21T05:47:33.511Z",
+    "fabric": "Cotton Silk",
+    "care_instructions": "Machine wash cold.",
+    "occasion": "wedding",
+    "color": "orange",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 9,
+  "fields": {
+    "name": "Yellow Chiffon Floral Ethnic Gown",
+    "slug": "yellow-chiffon-floral-ethnic-gown",
+    "category": 6,
+    "description": "Indo-western yellow chiffon gown with floral embroidery. Modern cut with traditional detailing.",
+    "price": "12000.00",
+    "discount_price": "9999.00",
+    "stock": 18,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.533Z",
+    "updated_at": "2026-11-21T05:47:33.534Z",
+    "fabric": "Chiffon",
+    "care_instructions": "Dry clean recommended.",
+    "occasion": "party",
+    "color": "yellow",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 10,
+  "fields": {
+    "name": "Multicolor Phulkari Dupatta",
+    "slug": "multicolor-phulkari-dupatta",
+    "category": 7,
+    "description": "Authentic Phulkari dupatta with traditional embroidery in vibrant multicolors. Pure cotton base.",
+    "price": "2500.00",
+    "discount_price": "1999.00",
+    "stock": 49,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.556Z",
+    "updated_at": "2026-11-21T05:47:33.556Z",
+    "fabric": "Cotton",
+    "care_instructions": "Gentle hand wash.",
+    "occasion": "festive",
+    "color": "multicolor",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 11,
+  "fields": {
+    "name": "Black Net Embroidered Anarkali Gown",
+    "slug": "black-net-embroidered-anarkali-gown",
+    "category": 6,
+    "description": "Elegant black net Anarkali gown with silver embroidery. Perfect for evening parties and receptions.",
+    "price": "15500.00",
+    "discount_price": "12999.00",
+    "stock": 15,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.574Z",
+    "updated_at": "2026-11-21T05:47:33.574Z",
+    "fabric": "Net with Silk lining",
+    "care_instructions": "Dry clean only.",
+    "occasion": "party",
+    "color": "black",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 12,
+  "fields": {
+    "name": "White Georgette Casual Kurti",
+    "slug": "white-georgette-casual-kurti",
+    "category": 4,
+    "description": "Breezy white georgette kurti with delicate printed border. Ideal for casual outings and office wear.",
+    "price": "1800.00",
+    "discount_price": null,
+    "stock": 60,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T05:47:33.597Z",
+    "updated_at": "2026-11-21T05:47:33.597Z",
+    "fabric": "Georgette",
+    "care_instructions": "Machine wash cold.",
+    "occasion": "casual",
+    "color": "white",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 13,
+  "fields": {
+    "name": "Crimson Velvet Bridal Lehenga",
+    "slug": "crimson-velvet-bridal-lehenga",
+    "category": 1,
+    "description": "Luxurious crimson velvet lehenga with hand-embroidered gold threadwork. Features a heavily embellished blouse and sheer dupatta with golden border. Perfect for the main wedding ceremony.",
+    "price": "65000.00",
+    "discount_price": "55000.00",
+    "stock": 8,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T09:47:13.407Z",
+    "updated_at": "2026-11-21T09:47:13.407Z",
+    "fabric": "Velvet Silk",
+    "care_instructions": "Dry clean only. Store in muslin cloth.",
+    "occasion": "bridal",
+    "color": "red",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 14,
+  "fields": {
+    "name": "Rose Pink Bridal Lehenga with Mirror Work",
+    "slug": "rose-pink-bridal-lehenga-with-mirror-work",
+    "category": 1,
+    "description": "Elegant rose pink lehenga adorned with intricate mirror and sequin work throughout. The flared skirt and crop blouse make it perfect for a modern bride.",
+    "price": "48000.00",
+    "discount_price": "42000.00",
+    "stock": 10,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T09:47:27.588Z",
+    "updated_at": "2026-11-21T09:47:27.588Z",
+    "fabric": "Net with Silk lining",
+    "care_instructions": "Dry clean only.",
+    "occasion": "bridal",
+    "color": "pink",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 15,
+  "fields": {
+    "name": "Royal Purple Kanjivaram Saree",
+    "slug": "royal-purple-kanjivaram-saree",
+    "category": 2,
+    "description": "Authentic Kanjivaram silk saree in deep royal purple with traditional gold zari weave. The heavy pallu features peacock motifs. Comes with unstitched blouse piece.",
+    "price": "28000.00",
+    "discount_price": "24000.00",
+    "stock": 12,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T09:47:35.223Z",
+    "updated_at": "2026-11-21T09:47:35.223Z",
+    "fabric": "Pure Kanjivaram Silk",
+    "care_instructions": "Dry clean only.",
+    "occasion": "wedding",
+    "color": "purple",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 16,
+  "fields": {
+    "name": "Coral Georgette Designer Saree",
+    "slug": "coral-georgette-designer-saree",
+    "category": 2,
+    "description": "Vibrant coral georgette saree with chikankari embroidery work. Light and breezy fabric ideal for summer weddings and festivals.",
+    "price": "9500.00",
+    "discount_price": "7999.00",
+    "stock": 20,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T09:47:49.635Z",
+    "updated_at": "2026-11-21T09:47:49.635Z",
+    "fabric": "Georgette",
+    "care_instructions": "Hand wash gently or dry clean.",
+    "occasion": "festive",
+    "color": "orange",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 17,
+  "fields": {
+    "name": "Deep Red Embroidered Anarkali Gown",
+    "slug": "deep-red-embroidered-anarkali-gown",
+    "category": 3,
+    "description": "Floor-length deep red Anarkali gown with heavy zardozi embroidery on the bodice. Paired with flared churidar and contrast dupatta. Perfect for wedding receptions.",
+    "price": "18500.00",
+    "discount_price": "15500.00",
+    "stock": 15,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T09:48:04.060Z",
+    "updated_at": "2026-11-21T09:48:04.060Z",
+    "fabric": "Silk with Net overlay",
+    "care_instructions": "Dry clean only.",
+    "occasion": "wedding",
+    "color": "red",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 18,
+  "fields": {
+    "name": "Blue Thread Work Anarkali Suit",
+    "slug": "blue-thread-work-anarkali-suit",
+    "category": 3,
+    "description": "Royal blue Anarkali suit with intricate white thread work and sequin detailing. Semi-stitched with adjustable waist. Comes with matching dupatta.",
+    "price": "7500.00",
+    "discount_price": "6200.00",
+    "stock": 25,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T09:48:18.237Z",
+    "updated_at": "2026-11-21T09:48:18.238Z",
+    "fabric": "Cotton Silk",
+    "care_instructions": "Hand wash cold.",
+    "occasion": "festive",
+    "color": "blue",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 19,
+  "fields": {
+    "name": "Gold Embroidered Sharara Set",
+    "slug": "gold-embroidered-sharara-set",
+    "category": 5,
+    "description": "Stunning gold sharara set with heavily embroidered short kurti and wide-leg pants. Perfect for sangeet and mehndi ceremonies.",
+    "price": "14000.00",
+    "discount_price": "11500.00",
+    "stock": 18,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T09:48:32.625Z",
+    "updated_at": "2026-11-21T09:48:32.625Z",
+    "fabric": "Brocade with Silk",
+    "care_instructions": "Dry clean recommended.",
+    "occasion": "wedding",
+    "color": "gold",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 20,
+  "fields": {
+    "name": "Printed Silk Festive Kurti with Palazzo",
+    "slug": "printed-silk-festive-kurti-with-palazzo",
+    "category": 4,
+    "description": "Vibrant printed silk kurti with matching palazzo pants. Block print design inspired by Rajasthani art. Great for festive occasions and casual functions.",
+    "price": "3200.00",
+    "discount_price": "2600.00",
+    "stock": 50,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T09:48:39.812Z",
+    "updated_at": "2026-11-21T09:48:39.812Z",
+    "fabric": "Silk Blend",
+    "care_instructions": "Hand wash in cold water.",
+    "occasion": "festive",
+    "color": "multicolor",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 21,
+  "fields": {
+    "name": "Maroon Embroidered Indo-Western Gown",
+    "slug": "maroon-embroidered-indo-western-gown",
+    "category": 6,
+    "description": "Contemporary Indo-Western gown in rich maroon with scattered embroidery. Features a ruffled hem and open-back design for the modern bride who loves fusion fashion.",
+    "price": "22000.00",
+    "discount_price": "18000.00",
+    "stock": 10,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T09:48:54.063Z",
+    "updated_at": "2026-11-21T09:48:54.063Z",
+    "fabric": "Crepe with Net",
+    "care_instructions": "Dry clean only.",
+    "occasion": "party",
+    "color": "maroon",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 22,
+  "fields": {
+    "name": "Bridal Chooda Set — 21 Bangles",
+    "slug": "bridal-chooda-set-21-bangles",
+    "category": 8,
+    "description": "Traditional red and white bridal chooda set with 21 bangles. Made from high-quality acrylic with gold kaliras detailing. Comes in a beautiful gift box.",
+    "price": "2800.00",
+    "discount_price": "2200.00",
+    "stock": 35,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T09:49:03.194Z",
+    "updated_at": "2026-11-21T09:49:03.194Z",
+    "fabric": "Acrylic & Metal",
+    "care_instructions": "Wipe gently with dry cloth.",
+    "occasion": "bridal",
+    "color": "red",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 23,
+  "fields": {
+    "name": "Royal Red Bridal Lehenga with Gold Zari Embroidery",
+    "slug": "royal-red-bridal-lehenga-with-gold-zari-embroidery",
+    "category": 1,
+    "description": "A magnificent heavy bridal lehenga in deep red raw silk with intricate gold zari and sequin embroidery. Features a designer blouse and net dupatta with scallop border. Perfect for your wedding day.",
+    "price": "65000.00",
+    "discount_price": "54999.00",
+    "stock": 8,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.685Z",
+    "updated_at": "2026-11-21T10:47:56.685Z",
+    "fabric": "Raw Silk with Net Dupatta",
+    "care_instructions": "Dry clean only. Store in a cool, dry place.",
+    "occasion": "bridal",
+    "color": "red",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 24,
+  "fields": {
+    "name": "Maroon Velvet Bridal Lehenga with Zardosi Work",
+    "slug": "maroon-velvet-bridal-lehenga-with-zardosi-work",
+    "category": 1,
+    "description": "Luxurious maroon velvet lehenga with heavy zardosi and dabka work. Comes with matching blouse and dupatta with four-sided border. A timeless bridal masterpiece.",
+    "price": "85000.00",
+    "discount_price": "72000.00",
+    "stock": 5,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.704Z",
+    "updated_at": "2026-11-21T10:47:56.704Z",
+    "fabric": "Velvet with Silk Lining",
+    "care_instructions": "Professional dry clean only.",
+    "occasion": "bridal",
+    "color": "maroon",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 25,
+  "fields": {
+    "name": "Pink Silk Lehenga for Sangeet Ceremony",
+    "slug": "pink-silk-lehenga-for-sangeet-ceremony",
+    "category": 1,
+    "description": "Gorgeous pink silk lehenga with thread work and mirror embellishments. Light weight for comfortable all-day wear during sangeet and mehendi.",
+    "price": "32000.00",
+    "discount_price": "26999.00",
+    "stock": 15,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.717Z",
+    "updated_at": "2026-11-21T10:47:56.717Z",
+    "fabric": "Banarasi Silk",
+    "care_instructions": "Dry clean recommended.",
+    "occasion": "wedding",
+    "color": "pink",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 26,
+  "fields": {
+    "name": "Gold Tissue Bridal Lehenga Set",
+    "slug": "gold-tissue-bridal-lehenga-set",
+    "category": 1,
+    "description": "Shimmering gold tissue lehenga with intricate gotapatti work. Lightweight yet grand — perfect for reception and sangeet ceremonies.",
+    "price": "42000.00",
+    "discount_price": "35000.00",
+    "stock": 10,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.761Z",
+    "updated_at": "2026-11-21T10:47:56.761Z",
+    "fabric": "Tissue Silk",
+    "care_instructions": "Dry clean only.",
+    "occasion": "wedding",
+    "color": "gold",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 27,
+  "fields": {
+    "name": "Royal Blue Banarasi Silk Saree with Gold Border",
+    "slug": "royal-blue-banarasi-silk-saree-with-gold-border",
+    "category": 2,
+    "description": "Exquisite royal blue Banarasi saree with rich gold zari border and pallu. Pure silk weave from Varanasi. Comes with unstitched blouse piece.",
+    "price": "18000.00",
+    "discount_price": "14999.00",
+    "stock": 20,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.780Z",
+    "updated_at": "2026-11-21T10:47:56.780Z",
+    "fabric": "Pure Banarasi Silk",
+    "care_instructions": "Dry clean only.",
+    "occasion": "wedding",
+    "color": "blue",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 28,
+  "fields": {
+    "name": "Green Kanjivaram Silk Saree",
+    "slug": "green-kanjivaram-silk-saree",
+    "category": 2,
+    "description": "Authentic green Kanjivaram silk saree with traditional temple border and peacock motifs. Rich pallu with gold and silver zari work.",
+    "price": "25000.00",
+    "discount_price": "21000.00",
+    "stock": 12,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.788Z",
+    "updated_at": "2026-11-21T10:47:56.788Z",
+    "fabric": "Kanjivaram Silk",
+    "care_instructions": "Dry clean only. Store folded in muslin cloth.",
+    "occasion": "bridal",
+    "color": "green",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 29,
+  "fields": {
+    "name": "Red Paithani Bridal Saree",
+    "slug": "red-paithani-bridal-saree",
+    "category": 2,
+    "description": "Handwoven red Paithani saree with traditional peacock and lotus motifs. The hallmark of Maharashtrian bridal elegance.",
+    "price": "35000.00",
+    "discount_price": "29999.00",
+    "stock": 7,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.802Z",
+    "updated_at": "2026-11-21T10:47:56.802Z",
+    "fabric": "Pure Silk (Paithani)",
+    "care_instructions": "Dry clean only.",
+    "occasion": "bridal",
+    "color": "red",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 30,
+  "fields": {
+    "name": "Orange Chanderi Silk Saree",
+    "slug": "orange-chanderi-silk-saree",
+    "category": 2,
+    "description": "Elegant orange Chanderi silk saree with subtle golden buti work. Lightweight and breathable — ideal for daytime wedding functions.",
+    "price": "7500.00",
+    "discount_price": "5999.00",
+    "stock": 25,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.820Z",
+    "updated_at": "2026-11-21T10:47:56.820Z",
+    "fabric": "Chanderi Silk",
+    "care_instructions": "Gentle hand wash or dry clean.",
+    "occasion": "festive",
+    "color": "orange",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 31,
+  "fields": {
+    "name": "Wine Velvet Anarkali Suit with Dupatta",
+    "slug": "wine-velvet-anarkali-suit-with-dupatta",
+    "category": 3,
+    "description": "Floor-length wine velvet Anarkali suit with heavy embroidered yoke and flared hemline. Comes with matching net dupatta.",
+    "price": "12500.00",
+    "discount_price": "9999.00",
+    "stock": 20,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.837Z",
+    "updated_at": "2026-11-21T10:47:56.837Z",
+    "fabric": "Velvet with Net",
+    "care_instructions": "Dry clean recommended.",
+    "occasion": "party",
+    "color": "maroon",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 32,
+  "fields": {
+    "name": "Teal Blue Embroidered Anarkali Gown",
+    "slug": "teal-blue-embroidered-anarkali-gown",
+    "category": 3,
+    "description": "Stunning teal blue Anarkali gown with heavy thread and sequin embroidery. Floor-length silhouette with contrast dupatta.",
+    "price": "15000.00",
+    "discount_price": "12500.00",
+    "stock": 15,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.855Z",
+    "updated_at": "2026-11-21T10:47:56.855Z",
+    "fabric": "Net with Silk Lining",
+    "care_instructions": "Dry clean only.",
+    "occasion": "wedding",
+    "color": "blue",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 33,
+  "fields": {
+    "name": "Orange Embroidered Kurti with Palazzo Set",
+    "slug": "orange-embroidered-kurti-with-palazzo-set",
+    "category": 4,
+    "description": "Vibrant orange kurti with heavy chikankari embroidery. Comes with matching palazzo pants and chiffon dupatta.",
+    "price": "4500.00",
+    "discount_price": "3750.00",
+    "stock": 40,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.872Z",
+    "updated_at": "2026-11-21T10:47:56.872Z",
+    "fabric": "Cotton Silk",
+    "care_instructions": "Machine wash cold, iron on low.",
+    "occasion": "wedding",
+    "color": "orange",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 34,
+  "fields": {
+    "name": "Yellow Lucknowi Chikan Kurti Set",
+    "slug": "yellow-lucknowi-chikan-kurti-set",
+    "category": 4,
+    "description": "Elegant yellow kurti with delicate Lucknowi chikankari work. Lightweight cotton blend perfect for summer weddings.",
+    "price": "3800.00",
+    "discount_price": "2999.00",
+    "stock": 50,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.883Z",
+    "updated_at": "2026-11-21T10:47:56.884Z",
+    "fabric": "Cotton",
+    "care_instructions": "Machine wash cold.",
+    "occasion": "casual",
+    "color": "yellow",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 35,
+  "fields": {
+    "name": "Purple Mirror-Work Kurti with Skirt",
+    "slug": "purple-mirror-work-kurti-with-skirt",
+    "category": 4,
+    "description": "Trendy purple kurti with mirror work and sequin embellishments. Paired with flared skirt for a modern ethnic look.",
+    "price": "5500.00",
+    "discount_price": "4499.00",
+    "stock": 35,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.928Z",
+    "updated_at": "2026-11-21T10:47:56.928Z",
+    "fabric": "Rayon Silk",
+    "care_instructions": "Hand wash in cold water.",
+    "occasion": "festive",
+    "color": "purple",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 36,
+  "fields": {
+    "name": "Peach Gharara Set for Nikah",
+    "slug": "peach-gharara-set-for-nikah",
+    "category": 5,
+    "description": "Graceful peach gharara set with golden threadwork. The wide-leg gharara creates a regal silhouette perfect for nikah ceremonies.",
+    "price": "12000.00",
+    "discount_price": "9999.00",
+    "stock": 15,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.948Z",
+    "updated_at": "2026-11-21T10:47:56.948Z",
+    "fabric": "Silk Organza",
+    "care_instructions": "Dry clean only.",
+    "occasion": "bridal",
+    "color": "gold",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 37,
+  "fields": {
+    "name": "Green Floral Sharara Set",
+    "slug": "green-floral-sharara-set",
+    "category": 5,
+    "description": "Fresh green sharara set with printed florals and gota patti border. Fun and festive for mehendi and haldi.",
+    "price": "5500.00",
+    "discount_price": "4200.00",
+    "stock": 30,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.966Z",
+    "updated_at": "2026-11-21T10:47:56.966Z",
+    "fabric": "Georgette",
+    "care_instructions": "Hand wash recommended.",
+    "occasion": "festive",
+    "color": "green",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 38,
+  "fields": {
+    "name": "Wine Indo-Western Trail Gown",
+    "slug": "wine-indo-western-trail-gown",
+    "category": 6,
+    "description": "Statement wine-coloured Indo-western gown with trail and cape sleeves. Heavy hand embroidery on bodice.",
+    "price": "22000.00",
+    "discount_price": "18500.00",
+    "stock": 10,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:56.983Z",
+    "updated_at": "2026-11-21T10:47:56.983Z",
+    "fabric": "Taffeta Silk",
+    "care_instructions": "Dry clean only.",
+    "occasion": "party",
+    "color": "maroon",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 39,
+  "fields": {
+    "name": "Rose Gold Shimmer Reception Gown",
+    "slug": "rose-gold-shimmer-reception-gown",
+    "category": 6,
+    "description": "Stunning rose gold shimmer gown with fitted bodice and flared bottom. The ultimate reception outfit for the modern bride.",
+    "price": "18000.00",
+    "discount_price": "14999.00",
+    "stock": 12,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.002Z",
+    "updated_at": "2026-11-21T10:47:57.002Z",
+    "fabric": "Shimmer Lycra",
+    "care_instructions": "Dry clean recommended.",
+    "occasion": "wedding",
+    "color": "gold",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 40,
+  "fields": {
+    "name": "Red Banarasi Dupatta with Gold Zari",
+    "slug": "red-banarasi-dupatta-with-gold-zari",
+    "category": 7,
+    "description": "Heavy red Banarasi silk dupatta with all-over gold zari work. Perfect bridal dupatta to pair with any lehenga or suit.",
+    "price": "5000.00",
+    "discount_price": "3999.00",
+    "stock": 29,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.017Z",
+    "updated_at": "2026-11-21T10:47:57.017Z",
+    "fabric": "Banarasi Silk",
+    "care_instructions": "Dry clean only.",
+    "occasion": "bridal",
+    "color": "red",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 41,
+  "fields": {
+    "name": "Ivory Gold Embroidered Groom Sherwani",
+    "slug": "ivory-gold-embroidered-groom-sherwani",
+    "category": 9,
+    "description": "Regal ivory sherwani with heavy gold threadwork and stone embellishments. Includes matching churidar and stole. The ultimate groom outfit.",
+    "price": "45000.00",
+    "discount_price": "38000.00",
+    "stock": 10,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.039Z",
+    "updated_at": "2026-11-21T10:47:57.040Z",
+    "fabric": "Raw Silk",
+    "care_instructions": "Dry clean only. Store on hanger.",
+    "occasion": "bridal",
+    "color": "white",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 42,
+  "fields": {
+    "name": "Maroon Velvet Groom Sherwani",
+    "slug": "maroon-velvet-groom-sherwani",
+    "category": 9,
+    "description": "Luxurious maroon velvet sherwani with antique gold embroidery. Regal mandarin collar with matching bottoms and dupatta.",
+    "price": "55000.00",
+    "discount_price": "46000.00",
+    "stock": 8,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.059Z",
+    "updated_at": "2026-11-21T10:47:57.059Z",
+    "fabric": "Velvet",
+    "care_instructions": "Professional dry clean only.",
+    "occasion": "bridal",
+    "color": "maroon",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 43,
+  "fields": {
+    "name": "Navy Blue Sherwani with Gold Buttons",
+    "slug": "navy-blue-sherwani-with-gold-buttons",
+    "category": 9,
+    "description": "Classic navy blue sherwani with golden buttons and subtle self-print. Elegant and sophisticated for the modern groom.",
+    "price": "32000.00",
+    "discount_price": "27000.00",
+    "stock": 12,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.097Z",
+    "updated_at": "2026-11-21T10:47:57.097Z",
+    "fabric": "Jacquard Silk",
+    "care_instructions": "Dry clean only.",
+    "occasion": "wedding",
+    "color": "blue",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 44,
+  "fields": {
+    "name": "Black Embroidered Sherwani Set",
+    "slug": "black-embroidered-sherwani-set",
+    "category": 9,
+    "description": "Sophisticated black sherwani with silver and gold threadwork. Comes with churidar and brooch. Perfect for sangeet or reception.",
+    "price": "38000.00",
+    "discount_price": "32000.00",
+    "stock": 10,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.115Z",
+    "updated_at": "2026-11-21T10:47:57.115Z",
+    "fabric": "Art Silk",
+    "care_instructions": "Dry clean only.",
+    "occasion": "party",
+    "color": "black",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 45,
+  "fields": {
+    "name": "White Cotton Lucknowi Chikan Kurta Pajama",
+    "slug": "white-cotton-lucknowi-chikan-kurta-pajama",
+    "category": 10,
+    "description": "Classic white Lucknowi chikan kurta with intricate hand-embroidery. Paired with comfortable cotton pajama. Timeless elegance for every occasion.",
+    "price": "4500.00",
+    "discount_price": "3500.00",
+    "stock": 40,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.134Z",
+    "updated_at": "2026-11-21T10:47:57.134Z",
+    "fabric": "Cotton",
+    "care_instructions": "Machine wash cold. Iron on medium.",
+    "occasion": "casual",
+    "color": "white",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 46,
+  "fields": {
+    "name": "Royal Blue Silk Kurta Set for Wedding",
+    "slug": "royal-blue-silk-kurta-set-for-wedding",
+    "category": 10,
+    "description": "Rich royal blue silk kurta with golden thread embroidery on collar and sleeves. Comes with matching churidar and pocket square.",
+    "price": "8500.00",
+    "discount_price": "6999.00",
+    "stock": 25,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.156Z",
+    "updated_at": "2026-11-21T10:47:57.156Z",
+    "fabric": "Dupion Silk",
+    "care_instructions": "Dry clean recommended.",
+    "occasion": "wedding",
+    "color": "blue",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 47,
+  "fields": {
+    "name": "Olive Green Pathani Kurta Set",
+    "slug": "olive-green-pathani-kurta-set",
+    "category": 10,
+    "description": "Stylish olive green Pathani suit with Chinese collar and self-print. Modern cut with traditional appeal.",
+    "price": "5500.00",
+    "discount_price": "4500.00",
+    "stock": 30,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.174Z",
+    "updated_at": "2026-11-21T10:47:57.174Z",
+    "fabric": "Cotton Silk Blend",
+    "care_instructions": "Machine wash cold.",
+    "occasion": "festive",
+    "color": "green",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 48,
+  "fields": {
+    "name": "Peach Silk Kurta with Embroidered Jacket",
+    "slug": "peach-silk-kurta-with-embroidered-jacket",
+    "category": 10,
+    "description": "Trendy peach silk kurta paired with a heavily embroidered Nehru jacket. The complete wedding guest outfit.",
+    "price": "12000.00",
+    "discount_price": "9999.00",
+    "stock": 20,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.193Z",
+    "updated_at": "2026-11-21T10:47:57.193Z",
+    "fabric": "Silk",
+    "care_instructions": "Dry clean only.",
+    "occasion": "wedding",
+    "color": "orange",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 49,
+  "fields": {
+    "name": "Black Bandhgala Jodhpuri Suit",
+    "slug": "black-bandhgala-jodhpuri-suit",
+    "category": 11,
+    "description": "Sharp black bandhgala suit with Jodhpuri cut trouser. Minimalist design with golden buttons. Perfect for reception or cocktail.",
+    "price": "18000.00",
+    "discount_price": "14999.00",
+    "stock": 15,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.213Z",
+    "updated_at": "2026-11-21T10:47:57.213Z",
+    "fabric": "Terry Rayon",
+    "care_instructions": "Dry clean only.",
+    "occasion": "party",
+    "color": "black",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 50,
+  "fields": {
+    "name": "Wine Nehru Jacket with Printed Kurta",
+    "slug": "wine-nehru-jacket-with-printed-kurta",
+    "category": 11,
+    "description": "Elegant wine-coloured Nehru jacket with printed kurta and trouser. The trending Indo-western look for weddings.",
+    "price": "10000.00",
+    "discount_price": "7999.00",
+    "stock": 19,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.316Z",
+    "updated_at": "2026-11-21T10:47:57.316Z",
+    "fabric": "Jacquard with Cotton Kurta",
+    "care_instructions": "Dry clean the jacket. Kurta can be hand washed.",
+    "occasion": "wedding",
+    "color": "maroon",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 51,
+  "fields": {
+    "name": "Ivory Indo-Western Sherwani Jacket",
+    "slug": "ivory-indo-western-sherwani-jacket",
+    "category": 11,
+    "description": "Modern ivory Indo-western sherwani jacket with asymmetric hemline. Fusion of traditional embroidery and contemporary design.",
+    "price": "22000.00",
+    "discount_price": "18000.00",
+    "stock": 10,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.368Z",
+    "updated_at": "2026-11-21T10:47:57.368Z",
+    "fabric": "Raw Silk",
+    "care_instructions": "Dry clean only.",
+    "occasion": "bridal",
+    "color": "white",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 52,
+  "fields": {
+    "name": "Gold Plated Bridal Jewellery Set (7 Pieces)",
+    "slug": "gold-plated-bridal-jewellery-set-7-pieces",
+    "category": 12,
+    "description": "Complete bridal jewellery set including necklace, earrings, maang tikka, haath phool, nose ring, bangles, and anklet. Gold plated with Kundan and pearl work.",
+    "price": "8500.00",
+    "discount_price": "6999.00",
+    "stock": 20,
+    "is_featured": true,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.402Z",
+    "updated_at": "2026-11-21T10:47:57.402Z",
+    "fabric": "Gold Plated Brass",
+    "care_instructions": "Store in jewellery box. Avoid contact with water.",
+    "occasion": "bridal",
+    "color": "gold",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 53,
+  "fields": {
+    "name": "Embroidered Bridal Mojari (Jutti)",
+    "slug": "embroidered-bridal-mojari-jutti",
+    "category": 12,
+    "description": "Hand-embroidered leather mojari (jutti) with zardosi and sequin work. Available in red, gold, and pink. Comfortable for all-day wear.",
+    "price": "2500.00",
+    "discount_price": "1999.00",
+    "stock": 48,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.436Z",
+    "updated_at": "2026-11-21T10:47:57.436Z",
+    "fabric": "Genuine Leather with Velvet",
+    "care_instructions": "Wipe clean with dry cloth.",
+    "occasion": "bridal",
+    "color": "red",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 54,
+  "fields": {
+    "name": "Groom's Pagdi/Safa (Wedding Turban)",
+    "slug": "grooms-pagdisafa-wedding-turban",
+    "category": 12,
+    "description": "Pre-tied groom's pagdi/safa in maroon silk with golden brooch and kalgi. Ready to wear — adjustable inner band.",
+    "price": "3500.00",
+    "discount_price": "2800.00",
+    "stock": 28,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.519Z",
+    "updated_at": "2026-11-21T10:47:57.519Z",
+    "fabric": "Silk",
+    "care_instructions": "Dry clean only.",
+    "occasion": "bridal",
+    "color": "maroon",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.product",
+  "pk": 55,
+  "fields": {
+    "name": "Red Bridal Kalire Set",
+    "slug": "red-bridal-kalire-set",
+    "category": 12,
+    "description": "Traditional gold-plated kalire (hanging ornaments) for the bride's chura. Shell and pearl detailing with jingling bells.",
+    "price": "1800.00",
+    "discount_price": "1499.00",
+    "stock": 40,
+    "is_featured": false,
+    "is_active": true,
+    "created_at": "2026-11-21T10:47:57.555Z",
+    "updated_at": "2026-11-21T10:47:57.556Z",
+    "fabric": "Gold Plated Brass",
+    "care_instructions": "Store in soft pouch.",
+    "occasion": "bridal",
+    "color": "gold",
+    "size_chart": ""
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 351,
+  "fields": {
+    "product": 23,
+    "image": "products/royal-red-bridal-lehenga-gold-zari.webp",
+    "is_primary": true,
+    "alt_text": "Royal Red Bridal Lehenga with Gold Zari Embroidery",
+    "created_at": "2026-11-21T18:42:39.602Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 352,
+  "fields": {
+    "product": 24,
+    "image": "products/maroon-velvet-bridal-lehenga-zardosi.jpg",
+    "is_primary": true,
+    "alt_text": "Maroon Velvet Bridal Lehenga with Zardosi Work",
+    "created_at": "2026-11-21T18:42:39.616Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 353,
+  "fields": {
+    "product": 25,
+    "image": "products/pink-silk-sangeet-lehenga.jpg",
+    "is_primary": true,
+    "alt_text": "Pink Silk Lehenga for Sangeet Ceremony",
+    "created_at": "2026-11-21T18:42:39.624Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 354,
+  "fields": {
+    "product": 26,
+    "image": "products/gold-tissue-bridal-lehenga-set.jpg",
+    "is_primary": true,
+    "alt_text": "Gold Tissue Bridal Lehenga Set",
+    "created_at": "2026-11-21T18:42:39.632Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 355,
+  "fields": {
+    "product": 27,
+    "image": "products/royal-blue-banarasi-silk-saree.png",
+    "is_primary": true,
+    "alt_text": "Royal Blue Banarasi Silk Saree with Gold Border",
+    "created_at": "2026-11-21T18:42:39.641Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 356,
+  "fields": {
+    "product": 28,
+    "image": "products/green-kanjivaram-silk-saree.png",
+    "is_primary": true,
+    "alt_text": "Green Kanjivaram Silk Saree",
+    "created_at": "2026-11-21T18:42:39.661Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 357,
+  "fields": {
+    "product": 29,
+    "image": "products/red-paithani-bridal-saree.png",
+    "is_primary": true,
+    "alt_text": "Red Paithani Bridal Saree",
+    "created_at": "2026-11-21T18:42:39.670Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 358,
+  "fields": {
+    "product": 12,
+    "image": "products/white-georgette-casual-kurti.png",
+    "is_primary": true,
+    "alt_text": "White Georgette Casual Kurti",
+    "created_at": "2026-11-21T18:42:39.678Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 359,
+  "fields": {
+    "product": 31,
+    "image": "products/wine-velvet-anarkali-suit.png",
+    "is_primary": true,
+    "alt_text": "Wine Velvet Anarkali Suit with Dupatta",
+    "created_at": "2026-11-21T18:42:39.686Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 360,
+  "fields": {
+    "product": 3,
+    "image": "products/pink-floral-anarkali-suit.png",
+    "is_primary": true,
+    "alt_text": "Pink Floral Anarkali Suit",
+    "created_at": "2026-11-21T18:42:39.699Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 361,
+  "fields": {
+    "product": 32,
+    "image": "products/teal-blue-embroidered-anarkali.png",
+    "is_primary": true,
+    "alt_text": "Teal Blue Embroidered Anarkali Gown",
+    "created_at": "2026-11-21T18:42:39.707Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 362,
+  "fields": {
+    "product": 33,
+    "image": "products/orange-embroidered-kurti-palazzo.png",
+    "is_primary": true,
+    "alt_text": "Orange Embroidered Kurti with Palazzo Set",
+    "created_at": "2026-11-21T18:42:39.715Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 363,
+  "fields": {
+    "product": 34,
+    "image": "products/yellow-lucknowi-chikan-kurti.jpg",
+    "is_primary": true,
+    "alt_text": "Yellow Lucknowi Chikan Kurti Set",
+    "created_at": "2026-11-21T18:42:39.728Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 364,
+  "fields": {
+    "product": 36,
+    "image": "products/peach-gharara-set-nikah.png",
+    "is_primary": true,
+    "alt_text": "Peach Gharara Set for Nikah",
+    "created_at": "2026-11-21T18:42:39.738Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 365,
+  "fields": {
+    "product": 6,
+    "image": "products/purple-sharara-set-embroidered.png",
+    "is_primary": true,
+    "alt_text": "Purple Sharara Set with Embroidered Kurti",
+    "created_at": "2026-11-21T18:42:39.751Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 366,
+  "fields": {
+    "product": 19,
+    "image": "products/gold-embroidered-sharara-set.jpg",
+    "is_primary": true,
+    "alt_text": "Gold Embroidered Sharara Set",
+    "created_at": "2026-11-21T18:42:39.759Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 367,
+  "fields": {
+    "product": 37,
+    "image": "products/green-floral-sharara-set.png",
+    "is_primary": true,
+    "alt_text": "Green Floral Sharara Set",
+    "created_at": "2026-11-21T18:42:39.766Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 368,
+  "fields": {
+    "product": 11,
+    "image": "products/black-net-embroidered-gown.png",
+    "is_primary": true,
+    "alt_text": "Black Net Embroidered Anarkali Gown",
+    "created_at": "2026-11-21T18:42:39.773Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 369,
+  "fields": {
+    "product": 38,
+    "image": "products/wine-indo-western-trail-gown.jpg",
+    "is_primary": true,
+    "alt_text": "Wine Indo-Western Trail Gown",
+    "created_at": "2026-11-21T18:42:39.789Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 370,
+  "fields": {
+    "product": 39,
+    "image": "products/rose-gold-shimmer-reception-gown.png",
+    "is_primary": true,
+    "alt_text": "Rose Gold Shimmer Reception Gown",
+    "created_at": "2026-11-21T18:42:39.795Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 371,
+  "fields": {
+    "product": 45,
+    "image": "products/white-lucknowi-chikan-kurta-nehru-jacket.png",
+    "is_primary": true,
+    "alt_text": "White Cotton Lucknowi Chikan Kurta Pajama",
+    "created_at": "2026-11-21T18:42:39.801Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 372,
+  "fields": {
+    "product": 42,
+    "image": "products/maroon-velvet-groom-sherwani.png",
+    "is_primary": true,
+    "alt_text": "Maroon Velvet Groom Sherwani",
+    "created_at": "2026-11-21T18:42:39.809Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 373,
+  "fields": {
+    "product": 46,
+    "image": "products/royal-blue-silk-kurta-set.png",
+    "is_primary": true,
+    "alt_text": "Royal Blue Silk Kurta Set for Wedding",
+    "created_at": "2026-11-21T18:42:39.822Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 374,
+  "fields": {
+    "product": 44,
+    "image": "products/black-embroidered-sherwani-set.png",
+    "is_primary": true,
+    "alt_text": "Black Embroidered Sherwani Set",
+    "created_at": "2026-11-21T18:42:39.830Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 375,
+  "fields": {
+    "product": 48,
+    "image": "products/peach-silk-kurta-embroidered-jacket.png",
+    "is_primary": true,
+    "alt_text": "Peach Silk Kurta with Embroidered Jacket",
+    "created_at": "2026-11-21T18:42:39.840Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 376,
+  "fields": {
+    "product": 50,
+    "image": "products/wine-nehru-jacket-printed-kurta.jpg",
+    "is_primary": true,
+    "alt_text": "Wine Nehru Jacket with Printed Kurta",
+    "created_at": "2026-11-21T18:42:39.856Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 377,
+  "fields": {
+    "product": 47,
+    "image": "products/olive-green-pathani-kurta-set.png",
+    "is_primary": true,
+    "alt_text": "Olive Green Pathani Kurta Set",
+    "created_at": "2026-11-21T18:42:39.867Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 378,
+  "fields": {
+    "product": 51,
+    "image": "products/ivory-indo-western-sherwani-jacket.png",
+    "is_primary": true,
+    "alt_text": "Ivory Indo-Western Sherwani Jacket",
+    "created_at": "2026-11-21T18:42:39.875Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 379,
+  "fields": {
+    "product": 49,
+    "image": "products/black-bandhgala-jodhpuri-suit.png",
+    "is_primary": true,
+    "alt_text": "Black Bandhgala Jodhpuri Suit",
+    "created_at": "2026-11-21T18:42:39.883Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 380,
+  "fields": {
+    "product": 43,
+    "image": "products/navy-blue-sherwani-gold-buttons.png",
+    "is_primary": true,
+    "alt_text": "Navy Blue Sherwani with Gold Buttons",
+    "created_at": "2026-11-21T18:42:39.892Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 381,
+  "fields": {
+    "product": 41,
+    "image": "products/ivory-gold-embroidered-groom-sherwani.png",
+    "is_primary": true,
+    "alt_text": "Ivory Gold Embroidered Groom Sherwani",
+    "created_at": "2026-11-21T18:42:39.899Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 382,
+  "fields": {
+    "product": 10,
+    "image": "products/multicolor-phulkari-dupatta.png",
+    "is_primary": true,
+    "alt_text": "Multicolor Phulkari Dupatta",
+    "created_at": "2026-11-21T18:42:39.906Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 383,
+  "fields": {
+    "product": 40,
+    "image": "products/red-banarasi-dupatta-gold-zari.png",
+    "is_primary": true,
+    "alt_text": "Red Banarasi Dupatta with Gold Zari",
+    "created_at": "2026-11-21T18:42:39.925Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 384,
+  "fields": {
+    "product": 52,
+    "image": "products/gold-plated-bridal-jewellery-set-7pc.png",
+    "is_primary": true,
+    "alt_text": "Gold Plated Bridal Jewellery Set (7 Pieces)",
+    "created_at": "2026-11-21T18:42:39.935Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 385,
+  "fields": {
+    "product": 55,
+    "image": "products/red-bridal-kalire-set.png",
+    "is_primary": true,
+    "alt_text": "Red Bridal Kalire Set",
+    "created_at": "2026-11-21T18:42:39.945Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 386,
+  "fields": {
+    "product": 22,
+    "image": "products/bridal-chooda-set-bangles.png",
+    "is_primary": true,
+    "alt_text": "Bridal Chooda Set — 21 Bangles",
+    "created_at": "2026-11-21T18:42:39.950Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 387,
+  "fields": {
+    "product": 22,
+    "image": "products/bridal-bangles-pink-purple.png",
+    "is_primary": false,
+    "alt_text": "Bridal Chooda Set — 21 Bangles",
+    "created_at": "2026-11-21T18:42:39.959Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 388,
+  "fields": {
+    "product": 52,
+    "image": "products/gold-plated-bridal-jewellery-set-alt.png",
+    "is_primary": false,
+    "alt_text": "Gold Plated Bridal Jewellery Set (7 Pieces)",
+    "created_at": "2026-11-21T18:42:39.964Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 389,
+  "fields": {
+    "product": 52,
+    "image": "products/gold-plated-bridal-jewellery-earrings.png",
+    "is_primary": false,
+    "alt_text": "Gold Plated Bridal Jewellery Set (7 Pieces)",
+    "created_at": "2026-11-21T18:42:39.969Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 390,
+  "fields": {
+    "product": 52,
+    "image": "products/gold-plated-bridal-jewellery-on-model.png",
+    "is_primary": false,
+    "alt_text": "Gold Plated Bridal Jewellery Set (7 Pieces)",
+    "created_at": "2026-11-21T18:42:39.973Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 391,
+  "fields": {
+    "product": 53,
+    "image": "products/embroidered-bridal-mojari-red.png",
+    "is_primary": true,
+    "alt_text": "Embroidered Bridal Mojari (Jutti)",
+    "created_at": "2026-11-21T18:42:39.980Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 392,
+  "fields": {
+    "product": 53,
+    "image": "products/embroidered-bridal-mojari-colorful.png",
+    "is_primary": false,
+    "alt_text": "Embroidered Bridal Mojari (Jutti)",
+    "created_at": "2026-11-21T18:42:39.985Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 393,
+  "fields": {
+    "product": 54,
+    "image": "products/groom-pagdi-safa-white-emerald.png",
+    "is_primary": true,
+    "alt_text": "Groom's Pagdi/Safa (Wedding Turban)",
+    "created_at": "2026-11-21T18:42:39.993Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 394,
+  "fields": {
+    "product": 54,
+    "image": "products/groom-pagdi-safa-red-velvet.png",
+    "is_primary": false,
+    "alt_text": "Groom's Pagdi/Safa (Wedding Turban)",
+    "created_at": "2026-11-21T18:42:39.999Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 395,
+  "fields": {
+    "product": 1,
+    "image": "products/royal-red-bridal-lehenga-gold-zari.webp",
+    "is_primary": true,
+    "alt_text": "Royal Red Bridal Lehenga with Gold Embroidery",
+    "created_at": "2026-11-21T18:42:40.004Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 396,
+  "fields": {
+    "product": 2,
+    "image": "products/maroon-velvet-bridal-lehenga-zardosi.jpg",
+    "is_primary": true,
+    "alt_text": "Maroon Silk Bridal Lehenga Set",
+    "created_at": "2026-11-21T18:42:40.008Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 397,
+  "fields": {
+    "product": 7,
+    "image": "products/gold-tissue-bridal-lehenga-set.jpg",
+    "is_primary": true,
+    "alt_text": "Gold Tissue Lehenga for Sangeet",
+    "created_at": "2026-11-21T18:42:40.013Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 398,
+  "fields": {
+    "product": 13,
+    "image": "products/maroon-velvet-bridal-lehenga-zardosi.jpg",
+    "is_primary": true,
+    "alt_text": "Crimson Velvet Bridal Lehenga",
+    "created_at": "2026-11-21T18:42:40.017Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 399,
+  "fields": {
+    "product": 14,
+    "image": "products/pink-silk-sangeet-lehenga.jpg",
+    "is_primary": true,
+    "alt_text": "Rose Pink Bridal Lehenga with Mirror Work",
+    "created_at": "2026-11-21T18:42:40.021Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 400,
+  "fields": {
+    "product": 4,
+    "image": "products/royal-blue-banarasi-silk-saree.png",
+    "is_primary": true,
+    "alt_text": "Blue Banarasi Designer Saree",
+    "created_at": "2026-11-21T18:42:40.025Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 401,
+  "fields": {
+    "product": 5,
+    "image": "products/green-kanjivaram-silk-saree.png",
+    "is_primary": true,
+    "alt_text": "Green Chanderi Silk Saree",
+    "created_at": "2026-11-21T18:42:40.029Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 402,
+  "fields": {
+    "product": 15,
+    "image": "products/green-kanjivaram-silk-saree.png",
+    "is_primary": true,
+    "alt_text": "Royal Purple Kanjivaram Saree",
+    "created_at": "2026-11-21T18:42:40.036Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 403,
+  "fields": {
+    "product": 16,
+    "image": "products/red-paithani-bridal-saree.png",
+    "is_primary": true,
+    "alt_text": "Coral Georgette Designer Saree",
+    "created_at": "2026-11-21T18:42:40.041Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 404,
+  "fields": {
+    "product": 30,
+    "image": "products/red-paithani-bridal-saree.png",
+    "is_primary": true,
+    "alt_text": "Orange Chanderi Silk Saree",
+    "created_at": "2026-11-21T18:42:40.046Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 405,
+  "fields": {
+    "product": 17,
+    "image": "products/wine-velvet-anarkali-suit.png",
+    "is_primary": true,
+    "alt_text": "Deep Red Embroidered Anarkali Gown",
+    "created_at": "2026-11-21T18:42:40.050Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 406,
+  "fields": {
+    "product": 18,
+    "image": "products/teal-blue-embroidered-anarkali.png",
+    "is_primary": true,
+    "alt_text": "Blue Thread Work Anarkali Suit",
+    "created_at": "2026-11-21T18:42:40.054Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 407,
+  "fields": {
+    "product": 8,
+    "image": "products/orange-embroidered-kurti-palazzo.png",
+    "is_primary": true,
+    "alt_text": "Orange Embroidered Wedding Kurti Set",
+    "created_at": "2026-11-21T18:42:40.059Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 408,
+  "fields": {
+    "product": 20,
+    "image": "products/yellow-lucknowi-chikan-kurti.jpg",
+    "is_primary": true,
+    "alt_text": "Printed Silk Festive Kurti with Palazzo",
+    "created_at": "2026-11-21T18:42:40.063Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 409,
+  "fields": {
+    "product": 35,
+    "image": "products/purple-sharara-set-embroidered.png",
+    "is_primary": true,
+    "alt_text": "Purple Mirror-Work Kurti with Skirt",
+    "created_at": "2026-11-21T18:42:40.067Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 410,
+  "fields": {
+    "product": 9,
+    "image": "products/rose-gold-shimmer-reception-gown.png",
+    "is_primary": true,
+    "alt_text": "Yellow Chiffon Floral Ethnic Gown",
+    "created_at": "2026-11-21T18:42:40.072Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 411,
+  "fields": {
+    "product": 21,
+    "image": "products/wine-indo-western-trail-gown.jpg",
+    "is_primary": true,
+    "alt_text": "Maroon Embroidered Indo-Western Gown",
+    "created_at": "2026-11-21T18:42:40.076Z"
+  }
+},
+{
+  "model": "products.wishlist",
+  "pk": 1,
+  "fields": {
+    "user": 7,
+    "product": 54,
+    "added_at": "2026-11-21T20:07:06.381Z"
+  }
+},
+{
+  "model": "products.wishlist",
+  "pk": 2,
+  "fields": {
+    "user": 7,
+    "product": 53,
+    "added_at": "2026-11-21T20:07:08.483Z"
+  }
+},
+{
+  "model": "coupons.coupon",
+  "pk": 1,
+  "fields": {
+    "code": "BRIDAL10",
+    "description": "10% off on all bridal wear",
+    "discount_type": "PERCENTAGE",
+    "discount_value": "10.00",
+    "min_order_amount": "1000.00",
+    "max_discount_amount": "5000.00",
+    "max_uses": 100,
+    "times_used": 2,
+    "is_active": true,
+    "valid_from": "2026-11-21T05:47:33.614Z",
+    "valid_until": null,
+    "created_at": "2026-11-21T05:47:33.614Z"
+  }
+},
+{
+  "model": "coupons.coupon",
+  "pk": 2,
+  "fields": {
+    "code": "FLAT500",
+    "description": "Flat ₹500 off on orders above ₹3000",
+    "discount_type": "FIXED",
+    "discount_value": "500.00",
+    "min_order_amount": "3000.00",
+    "max_discount_amount": null,
+    "max_uses": 50,
+    "times_used": 0,
+    "is_active": true,
+    "valid_from": "2026-11-21T05:47:33.636Z",
+    "valid_until": null,
+    "created_at": "2026-11-21T05:47:33.636Z"
+  }
+},
+{
+  "model": "coupons.coupon",
+  "pk": 3,
+  "fields": {
+    "code": "WEDDING20",
+    "description": "20% off on wedding collection (max ₹10,000)",
+    "discount_type": "PERCENTAGE",
+    "discount_value": "20.00",
+    "min_order_amount": "5000.00",
+    "max_discount_amount": "10000.00",
+    "max_uses": 50,
+    "times_used": 0,
+    "is_active": true,
+    "valid_from": "2026-11-21T10:47:57.580Z",
+    "valid_until": null,
+    "created_at": "2026-11-21T10:47:57.581Z"
+  }
+}
+]

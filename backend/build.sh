@@ -9,5 +9,5 @@ python manage.py collectstatic --no-input
 python fix_migrations.py
 python manage.py migrate
 python create_admin.py
-python manage.py seed_images
+python manage.py loaddata seed_data.json
 
