@@ -201,19 +201,15 @@ export default function Home() {
 
         <div className="relative flex items-stretch" style={{ minHeight: 480 }}>
 
-          {/* ── LEFT DRESS ── */}
-          <div className="hidden lg:flex flex-col items-center justify-end flex-shrink-0 pl-6 pb-0"
-            style={{ width: 200 }}>
+          {/* ── LEFT DRESS / HERO IMAGE ── */}
+          <div className="hidden lg:flex flex-col items-center justify-center flex-shrink-0 pl-8 pb-4"
+            style={{ width: 240 }}>
             <div className="dress-float">
-              <BridalDressSVG
-                color={slide.leftDress.color}
-                accent={slide.leftDress.accent}
-                size={180}
+              <BridalHeroImage
+                src={slide.leftImg}
+                alt={slide.title}
+                size={200}
               />
-            </div>
-            {/* label ribbon */}
-            <div className="mb-3 bg-white/15 backdrop-blur-sm rounded-full px-4 py-1.5 text-xs font-semibold text-white/90 border border-white/20">
-              ✨ Bridal Collection
             </div>
           </div>
 
@@ -279,19 +275,15 @@ export default function Home() {
             </div>
           </div>
 
-          {/* ── RIGHT DRESS ── */}
-          <div className="hidden lg:flex flex-col items-center justify-end flex-shrink-0 pr-6 pb-0"
-            style={{ width: 200 }}>
+          {/* ── RIGHT DRESS / HERO IMAGE ── */}
+          <div className="hidden lg:flex flex-col items-center justify-center flex-shrink-0 pr-8 pb-4"
+            style={{ width: 240 }}>
             <div className="dress-float-slow">
-              <BridalDressSVG
-                color={slide.rightDress.color}
-                accent={slide.rightDress.accent}
-                flip
-                size={180}
+              <BridalHeroImage
+                src={slide.rightImg}
+                alt="Shaaz Bridal Wear"
+                size={200}
               />
-            </div>
-            <div className="mb-3 bg-white/15 backdrop-blur-sm rounded-full px-4 py-1.5 text-xs font-semibold text-white/90 border border-white/20">
-              💎 New Arrivals
             </div>
           </div>
         </div>
@@ -434,8 +426,12 @@ export default function Home() {
           ))}
           <div className="relative z-10 flex items-center justify-between px-8 md:px-16 py-10">
             {/* left mini dress */}
-            <div className="hidden md:block opacity-80 dress-float flex-shrink-0 -ml-4">
-              <BridalDressSVG color="#7b1818" accent="#f1c40f" size={120} />
+            <div className="hidden md:block opacity-90 dress-float flex-shrink-0 -ml-2">
+              <img
+                src="/images/hero-bride.jpg"
+                alt="Bridal Offer"
+                className="w-24 h-32 object-cover object-top rounded-2xl border-2 border-brand-gold/60 shadow-xl"
+              />
             </div>
             {/* center text */}
             <div className="text-white text-center flex-1">
@@ -456,8 +452,12 @@ export default function Home() {
               </Link>
             </div>
             {/* right mini dress */}
-            <div className="hidden md:block opacity-80 dress-float-slow flex-shrink-0 -mr-4">
-              <BridalDressSVG color="#5a0e0e" accent="#e74c3c" flip size={120} />
+            <div className="hidden md:block opacity-90 dress-float-slow flex-shrink-0 -mr-2">
+              <img
+                src="/images/hero-bride-left.jpg"
+                alt="Bridal Offer"
+                className="w-24 h-32 object-cover object-top rounded-2xl border-2 border-brand-gold/60 shadow-xl"
+              />
             </div>
           </div>
         </div>
