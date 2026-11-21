@@ -1,273 +1,197 @@
 # 🌸 Shaaz Ethnicwear — The Complete Bridal Store
 
-A full-stack e-commerce website for bridal ethnic wear, built with **Django REST Framework** (backend) and **React + Vite + Tailwind CSS** (frontend).
+A full-stack, production-grade e-commerce application for premier bridal and ethnic wear, inspired by Manyavar and Mohey. Built with a decoupled **Django REST Framework** backend, a modern **React 18 + Vite + Tailwind CSS** frontend, and **Razorpay Payment Gateway (Test Mode)**.
 
 ---
 
-## 🚀 Quick Start
+## 🎨 Aesthetic Theme & Brand Palette
+
+Shaaz Ethnicwear features an ethnic bridal color scheme:
+- **Deep Red / Royal Maroon** (`#9B1313`) — Primary regal bridal identity
+- **Sandal & Antique Gold** (`#D4AF37`) — Luxury bridal borders, badges, buttons, and accents
+- **Royal Purple** (`#6B21A8`) — Velvet sherwanis & festive sharara sets
+- **Emerald & Olive Green** (`#16A34A`) — Kanjivaram sarees & mehendi wear
+- **Festive Yellow** (`#EAB308`) — Haldi celebration outfits & Lucknowi kurtis
+- **Tangerine Orange** (`#EA580C`) — Chanderi silk sarees & festive kurtas
+- **Rose Pink** (`#DB2777`) — Sangeet lehengas & anarkali suits
+- **Sapphire Blue** (`#1D4ED8`) — Banarasi silk sarees & royal blue kurtas
+- **Ivory / Sandal Cream** (`#FFF8F0`) — Background & soft cards
+
+---
+
+## 👥 Collections Included (Men & Women)
+
+### 👰 Women's Bridal Wear
+1. **Bridal Lehengas** — Raw silk, heavy zari embroidery, velvet & sangeet lehengas
+2. **Designer Sarees** — Banarasi silk, Kanjivaram, Paithani, and Chanderi sarees
+3. **Anarkali Suits** — Floor-length embroidered velvet and georgette suits
+4. **Wedding Kurtis** — Chikankari, palazzo sets, and mirror-work kurtis
+5. **Sharara Sets** — Trendy party wear and nikah gharara sets
+6. **Ethnic Gowns** — Net embroidered gowns and Indo-Western trail reception gowns
+7. **Dupatta Collection** — Authentic Phulkari, Banarasi gold zari dupattas
+
+### 🤵 Men's Groom & Festive Wear
+8. **Sherwanis** — Royal ivory gold groom sherwanis, maroon velvet sherwanis, and black designer sherwanis
+9. **Kurta Pajama Sets** — Classic Lucknowi chikan, royal blue silk sets, Pathani suits, and Nehru jacket combos
+10. **Indo-Western Menswear** — Jodhpuri bandhgala suits, asymmetric jackets, and fusion sherwanis
+
+### 💍 Bridal Accessories
+11. **Bridal Accessories** — Kundan jewellery sets (7 pcs), embroidered mojaris (juttis), groom's pagdi/safa, and red bridal kalire sets
+
+---
+
+## ⚡ Quick Run Commands (Local Development)
 
 ### Prerequisites
 - Python 3.10+
-- Node.js 18+
-- npm 9+
+- Node.js 18+ & npm 9+
 
 ---
 
-## 🔧 Backend Setup (Django)
+### Step 1: Run the Django Backend
 
-```bash
-cd backend
+```powershell
+# Open terminal in project root
+cd "C:\Users\hr111\OneDrive\Desktop\AI Python Full Stack Projects\final project- bridal ecommerce website\backend"
 
-# 1. Install Python dependencies
-pip install -r requirements.txt --trusted-host pypi.org --trusted-host files.pythonhosted.org
+# 1. Install dependencies
+pip install -r requirements.txt
 
-# 2. Create .env file (already provided in backend/.env)
-# Edit backend/.env with your settings if needed
-
-# 3. Run database migrations
-python manage.py makemigrations accounts products orders coupons
+# 2. Apply database migrations
 python manage.py migrate
 
-# 4. Seed data (creates admin + sample products + coupons)
+# 3. Seed admin user, categories, products, and coupons
 python create_admin.py
 
-# 5. (Optional) Download product images
+# 4. Verify and map product images
 python manage.py seed_images
 
-# 6. Start the server
+# 5. Start the backend development server
 python manage.py runserver 8000
 ```
-
-Backend runs at: **http://localhost:8000**
+Backend API will be active at: **`http://localhost:8000`**
 
 ---
 
-## 🎨 Frontend Setup (React + Vite)
+### Step 2: Run the React Frontend
 
-```bash
-cd frontend
+```powershell
+# Open a second terminal
+cd "C:\Users\hr111\OneDrive\Desktop\AI Python Full Stack Projects\final project- bridal ecommerce website\frontend"
 
 # 1. Install dependencies
 npm install
 
-# 2. Start dev server
+# 2. Start the Vite development server
 npm run dev
 ```
-
-Frontend runs at: **http://localhost:5173**
-
----
-
-## 🔑 Admin Credentials
-
-| Role  | Email               | Password   |
-|-------|---------------------|------------|
-| Admin | admin@shaaz.com     | Admin@123  |
-
-**Admin Dashboard**: http://localhost:5173/admin-dashboard
+Frontend Web App will be active at: **`http://localhost:5173`**
 
 ---
 
-## 🛍️ Coupon Codes (for testing)
+## 🔑 Default Login Credentials
 
-| Code      | Discount                      |
-|-----------|-------------------------------|
-| BRIDAL10  | 10% off (max ₹5000)           |
-| FLAT500   | Flat ₹500 off (min ₹3000)    |
+| Role | Email | Password | Access Area |
+| :--- | :--- | :--- | :--- |
+| **Store Administrator** | `admin@shaaz.com` | `Admin@123` | Full Storefront + Admin Dashboard |
+| **New Customers** | Register any new account on `/register` | (your password) | Customer Storefront, Cart, Orders |
 
----
-
-## 📋 Features Implemented
-
-### Customer Features
-- ✅ User Registration, Login, Logout
-- ✅ Forgot Password (OTP via email)
-- ✅ Product Listing with Search, Filter & Sort
-- ✅ Product Detail with Images, Reviews & Rating
-- ✅ Add to Cart, Update Quantity, Remove Items
-- ✅ Add to Wishlist & Remove
-- ✅ Coupon Code Discount
-- ✅ Checkout with Shipping Address
-- ✅ Cash on Delivery (COD)
-- ✅ Razorpay Payment Gateway (Test Mode)
-- ✅ Order History & Order Details
-- ✅ Order Tracking with Timeline
-- ✅ Order Cancellation
-- ✅ User Profile Management
-- ✅ Address Management (Add / Edit / Delete / Set Default)
-- ✅ Product Ratings & Reviews
-
-### Admin Features (Dashboard at /admin-dashboard)
-- ✅ Dashboard with Revenue, Orders, Products & User Stats
-- ✅ Product Management (Add / Edit / Delete)
-- ✅ Category Management
-- ✅ Inventory Management (stock tracking)
-- ✅ Order Management with Status Updates
-- ✅ User Management (Activate / Deactivate / Toggle Admin)
-- ✅ Coupon Code Management (Create / Edit / Delete)
-- ✅ Order Tracking History
-
-### Technical
-- ✅ JWT Authentication (access + refresh tokens)
-- ✅ Auto token refresh on 401
-- ✅ CORS configured
-- ✅ Image upload & serving via Django media
-- ✅ Automatic stock deduction on order placement
-- ✅ Stock restoration on order cancellation
-- ✅ Form validation (frontend + backend)
-- ✅ Protected Routes (authenticated + admin-only)
-- ✅ Redux state management
-- ✅ Responsive mobile-first design
+**Admin Dashboard URL:** `http://localhost:5173/admin-dashboard`
 
 ---
 
-## 🎨 Color Palette
+## 🎟️ Active Discount Coupons (Test in Cart / Checkout)
 
-The website uses a rich bridal color palette:
-- **Deep Red** `#9B1313` — Primary brand color
-- **Crimson** `#DC143C` — Accents & buttons
-- **Gold** `#D4AF37` — Premium highlights
-- **Purple** `#6B21A8` — Secondary accent
-- **Pink** `#DB2777` — Festive elements
-- **Cream** `#FFF8F0` — Background
+| Coupon Code | Discount Type | Discount Value | Rules |
+| :--- | :--- | :--- | :--- |
+| **`BRIDAL10`** | Percentage | **10% OFF** | Min. order ₹1,000 (Max ₹5,000 discount) |
+| **`FLAT500`** | Flat Amount | **₹500 OFF** | Min. order ₹3,000 |
+| **`WEDDING20`** | Percentage | **20% OFF** | Min. order ₹5,000 (Max ₹10,000 discount) |
 
 ---
 
-## 📁 Project Structure
+## 💳 Payment Gateway (Razorpay & COD)
 
-```
-├── backend/                    # Django REST Framework
-│   ├── accounts/               # User auth, profile, addresses
-│   ├── products/               # Categories, products, reviews, wishlist
-│   ├── orders/                 # Cart, orders, order tracking
-│   ├── coupons/                # Coupon codes & discounts
-│   ├── payments/               # Razorpay integration
-│   ├── core/                   # Django settings, URLs
-│   ├── media/                  # Uploaded images
-│   └── create_admin.py         # Setup script
-│
-└── frontend/                   # React + Vite + Tailwind CSS
-    └── src/
-        ├── pages/              # All page components
-        │   ├── Home.jsx
-        │   ├── ProductList.jsx
-        │   ├── ProductDetail.jsx
-        │   ├── Cart.jsx
-        │   ├── Checkout.jsx
-        │   ├── OrderHistory.jsx
-        │   ├── OrderDetail.jsx
-        │   ├── Profile.jsx
-        │   ├── Wishlist.jsx
-        │   ├── AddressManager.jsx
-        │   ├── Login.jsx / Register.jsx
-        │   ├── ForgotPassword.jsx / ResetPassword.jsx
-        │   └── admin/          # Admin pages
-        ├── components/
-        │   ├── layout/         # Navbar, Footer, Layout
-        │   ├── common/         # ProductCard, ProtectedRoute
-        │   └── admin/          # AdminLayout
-        ├── store/              # Redux slices
-        ├── api/                # Axios API calls
-        ├── hooks/              # Custom hooks
-        └── utils/              # Helpers
+1. **Cash on Delivery (COD)**:
+   - Available on checkout with 1 click. Stock is immediately deducted and order status set to `PENDING`.
+
+2. **Razorpay Online Payment (Test Mode)**:
+   - Configured with test support.
+   - To use live Razorpay test keys: add your `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` in `backend/.env`.
+   - In offline or placeholder mode: the application automatically displays the interactive **Razorpay Test Mode Modal**, allowing one-click payment approval and automatic verification.
+   - Successful payment automatically updates the order status to `CONFIRMED` and `payment_status` to `PAID`.
+
+---
+
+## 🌐 Full List of Application URLs
+
+### Customer Storefront
+- **Home / Landing Page**: `http://localhost:5173/`
+- **Product Catalog (Search, Filter, Sort)**: `http://localhost:5173/products`
+- **Bridal Lehengas**: `http://localhost:5173/category/bridal-lehengas`
+- **Sherwanis (Men's)**: `http://localhost:5173/category/sherwanis`
+- **Designer Sarees**: `http://localhost:5173/category/designer-sarees`
+- **Product Details Page**: `http://localhost:5173/products/<slug>`
+- **Shopping Cart**: `http://localhost:5173/cart`
+- **Checkout & Payment**: `http://localhost:5173/checkout`
+- **Wishlist**: `http://localhost:5173/wishlist`
+- **Order History**: `http://localhost:5173/orders`
+- **Order Tracking & Details**: `http://localhost:5173/orders/<id>`
+- **User Profile**: `http://localhost:5173/profile`
+- **Saved Addresses**: `http://localhost:5173/addresses`
+- **Login**: `http://localhost:5173/login`
+- **Register**: `http://localhost:5173/register`
+- **Forgot Password (OTP)**: `http://localhost:5173/forgot-password`
+
+### Admin Management Back-Office
+- **Admin Dashboard**: `http://localhost:5173/admin-dashboard`
+- **Product Management (CRUD + Stock)**: `http://localhost:5173/admin-dashboard/products`
+- **Add New Product**: `http://localhost:5173/admin-dashboard/products/add`
+- **Category Management**: `http://localhost:5173/admin-dashboard/categories`
+- **Order Management & Status Tracking**: `http://localhost:5173/admin-dashboard/orders`
+- **User Management**: `http://localhost:5173/admin-dashboard/users`
+- **Coupon Code Management**: `http://localhost:5173/admin-dashboard/coupons`
+- **Django Native Admin**: `http://localhost:8000/admin/`
+
+---
+
+## 🚀 How to Deploy on Render (Step-by-Step)
+
+The project includes a production-ready `render.yaml` Blueprint and `build.sh` script.
+
+### 1. Push to GitHub
+```powershell
+cd "C:\Users\hr111\OneDrive\Desktop\AI Python Full Stack Projects\final project- bridal ecommerce website"
+
+# Connect to your GitHub repository
+git remote add origin https://github.com/<your-username>/<your-repo-name>.git
+git branch -M main
+git push -u origin main
 ```
 
----
-
-## 🌐 API Endpoints
-
-### Auth (`/api/auth/`)
-- `POST register/` — Create account
-- `POST login/` — Get JWT tokens
-- `POST logout/` — Blacklist refresh token
-- `GET/PATCH profile/` — User profile
-- `POST change-password/`
-- `POST forgot-password/` — Send OTP
-- `POST reset-password/` — Reset with OTP
-- `GET/POST addresses/` — Manage addresses
-
-### Products (`/api/products/`)
-- `GET /` — List with filters
-- `GET categories/all/` — All categories
-- `GET featured/` — Featured products
-- `GET <slug>/` — Product detail
-- `GET/POST <slug>/reviews/` — Reviews
-- `GET wishlist/` — User's wishlist
-- `POST wishlist/<id>/toggle/` — Toggle wishlist
-
-### Orders (`/api/orders/`)
-- `GET/DELETE cart/` — View/clear cart
-- `POST cart/add/` — Add to cart
-- `PATCH/DELETE cart/items/<id>/` — Update/remove item
-- `GET /` — Order list
-- `POST create/` — Place order
-- `GET <id>/` — Order detail
-- `POST <id>/cancel/` — Cancel order
-
-### Coupons (`/api/coupons/`)
-- `POST apply/` — Validate & apply coupon
-
-### Payments (`/api/payments/`)
-- `POST create-order/` — Create Razorpay order
-- `POST verify/` — Verify payment signature
-
-### Admin (`/api/admin/`)
-- `GET dashboard/` — Stats
-- Full CRUD for products, categories, orders, users, coupons
+### 2. Deploy on Render
+1. Log in to [dashboard.render.com](https://dashboard.render.com/).
+2. Click **New +** → **Blueprint**.
+3. Connect your GitHub repository.
+4. Render will automatically detect `render.yaml` and configure:
+   - **`shaaz-db`**: Managed PostgreSQL database
+   - **`shaaz-ethnicwear-backend`**: Django Python Web Service
+   - **`shaaz-ethnicwear`**: React Vite Static Site
+5. Click **Apply**.
+6. The backend build script (`build.sh`) will run migrations, seed data, and link all product images automatically.
+7. Your live website URL will be: `https://shaaz-ethnicwear.onrender.com`
 
 ---
 
-## 📸 Adding Product Images
+## 📦 Features Checklist & Architecture
 
-Upload product images through:
-1. **Django Admin**: http://localhost:8000/admin → Products → Select a product → Add images in the inline section
-2. **Admin Dashboard**: http://localhost:5173/admin-dashboard/products/add → Upload images directly
-
-Images stored in `backend/media/products/` and served at `http://localhost:8000/media/products/`.
-
----
-
-## 💳 Razorpay Test Mode
-
-To use the Razorpay payment gateway:
-1. Create a free account at https://dashboard.razorpay.com/
-2. Go to Settings → API Keys → Generate Test Key
-3. Update `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` in `backend/.env`
-4. Use test card: `4111 1111 1111 1111`, any future expiry, any CVV
-
----
-
-## ☁️ Deploy to Render (PostgreSQL)
-
-The repo ships a `render.yaml` Blueprint that provisions everything:
-
-| Resource | Purpose |
-|----------|---------|
-| `shaaz-db` (PostgreSQL) | Persists products, images & stock across deploys |
-| `shaaz-backend` (Web Service) | Django REST API + admin (runs migrations & seeds data on every build) |
-| `shaaz-frontend` (Static Site) | React app, pointed at the backend automatically |
-
-### Steps
-1. Push this project to a GitHub/GitLab repository.
-2. In Render: **New → Blueprint** → select the repo → **Apply**.
-3. Wait for the first build. `backend/build.sh` automatically installs dependencies,
-   runs `collectstatic` + `migrate`, then runs `create_admin.py` (admin user,
-   categories, 12 products, coupons) and `seed_images` (assigns the bundled
-   category images to the database).
-4. Verify the API: `https://<shaaz-backend-url>/api/products/` returns the seeded products.
-5. Admin panel: `https://<shaaz-backend-url>/admin/` — login `admin@shaaz.com` / `Admin@123`.
-
-Because the data is (re)seeded during every build, the database is always reflected on Render.
-
-> **Images**: product images live in `backend/media/` and are served by Django, so they
-> appear on Render with no external storage.
-> **API URL**: `render.yaml` sets the frontend `VITE_API_URL` from the backend host
-> automatically — no manual edit required.
-
----
-
-## 📝 Notes
-
-- **Email**: Uses Django console backend in DEBUG mode — OTPs print to the terminal.
-- **Images**: Products without uploaded images show a branded placeholder.
-- **Stock**: Automatically deducted on order placement, restored on cancellation.
+- [x] **Responsive UI**: Aesthetic bridal palette with animations, mobile hamburger navigation, announcement bar, and hero sliders.
+- [x] **Full Authentication**: JWT (SimpleJWT) with access/refresh rotation, OTP password recovery, and role-based route guards (`ProtectedRoute`, `AdminRoute`).
+- [x] **Catalog Browsing**: Full-text search, multi-faceted filtering (category, color, occasion, price range, in-stock), and sorting.
+- [x] **Stock Management**: Atomic stock reduction upon order placement, out-of-stock badge, and stock restoration on cancellation.
+- [x] **Cart & Wishlist**: Real-time quantity updates, cart totals calculation, item removal, and synchronized wishlist state.
+- [x] **Checkout & Addresses**: Multiple saved addresses support, new address entry with inline validation.
+- [x] **Payment Integration**: Cash on Delivery and Razorpay (live test mode with HMAC signature validation and simulated fallback).
+- [x] **Order Tracking**: Visual status timeline (`PENDING` → `CONFIRMED` → `PROCESSING` → `SHIPPED` → `DELIVERED`).
+- [x] **Customer Reviews**: Star ratings, title, comment, and verified customer review breakdown.
+- [x] **Complete Admin Dashboard**: Revenue, total orders, low-stock warnings, user role updates, product CRUD, and coupon management.
