@@ -134,10 +134,17 @@ export default function Home() {
           getFeaturedProducts(),
           categories.length === 0 ? getCategories() : Promise.resolve(null),
         ])
-        dispatch(setFeatured(fRes.data.results || fRes.data))
-        if (cRes) dispatch(setCategories(cRes.data))
-      } catch {}
-      finally { setLoading(false) }
+        if (fRes?.data) {
+          dispatch(setFeatured(fRes.data.results || fRes.data))
+        }
+        if (cRes?.data) {
+          dispatch(setCategories(cRes.data))
+        }
+      } catch (err) {
+        console.error('Failed to load featured products from local API:', err)
+      } finally {
+        setLoading(false)
+      }
     })()
   }, [dispatch, categories.length])
 
