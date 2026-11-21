@@ -134,6 +134,49 @@ class ProductReviewListCreateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ProductRecommendationsView(APIView):
+    """
+    Frequently Bought Together & Recommended Items for bridal attire:
+    Matches main attire (Lehenga/Sherwani) with complementary bridal accessories
+    (Jewellery, Mojaris, Turbans/Safas, Dupattas).
+    """
+    permission_classes = [AllowAny]
+
+    def get(self, request, slug):
+        product = get_object_or_404(
+            Product.objects.select_related('category'), slug=slug, is_active=True
+        )
+        cat_slug = product.category.slug
+
+        is_menswear = cat_slug in ['sherwanis', 'kurta-pajama-sets', 'indo-western-menswear']
+        if is_menswear:
+            complementary = ['bridal-accessories', 'dupatta-collection', 'accessories']
+        elif cat_slug in ['bridal-accessories', 'accessories', 'dupatta-collection']:
+            complementary = ['bridal-lehengas', 'designer-sarees', 'sherwanis']
+        else:
+            complementary = ['bridal-accessories', 'accessories', 'dupatta-collection']
+
+        bought_together = Product.objects.filter(
+            category__slug__in=complementary,
+            is_active=True,
+            stock__gt=0
+        ).exclude(id=product.id).order_by('?')[:3]
+
+        similar = Product.objects.filter(
+            category=product.category,
+            is_active=True
+        ).exclude(id=product.id).order_by('?')[:4]
+
+        return Response({
+            'bought_together': ProductListSerializer(
+                bought_together, many=True, context={'request': request}
+            ).data,
+            'similar_products': ProductListSerializer(
+                similar, many=True, context={'request': request}
+            ).data,
+        })
+
+
 class WishlistView(APIView):
     """Get the authenticated user's wishlist."""
     permission_classes = [IsAuthenticated]

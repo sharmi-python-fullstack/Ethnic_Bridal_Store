@@ -50,6 +50,17 @@ class ApplyCouponView(APIView):
         })
 
 
+class ActiveCouponListView(APIView):
+    """Public: list all active coupons for customers to pick at checkout."""
+    permission_classes = []
+
+    def get(self, request):
+        active_coupons = Coupon.objects.filter(is_active=True)
+        valid_coupons = [c for c in active_coupons if c.is_valid()]
+        serializer = CouponSerializer(valid_coupons, many=True)
+        return Response(serializer.data)
+
+
 # ─── Admin Coupon Views ───────────────────────────────────────────────────────
 
 class AdminCouponListCreateView(generics.ListCreateAPIView):

@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { FiHeart, FiShoppingCart, FiStar, FiTruck, FiShield, FiRotateCcw, FiMinus, FiPlus } from 'react-icons/fi'
 import { FaHeart } from 'react-icons/fa'
-import { getProduct, getProductReviews, addReview, toggleWishlist } from '../api/products'
+import { getProduct, getProductReviews, addReview, toggleWishlist, getProductRecommendations } from '../api/products'
 import { formatPrice, getImageUrl, formatDate, getErrorMessage } from '../utils/helpers'
 import { useCart } from '../hooks/useCart'
 import toast from 'react-hot-toast'
@@ -16,6 +16,10 @@ export default function ProductDetail() {
 
   const [product, setProduct] = useState(null)
   const [reviews, setReviews] = useState([])
+  const [boughtTogether, setBoughtTogether] = useState([])
+  const [similarProducts, setSimilarProducts] = useState([])
+  const [bundleChecked, setBundleChecked] = useState({})
+  const [bundleLoading, setBundleLoading] = useState(false)
   const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
@@ -32,13 +36,21 @@ export default function ProductDetail() {
     const load = async () => {
       setLoading(true)
       try {
-        const [pRes, rRes] = await Promise.all([
+        const [pRes, rRes, recRes] = await Promise.all([
           getProduct(slug),
           getProductReviews(slug),
+          getProductRecommendations(slug).catch(() => ({ data: { bought_together: [], similar_products: [] } })),
         ])
         setProduct(pRes.data)
         setInWishlist(pRes.data.in_wishlist)
         setReviews(rRes.data.results || rRes.data)
+        const bt = recRes.data.bought_together || []
+        setBoughtTogether(bt)
+        setSimilarProducts(recRes.data.similar_products || [])
+        // Default check all bought together items
+        const checks = {}
+        bt.forEach((item) => { checks[item.id] = true })
+        setBundleChecked(checks)
       } catch {
         navigate('/products')
       } finally {
@@ -111,6 +123,30 @@ export default function ProductDetail() {
   const images = product.images || []
   const currentImg = images[selectedImage]?.image_url || getImageUrl(null)
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', 'Free Size']
+
+  const selectedBundleItems = boughtTogether.filter((item) => bundleChecked[item.id])
+  const bundleTotalPrice =
+    parseFloat(product?.effective_price || 0) +
+    selectedBundleItems.reduce((acc, item) => acc + parseFloat(item.effective_price || 0), 0)
+
+  const handleAddBundleToCart = async () => {
+    if (!token) {
+      toast.error('Please login to add items to cart')
+      return
+    }
+    setBundleLoading(true)
+    try {
+      await addItemToCart(product.id, quantity, selectedSize, selectedColor)
+      for (const item of selectedBundleItems) {
+        await addItemToCart(item.id, 1, '', '')
+      }
+      toast.success(`🎉 Added ${1 + selectedBundleItems.length} bridal items to your cart!`)
+    } catch {
+      toast.error('Failed to add bundle to cart')
+    } finally {
+      setBundleLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-brand-cream">
@@ -438,6 +474,156 @@ export default function ProductDetail() {
             )}
           </div>
         </div>
+
+        {/* ═══════════════════════════════════════════════════════════
+            FREQUENTLY BOUGHT TOGETHER / COMPLETE THE BRIDAL LOOK
+        ═══════════════════════════════════════════════════════════ */}
+        {boughtTogether.length > 0 && (
+          <div className="bg-white rounded-3xl shadow-card p-6 md:p-8 mb-10 border border-brand-gold/30">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-2xl">✨</span>
+              <h3 className="font-heading text-2xl font-bold text-brand-charcoal">
+                Frequently Bought Together
+              </h3>
+            </div>
+            <p className="text-gray-500 text-sm mb-6">
+              Complete your bridal ensemble with these matching authentic pieces handpicked for this outfit.
+            </p>
+
+            <div className="flex flex-col lg:flex-row items-center gap-6">
+              {/* Product cards row */}
+              <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 flex-1">
+                {/* Main Product Card */}
+                <div className="w-36 sm:w-44 bg-brand-cream/60 rounded-2xl p-3 border border-brand-gold/40 text-center flex-shrink-0">
+                  <div className="w-28 sm:w-36 h-36 sm:h-44 mx-auto rounded-xl overflow-hidden mb-2 shadow-sm">
+                    <img
+                      src={product.primary_image?.image_url ? getImageUrl(product.primary_image.image_url) : '/placeholder-bridal.svg'}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-brand-gold bg-brand-deep-red px-2 py-0.5 rounded-full inline-block mb-1">
+                    This Item
+                  </span>
+                  <p className="text-xs font-semibold text-brand-charcoal line-clamp-1">{product.name}</p>
+                  <p className="text-xs font-bold text-brand-deep-red mt-1">{formatPrice(product.effective_price)}</p>
+                </div>
+
+                {/* Plus Signs & Recommended Items */}
+                {boughtTogether.map((item) => (
+                  <div key={item.id} className="flex items-center gap-3 sm:gap-4">
+                    <span className="text-xl sm:text-2xl font-bold text-brand-gold select-none">+</span>
+                    <div
+                      onClick={() => setBundleChecked((prev) => ({ ...prev, [item.id]: !prev[item.id] }))}
+                      className={`w-36 sm:w-44 rounded-2xl p-3 border cursor-pointer transition-all text-center flex-shrink-0 ${
+                        bundleChecked[item.id]
+                          ? 'border-brand-gold bg-amber-50/70 shadow-sm'
+                          : 'border-gray-200 bg-gray-50 opacity-60'
+                      }`}
+                    >
+                      <div className="w-28 sm:w-36 h-36 sm:h-44 mx-auto rounded-xl overflow-hidden mb-2 shadow-sm relative">
+                        <img
+                          src={item.primary_image?.image_url ? getImageUrl(item.primary_image.image_url) : '/placeholder-bridal.svg'}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-1.5 left-1.5">
+                          <input
+                            type="checkbox"
+                            checked={!!bundleChecked[item.id]}
+                            onChange={() => {}}
+                            className="w-4 h-4 accent-brand-deep-red rounded cursor-pointer"
+                          />
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-1">
+                        {item.category_name}
+                      </span>
+                      <p className="text-xs font-semibold text-brand-charcoal line-clamp-1">{item.name}</p>
+                      <p className="text-xs font-bold text-brand-deep-red mt-1">{formatPrice(item.effective_price)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Action Box */}
+              <div className="w-full lg:w-72 bg-gradient-to-br from-brand-cream to-amber-50 p-6 rounded-2xl border border-brand-gold/40 flex flex-col justify-center items-center text-center shadow-sm">
+                <span className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                  Bundle Price ({1 + selectedBundleItems.length} items)
+                </span>
+                <span className="font-heading text-3xl font-bold text-brand-deep-red my-2">
+                  {formatPrice(bundleTotalPrice)}
+                </span>
+                <p className="text-xs text-green-700 font-semibold mb-4">
+                  ✨ Perfect Match for Wedding & Reception
+                </p>
+                <button
+                  type="button"
+                  onClick={handleAddBundleToCart}
+                  disabled={bundleLoading}
+                  className="w-full bg-brand-deep-red hover:bg-red-800 text-white font-bold py-3.5 px-4 rounded-xl text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <FiShoppingCart />
+                  {bundleLoading ? 'Adding Bundle…' : `Add ${1 + selectedBundleItems.length} Items to Cart`}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════
+            SIMILAR BRIDAL STYLES YOU MAY LIKE
+        ═══════════════════════════════════════════════════════════ */}
+        {similarProducts.length > 0 && (
+          <div className="mb-12">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="font-heading text-2xl font-bold text-brand-charcoal">
+                  Similar Bridal Styles
+                </h3>
+                <p className="text-gray-400 text-sm mt-0.5">Explore more handpicked pieces from {product.category?.name}</p>
+              </div>
+              <Link
+                to={`/category/${product.category?.slug}`}
+                className="text-brand-deep-red hover:text-brand-gold text-sm font-semibold transition-colors"
+              >
+                View All →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+              {similarProducts.map((p) => (
+                <div key={p.id} className="group bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 overflow-hidden flex flex-col">
+                  <Link to={`/products/${p.slug}`} className="block relative h-56 overflow-hidden bg-brand-cream">
+                    <img
+                      src={p.primary_image?.image_url ? getImageUrl(p.primary_image.image_url) : '/placeholder-bridal.svg'}
+                      alt={p.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </Link>
+                  <div className="p-4 flex-1 flex flex-col justify-between">
+                    <div>
+                      <p className="text-[11px] text-brand-gold font-semibold uppercase tracking-wider mb-1">{p.category_name}</p>
+                      <Link to={`/products/${p.slug}`}>
+                        <h4 className="font-heading text-sm font-semibold text-brand-charcoal line-clamp-1 hover:text-brand-deep-red transition-colors">
+                          {p.name}
+                        </h4>
+                      </Link>
+                    </div>
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="font-bold text-brand-deep-red text-base">{formatPrice(p.effective_price)}</span>
+                      <Link
+                        to={`/products/${p.slug}`}
+                        className="text-xs font-semibold bg-brand-cream hover:bg-brand-gold text-brand-charcoal px-3 py-1.5 rounded-lg transition-colors"
+                      >
+                        View
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

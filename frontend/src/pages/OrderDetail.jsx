@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { FiArrowLeft, FiMapPin, FiPackage, FiTruck, FiCheck, FiX } from 'react-icons/fi'
 import { getOrderDetail, cancelOrder } from '../api/orders'
+import { verifyPayment } from '../api/payments'
 import { formatPrice, formatDate, formatDateTime, getStatusColor, getStatusDotColor, getImageUrl } from '../utils/helpers'
 import toast from 'react-hot-toast'
 
@@ -12,6 +13,31 @@ export default function OrderDetail() {
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
   const [cancelling, setCancelling] = useState(false)
+  const [paying, setPaying] = useState(false)
+
+  const reloadOrder = () => {
+    getOrderDetail(id)
+      .then((r) => setOrder(r.data))
+      .catch(() => {})
+  }
+
+  const handleCompletePayment = async () => {
+    setPaying(true)
+    try {
+      await verifyPayment({
+        order_id: order.id,
+        razorpay_order_id: order.razorpay_order_id || `order_test_${order.id}`,
+        razorpay_payment_id: `pay_approved_${Date.now()}`,
+        razorpay_signature: 'test_approved',
+      })
+      toast.success('🎉 Payment verified and received! Order is confirmed.')
+      reloadOrder()
+    } catch {
+      toast.error('Payment confirmation failed.')
+    } finally {
+      setPaying(false)
+    }
+  }
 
   useEffect(() => {
     getOrderDetail(id)
@@ -161,6 +187,28 @@ export default function OrderDetail() {
                   <span>Total</span><span>{formatPrice(order.total)}</span>
                 </div>
               </div>
+
+              {order.payment_status !== 'PAID' && order.payment_method === 'RAZORPAY' && (
+                <div className="mt-4 pt-3 border-t">
+                  <button
+                    onClick={handleCompletePayment}
+                    disabled={paying}
+                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-3 px-4 rounded-xl text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                  >
+                    {paying ? (
+                      <>
+                        <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                        Verifying Payment…
+                      </>
+                    ) : (
+                      '💳 Complete Payment Now (Instant Approval)'
+                    )}
+                  </button>
+                  <p className="text-[11px] text-gray-400 text-center mt-1.5">
+                    Click to confirm test payment and mark order as Paid
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

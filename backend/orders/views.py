@@ -149,10 +149,12 @@ class OrderCreateView(APIView):
         shipping_charge = 0 if subtotal >= 999 else 99
         total = subtotal + shipping_charge - discount
 
+        # Immediately confirm order upon successful placement
         order = Order.objects.create(
             user=request.user,
             shipping_address=data['shipping_address'],
             payment_method=data['payment_method'],
+            status='CONFIRMED',
             coupon_code=coupon_code,
             subtotal=subtotal,
             shipping_charge=shipping_charge,
@@ -187,11 +189,12 @@ class OrderCreateView(APIView):
         # Clear cart
         cart.items.all().delete()
 
-        # Create first tracking entry
+        # Create first tracking entry as CONFIRMED
+        payment_desc = 'via Cash on Delivery' if data['payment_method'] == 'COD' else 'via Razorpay'
         OrderTracking.objects.create(
             order=order,
-            status='PENDING',
-            description='Order placed successfully. Waiting for confirmation.',
+            status='CONFIRMED',
+            description=f'Order #{order.order_number} confirmed {payment_desc}! Preparing your bridal attire for dispatch.',
             updated_by=None,
         )
 

@@ -6,6 +6,9 @@ import { getProducts, getCategories } from '../api/products'
 import { setProducts, setCategories } from '../store/slices/productSlice'
 import ProductCard from '../components/common/ProductCard'
 import { useDebounce } from '../hooks/useDebounce'
+import { useCart } from '../hooks/useCart'
+import { formatPrice, getImageUrl } from '../utils/helpers'
+import toast from 'react-hot-toast'
 
 const COLORS = ['red','pink','blue','green','yellow','orange','purple','gold','maroon','white','black','multicolor']
 const OCCASIONS = ['bridal','wedding','festive','party','casual','office']
@@ -140,9 +143,53 @@ function FilterPanel({ filters, updateFilter, clearFilters, categories, setFilte
 export default function ProductList() {
   const dispatch = useDispatch()
   const { products, pagination, isLoading, categories } = useSelector((s) => s.products)
+  const { token } = useSelector((s) => s.auth)
+  const { addItemToCart } = useCart()
   const [searchParams, setSearchParams] = useSearchParams()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [gridView, setGridView] = useState(true)
+  const [bundleAdding, setBundleAdding] = useState(false)
+  const [bundleChecked, setBundleChecked] = useState({})
+
+  // Initialize bundleChecked whenever products change
+  useEffect(() => {
+    if (products?.length >= 2) {
+      const initial = {}
+      products.slice(0, 3).forEach((p) => {
+        initial[p.id] = true
+      })
+      setBundleChecked(initial)
+    }
+  }, [products])
+
+  const bundleItems = products?.slice(0, 3) || []
+  const activeBundleItems = bundleItems.filter((p) => bundleChecked[p.id])
+  const bundleTotal = activeBundleItems.reduce(
+    (acc, p) => acc + parseFloat(p.effective_price || p.price || 0),
+    0
+  )
+
+  const handleAddBundleToCart = async () => {
+    if (activeBundleItems.length === 0) {
+      toast.error('Please select at least one item from the bundle')
+      return
+    }
+    setBundleAdding(true)
+    let addedCount = 0
+    for (const item of activeBundleItems) {
+      const success = await addItemToCart(
+        item.id,
+        1,
+        item.sizes?.[0] || '',
+        item.colors?.[0] || ''
+      )
+      if (success) addedCount++
+    }
+    setBundleAdding(false)
+    if (addedCount > 0) {
+      toast.success(`Added ${addedCount} bundle item${addedCount > 1 ? 's' : ''} to cart!`)
+    }
+  }
 
   // Filter state
   const [filters, setFilters] = useState({
@@ -356,6 +403,88 @@ export default function ProductList() {
                     <ProductCard key={p.id} product={p} />
                   ))}
                 </div>
+
+                {/* Frequently Bought Together Bundle */}
+                {bundleItems.length >= 2 && (
+                  <div className="mt-12 bg-white rounded-3xl shadow-card p-6 md:p-8 border border-brand-gold/40">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-2xl">✨</span>
+                      <div>
+                        <h3 className="font-heading text-xl md:text-2xl font-bold text-brand-charcoal">
+                          Frequently Bought Together
+                        </h3>
+                        <p className="text-gray-500 text-xs sm:text-sm">
+                          {filters.search
+                            ? `Curated matching sets for your search "${filters.search}"`
+                            : 'Handpicked bridal ensembles and matching accessory sets'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col lg:flex-row items-center gap-6 mt-6">
+                      {/* Products list with plus signs */}
+                      <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 flex-1">
+                        {bundleItems.map((item, idx) => (
+                          <div key={item.id} className="flex items-center gap-3 sm:gap-4">
+                            {idx > 0 && (
+                              <span className="text-xl sm:text-2xl font-bold text-brand-gold select-none">+</span>
+                            )}
+                            <div
+                              onClick={() => setBundleChecked((prev) => ({ ...prev, [item.id]: !prev[item.id] }))}
+                              className={`w-32 sm:w-40 rounded-2xl p-2.5 sm:p-3 border cursor-pointer transition-all text-center flex-shrink-0 ${
+                                bundleChecked[item.id]
+                                  ? 'border-brand-gold bg-amber-50/70 shadow-sm'
+                                  : 'border-gray-200 bg-gray-50 opacity-50'
+                              }`}
+                            >
+                              <div className="w-24 sm:w-32 h-32 sm:h-40 mx-auto rounded-xl overflow-hidden mb-2 shadow-sm relative">
+                                <img
+                                  src={item.primary_image?.image_url ? getImageUrl(item.primary_image.image_url) : '/placeholder-bridal.svg'}
+                                  alt={item.name}
+                                  className="w-full h-full object-cover"
+                                />
+                                <div className="absolute top-1.5 left-1.5 bg-white/90 rounded p-0.5">
+                                  <input
+                                    type="checkbox"
+                                    checked={!!bundleChecked[item.id]}
+                                    onChange={() => {}}
+                                    className="w-4 h-4 accent-brand-deep-red rounded cursor-pointer"
+                                  />
+                                </div>
+                              </div>
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-0.5">
+                                {item.category_name}
+                              </span>
+                              <p className="text-xs font-semibold text-brand-charcoal line-clamp-1">{item.name}</p>
+                              <p className="text-xs font-bold text-brand-deep-red mt-1">{formatPrice(item.effective_price || item.price)}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Action / Buy bundle */}
+                      <div className="w-full lg:w-64 bg-gradient-to-br from-brand-cream to-amber-50 p-5 rounded-2xl border border-brand-gold/40 flex flex-col justify-center items-center text-center shadow-sm">
+                        <span className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                          Bundle Price ({activeBundleItems.length} items)
+                        </span>
+                        <span className="font-heading text-2xl sm:text-3xl font-bold text-brand-deep-red my-1.5">
+                          {formatPrice(bundleTotal)}
+                        </span>
+                        <p className="text-[11px] text-green-700 font-semibold mb-3">
+                          ✨ Handpicked Bridal Match
+                        </p>
+                        <button
+                          type="button"
+                          onClick={handleAddBundleToCart}
+                          disabled={bundleAdding || activeBundleItems.length === 0}
+                          className="w-full bg-brand-deep-red hover:bg-red-800 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-xl text-xs sm:text-sm shadow-md hover:shadow-lg transition-all"
+                        >
+                          {bundleAdding ? 'Adding Items…' : `Add ${activeBundleItems.length} Items to Cart`}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Pagination */}
                 {pagination.totalPages > 1 && (

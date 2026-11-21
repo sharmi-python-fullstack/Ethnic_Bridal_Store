@@ -6,6 +6,9 @@ export const getProducts = (params = {}) =>
 export const getProduct = (slug) =>
   axiosInstance.get(`/api/products/${slug}/`)
 
+export const getProductRecommendations = (slug) =>
+  axiosInstance.get(`/api/products/${slug}/recommendations/`)
+
 export const getCategories = () =>
   axiosInstance.get('/api/products/categories/all/')
 
