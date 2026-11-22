@@ -64,7 +64,7 @@ const Footer = () => {
               {[
                 { label: 'Home', to: '/' },
                 { label: 'All Products', to: '/products' },
-                { label: 'New Arrivals', to: '/products?ordering=-created_at' },
+                { label: 'New Year 2027', to: '/products?ordering=-created_at' },
                 { label: 'Sale Items', to: '/products?has_discount=true' },
                 { label: 'My Orders', to: '/orders' },
                 { label: 'My Wishlist', to: '/wishlist' },

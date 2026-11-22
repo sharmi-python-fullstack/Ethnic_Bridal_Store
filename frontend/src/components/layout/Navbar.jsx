@@ -68,7 +68,7 @@ const Navbar = () => {
       <div className="bg-brand-gold text-brand-charcoal text-center py-2 px-4 text-xs font-semibold tracking-wide">
         🎊 Free Shipping on Orders Above ₹999 &nbsp;|&nbsp; Use Code{' '}
         <span className="bg-brand-deep-red text-white px-2 py-0.5 rounded font-bold">BRIDAL10</span>{' '}
-        for 10% Off &nbsp;|&nbsp; ✨ New Arrivals: Festive 2024 Collection Now Live!
+        for 10% Off &nbsp;|&nbsp; ✨ New Year 2027 Collection: Coming Soon!
       </div>
 
       {/* Main Navbar */}
@@ -135,7 +135,7 @@ const Navbar = () => {
                 to="/products?is_featured=true"
                 className="text-white/90 hover:text-brand-gold px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/10 transition-all"
               >
-                New Arrivals
+                New Year 2027
               </Link>
             </div>
 

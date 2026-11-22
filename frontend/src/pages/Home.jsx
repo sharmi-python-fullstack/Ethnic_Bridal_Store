@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { FiArrowRight, FiTruck, FiShield, FiRotateCcw, FiAward, FiStar } from 'react-icons/fi'
-import { GiCrown, GiFlowerEmblem, GiDiamondRing, GiLotus } from 'react-icons/gi'
+import { GiCrown, GiFlowerEmblem, GiLotus } from 'react-icons/gi'
 import { getFeaturedProducts, getCategories } from '../api/products'
 import { setFeatured, setCategories } from '../store/slices/productSlice'
 import { getImageUrl, formatPrice } from '../utils/helpers'
@@ -29,8 +29,8 @@ const HERO_SLIDES = [
     rightImg: '/images/hero-right.jpg',
   },
   {
-    title: 'Festive Elegance 2025',
-    subtitle: 'Celebrate every festival in style with our ethnic wear',
+    title: 'New Year 2027 Collection',
+    subtitle: 'A celebration of fresh beginnings, arriving soon in timeless ethnic style',
     bg: 'from-orange-950 via-orange-900 to-amber-900',
     cta: 'View Festive Wear', link: '/products?occasion=festive',
     accent: 'bg-white',
@@ -77,16 +77,30 @@ function BridalHeroImage({ src, alt = "Shaaz Bridal Collection", size = 260, rou
 }
 
 /* ─── floating decoration element ────────────────────────────────────────── */
-function FloatingDecor({ x, y, delay, color }) {
+function FloralGarland({ className = '', count = 9, mirrored = false }) {
+  const colors = ['#F8D36B', '#F7A7A7', '#FDE6A8', '#E9B7D1']
+
   return (
     <div
-      className="absolute pointer-events-none"
-      style={{
-        left: x, top: y,
-        animation: `float ${3 + delay}s ease-in-out ${delay}s infinite alternate`,
-      }}
+      className={'absolute pointer-events-none flex items-start gap-0.5 floral-garland ' + className}
+      aria-hidden="true"
     >
-      <GiFlowerEmblem style={{ color, fontSize: 20, opacity: 0.6 }} />
+      {Array.from({ length: count }, (_, index) => {
+        const curve = Math.sin((index / Math.max(count - 1, 1)) * Math.PI) * (mirrored ? -8 : 8)
+        const Flower = index % 3 === 0 ? GiLotus : GiFlowerEmblem
+        return (
+          <span key={index} className="inline-flex" style={{ marginTop: curve }}>
+            <Flower
+              className="garland-flower"
+              style={{
+                color: colors[index % colors.length],
+                animationDelay: index * 0.32 + 's',
+                fontSize: index % 3 === 0 ? 27 : 21,
+              }}
+            />
+          </span>
+        )
+      })}
     </div>
   )
 }
@@ -155,10 +169,6 @@ export default function Home() {
 
       {/* inject float keyframes once */}
       <style>{`
-        @keyframes float {
-          0%   { transform: translateY(0px) rotate(0deg); }
-          100% { transform: translateY(-18px) rotate(8deg); }
-        }
         @keyframes dressFloat {
           0%,100% { transform: translateY(0px); }
           50%      { transform: translateY(-12px); }
@@ -168,14 +178,17 @@ export default function Home() {
           50%  { opacity: 1; }
           100% { opacity: 0.4; }
         }
-        @keyframes spinSlow {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
+        @keyframes garlandBloom {
+          0%, 100% { opacity: 0.18; transform: translateY(2px) scale(0.9); }
+          50%      { opacity: 0.78; transform: translateY(-4px) scale(1.04); }
         }
         .dress-float { animation: dressFloat 4s ease-in-out infinite; }
         .dress-float-slow { animation: dressFloat 5.5s ease-in-out 1s infinite; }
         .shimmer-pulse { animation: shimmer 2.5s ease-in-out infinite; }
-        .spin-slow { animation: spinSlow 12s linear infinite; }
+        .garland-flower { animation: garlandBloom 5.6s ease-in-out infinite; }
+        @media (prefers-reduced-motion: reduce) {
+          .dress-float, .dress-float-slow, .shimmer-pulse, .garland-flower { animation: none !important; }
+        }
       `}</style>
 
       {/* ═══════════════════════════════════════════════════════
@@ -190,21 +203,9 @@ export default function Home() {
           style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/paisley.png')" }} />
 
         {/* ── floating petals / decor ── */}
-        {[
-          { x:'8%',  y:'15%', d:0,   c:'#f1c40f' },
-          { x:'5%',  y:'55%', d:1.2, c:'#e74c3c' },
-          { x:'12%', y:'80%', d:0.5, c:'#f39c12' },
-          { x:'85%', y:'12%', d:0.8, c:'#9b59b6' },
-          { x:'90%', y:'50%', d:1.5, c:'#f1c40f' },
-          { x:'87%', y:'78%', d:0.3, c:'#e74c3c' },
-        ].map((d, i) => (
-          <FloatingDecor key={i} x={d.x} y={d.y} delay={d.d} color={d.c} />
-        ))}
-
-        {/* spinning mandala rings */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-5">
-          <div className="spin-slow w-[600px] h-[600px] rounded-full border-2 border-white/40" />
-        </div>
+        <FloralGarland className="top-5 left-1/2 -translate-x-1/2" count={11} />
+        <FloralGarland className="bottom-12 right-0 hidden sm:flex rotate-[-10deg]" count={7} mirrored />
+        <FloralGarland className="bottom-20 left-2 hidden lg:flex rotate-[12deg]" count={6} />
 
         <div className="relative flex items-stretch" style={{ minHeight: 480 }}>
 
@@ -223,11 +224,10 @@ export default function Home() {
           {/* ── CENTER TEXT ── */}
           <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-20">
             {/* spinning crown ring */}
-            <div className="relative mb-5">
-              <div className={`w-16 h-16 rounded-full ${slide.accent} flex items-center justify-center shadow-gold animate-bounce`}>
-                <GiCrown className="text-brand-deep-red text-3xl" />
-              </div>
-              <div className="absolute inset-0 rounded-full border-2 border-white/30 spin-slow" />
+            <div className="mb-5 flex items-center justify-center gap-2 text-brand-gold">
+              <GiFlowerEmblem className="garland-flower text-2xl" style={{ animationDelay: '0.2s' }} />
+              <GiLotus className="garland-flower text-4xl" style={{ animationDelay: '0.5s' }} />
+              <GiFlowerEmblem className="garland-flower text-2xl" style={{ animationDelay: '0.8s' }} />
             </div>
 
             <span className="text-xs uppercase tracking-[0.3em] text-white/60 mb-3 font-medium">

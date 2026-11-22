@@ -1,9 +1,9 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { FiFilter, FiX, FiGrid, FiList, FiChevronDown } from 'react-icons/fi'
 import { getProducts, getCategories } from '../api/products'
-import { setProducts, setCategories } from '../store/slices/productSlice'
+import { setProducts, setCategories, setProductLoading } from '../store/slices/productSlice'
 import ProductCard from '../components/common/ProductCard'
 import { useDebounce } from '../hooks/useDebounce'
 import { useCart } from '../hooks/useCart'
@@ -150,6 +150,8 @@ export default function ProductList() {
   const [gridView, setGridView] = useState(true)
   const [bundleAdding, setBundleAdding] = useState(false)
   const [bundleChecked, setBundleChecked] = useState({})
+  const [fetchError, setFetchError] = useState('')
+  const requestSequence = useRef(0)
 
   // Initialize bundleChecked whenever products change
   useEffect(() => {
@@ -255,6 +257,7 @@ export default function ProductList() {
   const debouncedSearch = useDebounce(filters.search, 400)
 
   const fetchProducts = useCallback(async (f) => {
+    const requestId = ++requestSequence.current
     const params = {}
     if (f.search) params.search = f.search
     if (f.category) params.category = f.category
@@ -268,10 +271,19 @@ export default function ProductList() {
     params.ordering = f.ordering
     params.page = f.page
 
+    dispatch(setProductLoading(true))
+    setFetchError('')
     try {
       const res = await getProducts(params)
-      dispatch(setProducts(res.data))
-    } catch {}
+      if (requestId === requestSequence.current) {
+        dispatch(setProducts(res.data))
+      }
+    } catch {
+      if (requestId === requestSequence.current) {
+        dispatch(setProducts({ results: [], count: 0, page: f.page || 1, total_pages: 1 }))
+        setFetchError('Search is temporarily unavailable. Please make sure the backend server is running, then try again.')
+      }
+    }
   }, [dispatch])
 
   useEffect(() => {
@@ -283,25 +295,36 @@ export default function ProductList() {
   useEffect(() => {
     fetchProducts({ ...filters, search: debouncedSearch })
     // Sync URL without wiping out other search params
-    const params = {}
-    if (debouncedSearch) params.search = debouncedSearch
-    if (filters.category) params.category = filters.category
-    if (filters.occasion) params.occasion = filters.occasion
-    if (filters.color) params.color = filters.color
-    if (filters.min_price) params.min_price = filters.min_price
-    if (filters.max_price) params.max_price = filters.max_price
-    if (filters.in_stock) params.in_stock = 'true'
-    if (filters.is_featured) params.is_featured = 'true'
-    if (filters.has_discount) params.has_discount = 'true'
-    params.ordering = filters.ordering
-    if (filters.page > 1) params.page = filters.page
-    setSearchParams(params, { replace: true })
+    const params = new URLSearchParams()
+    if (debouncedSearch) params.set('search', debouncedSearch)
+    if (filters.category) params.set('category', filters.category)
+    if (filters.occasion) params.set('occasion', filters.occasion)
+    if (filters.color) params.set('color', filters.color)
+    if (filters.min_price) params.set('min_price', filters.min_price)
+    if (filters.max_price) params.set('max_price', filters.max_price)
+    if (filters.in_stock) params.set('in_stock', 'true')
+    if (filters.is_featured) params.set('is_featured', 'true')
+    if (filters.has_discount) params.set('has_discount', 'true')
+    params.set('ordering', filters.ordering)
+    if (filters.page > 1) params.set('page', String(filters.page))
+    if (params.toString() !== searchParams.toString()) {
+      setSearchParams(params, { replace: true })
+    }
   }, [debouncedSearch, filters.category, filters.occasion, filters.color, filters.min_price, filters.max_price, filters.in_stock, filters.is_featured, filters.has_discount, filters.ordering, filters.page, fetchProducts, setSearchParams])
 
   const updateFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value, page: 1 }))
   const clearFilters = () => setFilters({ search: '', category: '', occasion: '', color: '', min_price: '', max_price: '', in_stock: false, is_featured: false, has_discount: false, ordering: '-created_at', page: 1 })
 
   const activeFilterCount = [filters.search, filters.category, filters.occasion, filters.color, filters.min_price, filters.in_stock].filter(Boolean).length
+  const productStatus = fetchError
+    ? fetchError
+    : pagination.count > 0
+      ? String(pagination.count) + ' product' + (pagination.count === 1 ? '' : 's') + ' found' + (filters.search ? ' for "' + filters.search + '"' : '')
+      : isLoading
+        ? 'Searching products…'
+        : filters.search
+          ? 'No products found for "' + filters.search + '"'
+          : 'No products found'
 
   return (
     <div className="min-h-screen bg-brand-cream">
@@ -310,8 +333,8 @@ export default function ProductList() {
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="font-heading text-3xl font-bold text-brand-charcoal">All Products</h1>
-            <p className="text-gray-500 text-sm mt-1">
-              {pagination.count > 0 ? `${pagination.count} products found` : 'Loading products…'}
+            <p className={'text-sm mt-1 ' + (fetchError ? 'text-red-600' : 'text-gray-500')} role="status" aria-live="polite">
+              {productStatus}
             </p>
           </div>
           <div className="flex items-center gap-3">
