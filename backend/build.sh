@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# Move into the backend folder where manage.py and requirements.txt live
-cd backend
-
 # Install dependencies
 pip install -r requirements.txt
 
