@@ -5,7 +5,9 @@ services:
     runtime: python
     region: singapore
     rootDir: backend
-    buildCommand: "./build.sh"
+    # Render runs this command from backend/ because rootDir is backend.
+    # The shared build script is one level above that directory.
+    buildCommand: "bash ../build.sh"
     startCommand: "gunicorn core.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: PYTHON_VERSION
