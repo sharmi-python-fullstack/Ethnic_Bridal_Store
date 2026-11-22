@@ -186,6 +186,20 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 DEFAULT_FROM_EMAIL = 'Shaaz Ethnicwear <noreply@shaaz.com>'
 
+# Email delivery
+#
+# Development continues to print emails in the terminal by default. In Render,
+# set EMAIL_BACKEND to Django's SMTP backend and provide the SMTP variables
+# below. Credentials are intentionally read only from the environment.
+EMAIL_BACKEND = config('EMAIL_BACKEND', default=EMAIL_BACKEND)
+EMAIL_HOST = config('EMAIL_HOST', default=EMAIL_HOST)
+EMAIL_PORT = config('EMAIL_PORT', default=EMAIL_PORT, cast=int)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default=EMAIL_HOST_USER)
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default=EMAIL_HOST_PASSWORD)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=EMAIL_USE_TLS, cast=bool)
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default=EMAIL_HOST_USER or DEFAULT_FROM_EMAIL)
+EMAIL_TIMEOUT = config('EMAIL_TIMEOUT', default=20, cast=int)
+
 # Razorpay
 # Keep payment keys out of source control. Use Razorpay test keys locally and
 # live keys only in the production environment.
