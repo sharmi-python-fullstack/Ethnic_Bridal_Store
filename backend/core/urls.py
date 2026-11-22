@@ -2,6 +2,9 @@
 URL configuration for Shaaz Ethnicwear backend.
 """
 from django.contrib import admin
+from django.conf import settings
+from django.http import JsonResponse
+from django.urls import path
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
@@ -15,6 +18,17 @@ from products.views import (
     AdminCategoryListView, AdminCategoryDetailView,
 )
 from coupons.views import AdminCouponListCreateView, AdminCouponDetailView
+def payment_config_check(request):
+    return JsonResponse({
+        "razorpay_key_id_configured": bool(
+            getattr(settings, "RAZORPAY_KEY_ID", "")
+        ),
+        "razorpay_secret_configured": bool(
+            getattr(settings, "RAZORPAY_KEY_SECRET", "")
+        ),
+    })
+
+
 
 def health_check(request):
     """Lightweight response for Render health checks and service monitoring."""
@@ -24,6 +38,12 @@ def health_check(request):
 urlpatterns = [
     path('', health_check, name='health-check'),
     path('admin/', admin.site.urls),
+     # Razorpay configuration diagnostic
+    path(
+        'api/payment-config-check/',
+        payment_config_check,
+        name='payment-config-check'
+    ),
 
     # Auth & user management
     path('api/auth/', include('accounts.urls')),
