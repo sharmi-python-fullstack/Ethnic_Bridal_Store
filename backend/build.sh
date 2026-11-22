@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
-# Render.com build script for Django backend
-set -o errexit
+set -e
 
-pip install --upgrade pip setuptools wheel
+# Move to the project root (where manage.py lives)
+cd "$(dirname "$0")/.."
+
+# Install Python dependencies
 pip install -r requirements.txt
 
-python manage.py collectstatic --no-input
-python fix_migrations.py
-python manage.py migrate
-python create_admin.py
-python manage.py loaddata seed_data.json
+# Apply migrations
+python manage.py migrate --noinput
 
+# Run the idempotent seed script (safe to re-run, no duplicates)
+python seed_store.py
+
+# Collect static files
+python manage.py collectstatic --noinput
