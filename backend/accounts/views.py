@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 
-from ...models import CustomUser, UserAddress
+from .models import CustomUser, UserAddress
 from .serializers import (
     RegisterSerializer, LoginSerializer, UserSerializer,
     UserUpdateSerializer, ChangePasswordSerializer,

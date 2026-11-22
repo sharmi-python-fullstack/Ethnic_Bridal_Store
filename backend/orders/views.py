@@ -128,6 +128,20 @@ class OrderCreateView(APIView):
 
         data = serializer.validated_data
         cart = data['cart']
+        is_online_payment = data['payment_method'] == 'RAZORPAY'
+
+        # Reuse an outstanding secure-payment order instead of creating a
+        # duplicate order and reserving the same cart stock a second time.
+        if is_online_payment:
+            pending_order = Order.objects.filter(
+                user=request.user, payment_method='RAZORPAY',
+                payment_status='PENDING', status='PENDING',
+            ).order_by('-created_at').first()
+            if pending_order:
+                return Response({
+                    'message': 'A pending Razorpay payment was found.',
+                    'order': OrderDetailSerializer(pending_order, context={'request': request}).data,
+                }, status=status.HTTP_200_OK)
 
         # Apply coupon if provided
         coupon_code = data.get('coupon_code', '').strip()
@@ -149,12 +163,13 @@ class OrderCreateView(APIView):
         shipping_charge = 0 if subtotal >= 999 else 99
         total = subtotal + shipping_charge - discount
 
-        # Immediately confirm order upon successful placement
+        # Online orders remain pending until Razorpay returns a verified payment
+        # signature. COD orders can be confirmed immediately.
         order = Order.objects.create(
             user=request.user,
             shipping_address=data['shipping_address'],
             payment_method=data['payment_method'],
-            status='CONFIRMED',
+            status='PENDING' if is_online_payment else 'CONFIRMED',
             coupon_code=coupon_code,
             subtotal=subtotal,
             shipping_charge=shipping_charge,
@@ -186,15 +201,20 @@ class OrderCreateView(APIView):
             item.product.stock = max(0, item.product.stock - item.quantity)
             item.product.save(update_fields=['stock'])
 
-        # Clear cart
-        cart.items.all().delete()
+        # Keep the cart until an online payment is verified, so an interrupted
+        # Razorpay checkout can be retried. COD has no second confirmation step.
+        if not is_online_payment:
+            cart.items.all().delete()
 
-        # Create first tracking entry as CONFIRMED
-        payment_desc = 'via Cash on Delivery' if data['payment_method'] == 'COD' else 'via Razorpay'
+        payment_desc = 'via Cash on Delivery' if data['payment_method'] == 'COD' else 'awaiting Razorpay payment'
         OrderTracking.objects.create(
             order=order,
-            status='CONFIRMED',
-            description=f'Order #{order.order_number} confirmed {payment_desc}! Preparing your bridal attire for dispatch.',
+            status=order.status,
+            description=(
+                f'Order #{order.order_number} confirmed {payment_desc}! Preparing your bridal attire for dispatch.'
+                if not is_online_payment
+                else f'Order #{order.order_number} was created and is awaiting secure Razorpay payment confirmation.'
+            ),
             updated_by=None,
         )
 

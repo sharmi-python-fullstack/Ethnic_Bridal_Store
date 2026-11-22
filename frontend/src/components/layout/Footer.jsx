@@ -1,9 +1,19 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { GiCrown } from 'react-icons/gi'
 import { FiFacebook, FiInstagram, FiTwitter, FiYoutube, FiMapPin, FiPhone, FiMail } from 'react-icons/fi'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
+  const [email, setEmail] = useState('')
+  const [subscribed, setSubscribed] = useState(false)
+
+  const handleSubscribe = (event) => {
+    event.preventDefault()
+    if (!email.trim()) return
+    setSubscribed(true)
+    setEmail('')
+  }
 
   return (
     <footer className="bg-brand-deep-red text-white">
@@ -28,14 +38,16 @@ const Footer = () => {
             {/* Social Icons */}
             <div className="flex items-center gap-3">
               {[
-                { icon: FiFacebook, href: '#', label: 'Facebook' },
-                { icon: FiInstagram, href: '#', label: 'Instagram' },
-                { icon: FiTwitter, href: '#', label: 'Twitter' },
-                { icon: FiYoutube, href: '#', label: 'YouTube' },
+                { icon: FiFacebook, href: 'https://www.facebook.com/', label: 'Facebook' },
+                { icon: FiInstagram, href: 'https://www.instagram.com/', label: 'Instagram' },
+                { icon: FiTwitter, href: 'https://x.com/', label: 'X' },
+                { icon: FiYoutube, href: 'https://www.youtube.com/', label: 'YouTube' },
               ].map(({ icon: Icon, href, label }) => (
                 <a
                   key={label}
                   href={href}
+                  target="_blank"
+                  rel="noreferrer"
                   aria-label={label}
                   className="w-9 h-9 rounded-full border border-white/30 flex items-center justify-center text-white/70 hover:bg-brand-gold hover:text-brand-charcoal hover:border-brand-gold transition-all duration-300"
                 >
@@ -52,8 +64,8 @@ const Footer = () => {
               {[
                 { label: 'Home', to: '/' },
                 { label: 'All Products', to: '/products' },
-                { label: 'New Arrivals', to: '/products?sort=-created_at' },
-                { label: 'Sale Items', to: '/products?on_sale=true' },
+                { label: 'New Arrivals', to: '/products?ordering=-created_at' },
+                { label: 'Sale Items', to: '/products?has_discount=true' },
                 { label: 'My Orders', to: '/orders' },
                 { label: 'My Wishlist', to: '/wishlist' },
               ].map(({ label, to }) => (
@@ -124,16 +136,21 @@ const Footer = () => {
             {/* Newsletter Mini */}
             <div className="mt-6">
               <p className="text-white/80 text-sm font-medium mb-2">Subscribe for updates</p>
-              <div className="flex gap-2">
+              <form className="flex gap-2" onSubmit={handleSubscribe}>
                 <input
                   type="email"
                   placeholder="Your email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  required
+                  aria-label="Email address for newsletter"
                   className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white placeholder-white/50 focus:outline-none focus:border-brand-gold"
                 />
-                <button className="bg-brand-gold text-brand-charcoal px-3 py-2 rounded-lg text-sm font-semibold hover:bg-yellow-400 transition-all">
+                <button type="submit" className="bg-brand-gold text-brand-charcoal px-3 py-2 rounded-lg text-sm font-semibold hover:bg-yellow-400 transition-all">
                   Go
                 </button>
-              </div>
+              </form>
+              {subscribed && <p className="text-brand-gold text-xs mt-2" role="status">Thanks — you’re on the list!</p>}
             </div>
           </div>
         </div>
@@ -146,10 +163,14 @@ const Footer = () => {
             © {currentYear} Shaaz Ethnicwear. All rights reserved. Crafted with ❤️ in India.
           </p>
           <div className="flex items-center gap-4">
-            {['Privacy Policy', 'Terms of Service', 'Return Policy'].map((item) => (
-              <a key={item} href="#" className="text-white/60 hover:text-brand-gold text-xs transition-colors">
-                {item}
-              </a>
+            {[
+              ['Privacy Policy', 'privacy'],
+              ['Terms of Service', 'terms'],
+              ['Return Policy', 'returns'],
+            ].map(([label, page]) => (
+              <Link key={page} to={`/legal/${page}`} className="text-white/60 hover:text-brand-gold text-xs transition-colors">
+                {label}
+              </Link>
             ))}
           </div>
         </div>

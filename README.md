@@ -113,13 +113,12 @@ Frontend Web App will be active at: **`http://localhost:5173`**
 ## 💳 Payment Gateway (Razorpay & COD)
 
 1. **Cash on Delivery (COD)**:
-   - Available on checkout with 1 click. Stock is immediately deducted and order status set to `PENDING`.
+   - Available on checkout with 1 click. The order is immediately confirmed for fulfilment.
 
 2. **Razorpay Online Payment (Test Mode)**:
-   - Configured with test support.
-   - To use live Razorpay test keys: add your `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` in `backend/.env`.
-   - In offline or placeholder mode: the application automatically displays the interactive **Razorpay Test Mode Modal**, allowing one-click payment approval and automatic verification.
-   - Successful payment automatically updates the order status to `CONFIRMED` and `payment_status` to `PAID`.
+   - Add your own Razorpay test or live `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` to `backend/.env` (use Render environment variables when deployed).
+   - The official Razorpay Checkout opens for cards, UPI, netbanking and wallets; card and bank credentials never reach this application.
+   - An online order stays pending until Razorpay's signed payment callback is verified. A successful verification marks it `CONFIRMED` and `PAID`.
 
 ---
 
@@ -191,7 +190,7 @@ git push -u origin main
 - [x] **Stock Management**: Atomic stock reduction upon order placement, out-of-stock badge, and stock restoration on cancellation.
 - [x] **Cart & Wishlist**: Real-time quantity updates, cart totals calculation, item removal, and synchronized wishlist state.
 - [x] **Checkout & Addresses**: Multiple saved addresses support, new address entry with inline validation.
-- [x] **Payment Integration**: Cash on Delivery and Razorpay (live test mode with HMAC signature validation and simulated fallback).
+- [x] **Payment Integration**: Cash on Delivery and Razorpay Checkout with server-side HMAC signature verification.
 - [x] **Order Tracking**: Visual status timeline (`PENDING` → `CONFIRMED` → `PROCESSING` → `SHIPPED` → `DELIVERED`).
 - [x] **Customer Reviews**: Star ratings, title, comment, and verified customer review breakdown.
 - [x] **Complete Admin Dashboard**: Revenue, total orders, low-stock warnings, user role updates, product CRUD, and coupon management.

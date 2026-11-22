@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from ...models import CustomUser, UserAddress
+from .models import CustomUser, UserAddress
 
 
 class RegisterSerializer(serializers.ModelSerializer):

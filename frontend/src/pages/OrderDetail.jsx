@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { FiArrowLeft, FiMapPin, FiPackage, FiTruck, FiCheck, FiX } from 'react-icons/fi'
 import { getOrderDetail, cancelOrder } from '../api/orders'
-import { verifyPayment } from '../api/payments'
 import { formatPrice, formatDate, formatDateTime, getStatusColor, getStatusDotColor, getImageUrl } from '../utils/helpers'
 import toast from 'react-hot-toast'
 
@@ -13,15 +12,8 @@ export default function OrderDetail() {
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
   const [cancelling, setCancelling] = useState(false)
-  const [paying, setPaying] = useState(false)
 
-  const reloadOrder = () => {
-    getOrderDetail(id)
-      .then((r) => setOrder(r.data))
-      .catch(() => {})
-  }
-
-  const handleCompletePayment = async () => {
+  /* Legacy simulated-payment flow retained below only as a migration note.
     setPaying(true)
     try {
       await verifyPayment({
@@ -37,7 +29,7 @@ export default function OrderDetail() {
     } finally {
       setPaying(false)
     }
-  }
+  */
 
   useEffect(() => {
     getOrderDetail(id)
@@ -188,7 +180,7 @@ export default function OrderDetail() {
                 </div>
               </div>
 
-              {order.payment_status !== 'PAID' && order.payment_method === 'RAZORPAY' && (
+              {false && order.payment_status !== 'PAID' && order.payment_method === 'RAZORPAY' && (
                 <div className="mt-4 pt-3 border-t">
                   <button
                     onClick={handleCompletePayment}
@@ -207,6 +199,16 @@ export default function OrderDetail() {
                   <p className="text-[11px] text-gray-400 text-center mt-1.5">
                     Click to confirm test payment and mark order as Paid
                   </p>
+                </div>
+              )}
+              {order.payment_status !== 'PAID' && order.payment_method === 'RAZORPAY' && (
+                <div className="mt-4 pt-3 border-t text-center">
+                  <p className="text-[11px] text-orange-700 bg-orange-50 border border-orange-200 rounded-lg p-2.5">
+                    Payment is awaiting Razorpay confirmation. Return to checkout to securely complete it, or cancel this pending order.
+                  </p>
+                  <Link to="/checkout" className="inline-block text-xs font-semibold text-brand-deep-red hover:underline mt-2">
+                    Return to checkout
+                  </Link>
                 </div>
               )}
             </div>

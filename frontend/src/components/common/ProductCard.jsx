@@ -1,19 +1,27 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { FiHeart, FiShoppingCart, FiStar, FiEye } from 'react-icons/fi'
 import { FaHeart } from 'react-icons/fa'
 import { formatPrice, getImageUrl } from '../../utils/helpers'
 import { toggleWishlist } from '../../api/products'
+import { toggleWishlistAction } from '../../store/slices/wishlistSlice'
 import { useCart } from '../../hooks/useCart'
 import toast from 'react-hot-toast'
 
 const ProductCard = ({ product, onWishlistToggle }) => {
+  const dispatch = useDispatch()
   const { token } = useSelector((state) => state.auth)
-  const { addItemToCart } = useCart()
-  const [inWishlist, setInWishlist] = useState(product.in_wishlist || false)
+  const { items: wishlistItems } = useSelector((state) => state.wishlist)
+  const isItemInWishlist = wishlistItems.some((i) => (i.product?.id || i.id) === product.id)
+  const [inWishlist, setInWishlist] = useState(isItemInWishlist || product.in_wishlist || false)
   const [wishlistLoading, setWishlistLoading] = useState(false)
   const [cartLoading, setCartLoading] = useState(false)
+
+  // Keep heart state synced with Redux store
+  useEffect(() => {
+    setInWishlist(isItemInWishlist)
+  }, [isItemInWishlist])
 
   const primaryImage = product.primary_image?.image_url
   const imgSrc = getImageUrl(primaryImage)
@@ -21,18 +29,35 @@ const ProductCard = ({ product, onWishlistToggle }) => {
   const handleWishlist = async (e) => {
     e.preventDefault()
     e.stopPropagation()
-    if (!token) { toast.error('Please login to add to wishlist'); return }
     setWishlistLoading(true)
-    try {
-      const res = await toggleWishlist(product.id)
-      setInWishlist(res.data.in_wishlist)
-      toast.success(res.data.message)
-      onWishlistToggle && onWishlistToggle(product.id, res.data.in_wishlist)
-    } catch {
-      toast.error('Failed to update wishlist')
-    } finally {
-      setWishlistLoading(false)
+
+    // Instantly update Redux and localStorage
+    dispatch(toggleWishlistAction({ id: product.id, product }))
+    const nextState = !inWishlist
+    setInWishlist(nextState)
+
+    if (nextState) {
+      toast.success(`"${product.name}" added to wishlist! ❤️`)
+    } else {
+      toast.success(`"${product.name}" removed from wishlist.`)
     }
+
+    if (onWishlistToggle) {
+      onWishlistToggle(product.id, nextState)
+    }
+
+    // Sync with backend if logged in
+    if (token) {
+      try {
+        const res = await toggleWishlist(product.id)
+        if (res.data?.in_wishlist !== undefined) {
+          setInWishlist(res.data.in_wishlist)
+        }
+      } catch (err) {
+        console.warn('Backend wishlist sync notice:', err)
+      }
+    }
+    setWishlistLoading(false)
   }
 
   const handleAddToCart = async (e) => {

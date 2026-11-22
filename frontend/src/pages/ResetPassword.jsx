@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { GiCrown } from 'react-icons/gi'
 import { resetPasswordApi } from '../api/auth'
 import { getErrorMessage } from '../utils/helpers'
@@ -7,7 +7,8 @@ import toast from 'react-hot-toast'
 
 export default function ResetPassword() {
   const navigate = useNavigate()
-  const [form, setForm] = useState({ email: '', otp: '', new_password: '', confirm_password: '' })
+  const [searchParams] = useSearchParams()
+  const [form, setForm] = useState({ email: searchParams.get('email') || '', otp: '', new_password: '', confirm_password: '' })
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
 
@@ -68,7 +69,7 @@ export default function ResetPassword() {
               {loading ? 'Resetting…' : 'Reset Password'}
             </button>
             <p className="text-center text-sm text-gray-500">
-              <Link to="/forgot-password" className="text-brand-red hover:underline">Resend OTP</Link>
+              <Link to={`/forgot-password${form.email ? `?email=${encodeURIComponent(form.email)}` : ''}`} className="text-brand-red hover:underline">Resend OTP</Link>
               {' · '}
               <Link to="/login" className="text-brand-red hover:underline">Back to Login</Link>
             </p>

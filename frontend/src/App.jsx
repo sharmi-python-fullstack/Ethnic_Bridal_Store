@@ -16,6 +16,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
+import Legal from './pages/Legal'
 
 // Protected pages
 import Cart from './pages/Cart'
@@ -25,6 +26,7 @@ import OrderHistory from './pages/OrderHistory'
 import OrderDetail from './pages/OrderDetail'
 import Profile from './pages/Profile'
 import AddressManager from './pages/AddressManager'
+import OrderConfirmation from './pages/OrderConfirmation'
 
 // Admin pages
 import AdminDashboard from './pages/admin/AdminDashboard'
@@ -71,14 +73,16 @@ function App() {
         <Route path="register" element={<Register />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="reset-password" element={<ResetPassword />} />
+        <Route path="legal/:page" element={<Legal />} />
+        <Route path="wishlist" element={<Wishlist />} />
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="cart" element={<Cart />} />
-          <Route path="wishlist" element={<Wishlist />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="orders" element={<OrderHistory />} />
           <Route path="orders/:id" element={<OrderDetail />} />
+          <Route path="orders/:id/confirmation" element={<OrderConfirmation />} />
           <Route path="profile" element={<Profile />} />
           <Route path="addresses" element={<AddressManager />} />
         </Route>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { GiCrown } from 'react-icons/gi'
 import { FiMail } from 'react-icons/fi'
 import { forgotPasswordApi } from '../api/auth'
@@ -7,7 +7,8 @@ import { getErrorMessage } from '../utils/helpers'
 import toast from 'react-hot-toast'
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState('')
+  const [searchParams] = useSearchParams()
+  const [email, setEmail] = useState(searchParams.get('email') || '')
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
 
@@ -43,7 +44,7 @@ export default function ForgotPassword() {
               <div className="text-5xl mb-4">📧</div>
               <h3 className="font-heading text-xl font-bold text-brand-charcoal mb-2">OTP Sent!</h3>
               <p className="text-gray-500 text-sm mb-6">We've sent a 6-digit OTP to <strong>{email}</strong>. Check your inbox.</p>
-              <Link to="/reset-password" className="btn-primary inline-block w-full text-center">
+              <Link to={`/reset-password?email=${encodeURIComponent(email)}`} className="btn-primary inline-block w-full text-center">
                 Enter OTP & Reset Password
               </Link>
             </div>

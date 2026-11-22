@@ -56,11 +56,10 @@ const Navbar = () => {
 
   const handleSearch = (e) => {
     e.preventDefault()
-    if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`)
-      setSearchOpen(false)
-      setSearchQuery('')
-    }
+    const query = searchQuery.trim()
+    navigate(query ? `/products?search=${encodeURIComponent(query)}` : '/products')
+    setSearchOpen(false)
+    setSearchQuery('')
   }
 
   return (
@@ -133,7 +132,7 @@ const Navbar = () => {
               </div>
 
               <Link
-                to="/products?featured=true"
+                to="/products?is_featured=true"
                 className="text-white/90 hover:text-brand-gold px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/10 transition-all"
               >
                 New Arrivals
@@ -152,20 +151,18 @@ const Navbar = () => {
               </button>
 
               {/* Wishlist */}
-              {token && (
-                <Link
-                  to="/wishlist"
-                  className="relative p-2 text-white/90 hover:text-brand-gold hover:bg-white/10 rounded-lg transition-all"
-                  aria-label="Wishlist"
-                >
-                  <FiHeart size={20} />
-                  {wishlistItems.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-brand-gold text-brand-charcoal text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                      {wishlistItems.length}
-                    </span>
-                  )}
-                </Link>
-              )}
+              <Link
+                to="/wishlist"
+                className="relative p-2 text-white/90 hover:text-brand-gold hover:bg-white/10 rounded-lg transition-all"
+                aria-label="Wishlist"
+              >
+                <FiHeart size={20} />
+                {wishlistItems && wishlistItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-brand-gold text-brand-charcoal text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                    {wishlistItems.length}
+                  </span>
+                )}
+              </Link>
 
               {/* Cart */}
               <Link
@@ -303,6 +300,18 @@ const Navbar = () => {
                 className="block px-4 py-3 text-white/90 hover:bg-white/10 rounded-lg text-sm font-medium"
               >
                 All Products
+              </Link>
+              <Link
+                to="/wishlist"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-between px-4 py-3 text-white/90 hover:bg-white/10 rounded-lg text-sm font-medium"
+              >
+                <span>My Wishlist</span>
+                {wishlistItems && wishlistItems.length > 0 && (
+                  <span className="bg-brand-gold text-brand-charcoal text-xs font-bold px-2 py-0.5 rounded-full">
+                    {wishlistItems.length}
+                  </span>
+                )}
               </Link>
               {categories.slice(0, 6).map((cat) => (
                 <Link

@@ -200,6 +200,8 @@ export default function ProductList() {
     min_price: searchParams.get('min_price') || '',
     max_price: searchParams.get('max_price') || '',
     in_stock: searchParams.get('in_stock') === 'true',
+    is_featured: searchParams.get('is_featured') === 'true',
+    has_discount: searchParams.get('has_discount') === 'true',
     ordering: searchParams.get('ordering') || '-created_at',
     page: parseInt(searchParams.get('page') || '1', 10),
   })
@@ -213,6 +215,8 @@ export default function ProductList() {
     const urlMinPrice = searchParams.get('min_price') || ''
     const urlMaxPrice = searchParams.get('max_price') || ''
     const urlInStock = searchParams.get('in_stock') === 'true'
+    const urlFeatured = searchParams.get('is_featured') === 'true'
+    const urlDiscount = searchParams.get('has_discount') === 'true'
     const urlOrdering = searchParams.get('ordering') || '-created_at'
     const urlPage = parseInt(searchParams.get('page') || '1', 10)
 
@@ -225,6 +229,8 @@ export default function ProductList() {
         prev.min_price === urlMinPrice &&
         prev.max_price === urlMaxPrice &&
         prev.in_stock === urlInStock &&
+        prev.is_featured === urlFeatured &&
+        prev.has_discount === urlDiscount &&
         prev.ordering === urlOrdering &&
         prev.page === urlPage
       ) {
@@ -238,6 +244,8 @@ export default function ProductList() {
         min_price: urlMinPrice,
         max_price: urlMaxPrice,
         in_stock: urlInStock,
+        is_featured: urlFeatured,
+        has_discount: urlDiscount,
         ordering: urlOrdering,
         page: urlPage,
       }
@@ -255,6 +263,8 @@ export default function ProductList() {
     if (f.min_price) params.min_price = f.min_price
     if (f.max_price) params.max_price = f.max_price
     if (f.in_stock) params.in_stock = 'true'
+    if (f.is_featured) params.is_featured = 'true'
+    if (f.has_discount) params.has_discount = 'true'
     params.ordering = f.ordering
     params.page = f.page
 
@@ -281,13 +291,15 @@ export default function ProductList() {
     if (filters.min_price) params.min_price = filters.min_price
     if (filters.max_price) params.max_price = filters.max_price
     if (filters.in_stock) params.in_stock = 'true'
+    if (filters.is_featured) params.is_featured = 'true'
+    if (filters.has_discount) params.has_discount = 'true'
     params.ordering = filters.ordering
     if (filters.page > 1) params.page = filters.page
     setSearchParams(params, { replace: true })
-  }, [debouncedSearch, filters.category, filters.occasion, filters.color, filters.min_price, filters.max_price, filters.in_stock, filters.ordering, filters.page, fetchProducts, setSearchParams])
+  }, [debouncedSearch, filters.category, filters.occasion, filters.color, filters.min_price, filters.max_price, filters.in_stock, filters.is_featured, filters.has_discount, filters.ordering, filters.page, fetchProducts, setSearchParams])
 
   const updateFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value, page: 1 }))
-  const clearFilters = () => setFilters({ search: '', category: '', occasion: '', color: '', min_price: '', max_price: '', in_stock: false, ordering: '-created_at', page: 1 })
+  const clearFilters = () => setFilters({ search: '', category: '', occasion: '', color: '', min_price: '', max_price: '', in_stock: false, is_featured: false, has_discount: false, ordering: '-created_at', page: 1 })
 
   const activeFilterCount = [filters.search, filters.category, filters.occasion, filters.color, filters.min_price, filters.in_stock].filter(Boolean).length
 
