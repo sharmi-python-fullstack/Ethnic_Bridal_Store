@@ -3,11 +3,10 @@ Seed superuser, categories, products, images, and coupons cleanly and idempotent
 Uses update_or_create so it NEVER fails on duplicate slugs or existing records.
 """
 import os
-import sys
 import json
+import sys
 import django
 
-# Ensure current directory is on path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BASE_DIR)
 
@@ -30,7 +29,7 @@ def run():
         print("[seed_store] Superuser admin@shaaz.com already exists.")
 
     # 2. Read seed_data.json
-    seed_file = os.path.join(BASE_DIR, 'seed_data.json')
+    seed_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'seed_data.json')
     if not os.path.exists(seed_file):
         print("[seed_store] seed_data.json not found, skipping.")
         return

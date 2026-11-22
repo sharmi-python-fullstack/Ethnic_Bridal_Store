@@ -187,8 +187,8 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 DEFAULT_FROM_EMAIL = 'Shaaz Ethnicwear <noreply@shaaz.com>'
 
 # Razorpay
-RAZORPAY_KEY_ID = config('RAZORPAY_KEY_ID', default='rzp_test_placeholder')
-RAZORPAY_KEY_SECRET = config('RAZORPAY_KEY_SECRET', default='placeholder_secret')
+RAZORPAY_KEY_ID = config('RAZORPAY_KEY_ID', default='rzp_test_TqeE3jTwsnidKS')
+RAZORPAY_KEY_SECRET = config('RAZORPAY_KEY_SECRET', default='rzp_test_secret_shaaz')
 
 # Logging
 LOGGING = {
