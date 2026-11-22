@@ -109,3 +109,70 @@
 .star-empty {
   color: #E5E7EB;
 }
+
+/* Subtle real floral garlands shared across the site. */
+.site-floral-background {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  overflow: hidden;
+  pointer-events: none;
+}
+.site-garland {
+  position: absolute;
+  display: block;
+  width: min(66vw, 880px);
+  max-width: none;
+  height: auto;
+  opacity: 0.11;
+  filter: saturate(0.72) contrast(0.92);
+  transform-origin: center;
+  animation: garland-drift 14s ease-in-out infinite;
+}
+.site-garland-top {
+  top: 4.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.site-garland-left {
+  top: 34%;
+  left: -28vw;
+  width: min(54vw, 720px);
+  transform: rotate(90deg);
+  animation-delay: -4s;
+}
+.site-garland-right {
+  top: 56%;
+  right: -28vw;
+  width: min(54vw, 720px);
+  transform: rotate(-90deg);
+  animation-delay: -8s;
+}
+.site-garland-bottom {
+  right: -7vw;
+  bottom: -0.5rem;
+  width: min(50vw, 680px);
+  transform: rotate(-5deg);
+  animation-delay: -11s;
+}
+.site-garland-center {
+  top: 54%;
+  left: 50%;
+  width: min(32vw, 460px);
+  opacity: 0.055;
+  transform: translate(-50%, -50%) rotate(3deg);
+  animation-delay: -6s;
+}
+@keyframes garland-drift {
+  0%, 100% { margin-top: 0; }
+  50% { margin-top: -7px; }
+}
+@media (max-width: 640px) {
+  .site-garland { opacity: 0.075; }
+  .site-garland-top { top: 4.1rem; width: 105vw; }
+  .site-garland-left, .site-garland-right { width: 95vw; }
+  .site-garland-bottom { width: 78vw; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-garland { animation: none; }
+}

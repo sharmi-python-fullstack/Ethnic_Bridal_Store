@@ -6,6 +6,7 @@ import Layout from './components/layout/Layout'
 import ProtectedRoute from './components/common/ProtectedRoute'
 import AdminRoute from './components/common/AdminRoute'
 import ScrollToTop from './components/common/ScrollToTop'
+import FloralBackground from './components/common/FloralBackground'
 
 // Public pages
 import Home from './pages/Home'
@@ -62,6 +63,7 @@ function App() {
   return (
     <>
       <ScrollToTop />
+      <FloralBackground />
       <Routes>
       {/* Public Routes */}
       <Route path="/" element={<Layout />}>
