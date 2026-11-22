@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { FiCheck, FiCreditCard, FiEdit2, FiMapPin, FiPlus, FiShield, FiTruck } from 'react-icons/fi'
+import { FiCheck, FiCreditCard, FiEdit2, FiMapPin, FiPlus, FiShield, FiTruck, FiAlertCircle, FiInfo } from 'react-icons/fi'
 import { createOrder, getCart } from '../api/orders'
 import { getAddresses } from '../api/auth'
-import { createRazorpayOrder, verifyPayment } from '../api/payments'
+import { createRazorpayOrder, verifyPayment, razorpayStatus } from '../api/payments'
 import { getActiveCoupons, applyCoupon as applyCouponApi } from '../api/coupons'
 import { applyCoupon, clearCart, removeCoupon, setCart } from '../store/slices/cartSlice'
 import { formatPrice, getErrorMessage, getImageUrl } from '../utils/helpers'
@@ -15,13 +15,19 @@ const FALLBACK_COUPONS = [
   { code: 'FLAT500', min_order_amount: 3000, description: '₹500 off orders above ₹3,000' },
 ]
 
+const TEST_CARD = {
+  number: '4111 1111 1111 1111',
+  expiry: '12/35',
+  cvv: '123',
+}
+
 function loadRazorpay() {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     if (window.Razorpay) return resolve(true)
     const existing = document.getElementById('razorpay-checkout-js')
     if (existing) {
       existing.addEventListener('load', () => resolve(true), { once: true })
-      existing.addEventListener('error', () => resolve(false), { once: true })
+      existing.addEventListener('error', () => reject(new Error('Razorpay SDK failed to load')), { once: true })
       return
     }
     const script = document.createElement('script')
@@ -29,8 +35,9 @@ function loadRazorpay() {
     script.src = 'https://checkout.razorpay.com/v1/checkout.js'
     script.async = true
     script.onload = () => resolve(true)
-    script.onerror = () => resolve(false)
+    script.onerror = () => reject(new Error('Razorpay SDK failed to load'))
     document.body.appendChild(script)
+    setTimeout(() => reject(new Error('Razorpay SDK took too long to load')), 15000)
   })
 }
 
@@ -54,9 +61,24 @@ export default function Checkout() {
     phone: user?.phone || '',
     address_line1: '', address_line2: '', city: '', state: '', pincode: '', country: 'India',
   })
+  const [razorpayStatusInfo, setRazorpayStatusInfo] = useState(null)
+  const [razorpayConfigured, setRazorpayConfigured] = useState(false)
+  const [razorpayMode, setRazorpayMode] = useState(null)
 
   useEffect(() => {
     let active = true
+    razorpayStatus()
+      .then((r) => {
+        if (!active) return
+        setRazorpayStatusInfo(r.data)
+        setRazorpayConfigured(r.data.configured === true && r.data.credentials_valid === true)
+        setRazorpayMode(r.data.mode || null)
+      })
+      .catch(() => {
+        if (!active) return
+        setRazorpayConfigured(false)
+      })
+
     Promise.all([getCart(), getAddresses(), getActiveCoupons().catch(() => ({ data: [] }))])
       .then(([cartResponse, addressResponse, couponResponse]) => {
         if (!active) return
@@ -78,6 +100,7 @@ export default function Checkout() {
   const shipping = subtotal >= 999 ? 0 : subtotal > 0 ? 99 : 0
   const total = Math.max(0, subtotal + shipping - Number(discount || 0))
   const shippingAddress = () => (showAddressForm ? address : selectedAddress)
+  const isTestMode = razorpayMode === 'test'
 
   const updateAddress = (event) => {
     const { name, value } = event.target
@@ -132,23 +155,31 @@ export default function Checkout() {
   }
 
   const openRazorpay = async (order, deliveryAddress) => {
+    if (!razorpayConfigured) {
+      toast.error('Online payments are not configured on the server. Please use Cash on Delivery or contact support.')
+      return
+    }
     setSubmitting(true)
     try {
-      if (!(await loadRazorpay())) throw new Error('Razorpay could not load. Check your connection and try again.')
+      if (!(await loadRazorpay())) throw new Error('Razorpay checkout could not load. Please check your internet connection and try again.')
       const response = await createRazorpayOrder({ order_id: order.id })
       const { amount, currency, key, razorpay_order_id } = response.data
       if (!key || !razorpay_order_id || !amount) throw new Error('Razorpay returned an incomplete order. Please try again.')
-      if (key.startsWith('rzp_test_')) {
-        toast('Razorpay Test Mode is active. Use Razorpay test card: 4111 1111 1111 1111, Expiry: 12/35, CVV: 123. No real money will be charged.', { icon: 'ℹ️', duration: 10000 })
-      }
+
       const razorpay = new window.Razorpay({
-        key, amount, currency: currency || 'INR', order_id: razorpay_order_id,
+        key,
+        amount,
+        currency: currency || 'INR',
+        order_id: razorpay_order_id,
         name: 'Shaaz Ethnicwear',
         description: 'Order #' + order.order_number,
-        prefill: { name: deliveryAddress.name, email: user?.email || '', contact: deliveryAddress.phone },
+        prefill: {
+          name: deliveryAddress.name,
+          email: user?.email || '',
+          contact: deliveryAddress.phone,
+        },
         notes: { order_number: order.order_number },
         theme: { color: '#9B1313' },
-        // Explicitly enable card and other payment methods
         method: {
           card: true,
           upi: true,
@@ -171,7 +202,7 @@ export default function Checkout() {
         modal: {
           ondismiss: () => {
             setPendingOrder(order)
-            toast('Payment window closed. You can securely resume payment when ready.', { icon: 'ℹ️' })
+            toast('Payment window closed. You can resume payment when ready.', { icon: 'ℹ️' })
           },
         },
       })
@@ -182,7 +213,7 @@ export default function Checkout() {
       razorpay.open()
     } catch (error) {
       setPendingOrder(order)
-      toast.error(getErrorMessage(error))
+      toast.error(getErrorMessage(error) || 'Failed to start Razorpay checkout. Please try again.')
     } finally {
       setSubmitting(false)
     }
@@ -191,6 +222,10 @@ export default function Checkout() {
   const placeOrder = async () => {
     if (!validateAddress()) return
     const deliveryAddress = shippingAddress()
+    if (paymentMethod === 'RAZORPAY' && !razorpayConfigured) {
+      toast.error('Online payments are not configured on the server. Please use Cash on Delivery.')
+      return
+    }
     if (paymentMethod === 'RAZORPAY' && pendingOrder) {
       openRazorpay(pendingOrder, deliveryAddress)
       return
@@ -221,6 +256,32 @@ export default function Checkout() {
     <main className="min-h-screen bg-brand-cream py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="font-heading text-3xl font-bold text-brand-charcoal mb-7">Checkout</h1>
+
+        {isTestMode && (
+          <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-3">
+            <FiInfo className="text-amber-600 mt-0.5" size={20} />
+            <div>
+              <h3 className="font-bold text-amber-800 text-sm mb-1">🧪 Test Mode — No Real Money Deducted</h3>
+              <p className="text-amber-700 text-xs mb-2">
+                You are using Razorpay test keys. Use the test card below — <strong>no money will be deducted</strong>.
+              </p>
+              <div className="bg-amber-100 p-2 rounded text-xs font-mono text-amber-800">
+                Card: {TEST_CARD.number}&nbsp;|&nbsp;Expiry: {TEST_CARD.expiry}&nbsp;|&nbsp;CVV: {TEST_CARD.cvv}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!razorpayConfigured && paymentMethod === 'RAZORPAY' && (
+          <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3">
+            <FiAlertCircle className="text-red-600 mt-0.5" size={20} />
+            <div>
+              <h3 className="font-bold text-red-800 text-sm mb-1">Online Payments Not Configured</h3>
+              <p className="text-red-700 text-xs">Razorpay is not configured on the server. Please use Cash on Delivery.</p>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <section className="lg:col-span-2 space-y-6">
             <div className="bg-white rounded-2xl shadow-card p-5 sm:p-6">
@@ -249,9 +310,13 @@ export default function Checkout() {
               <h2 className="font-heading text-xl font-bold text-brand-charcoal mb-4">Payment method</h2>
               <div className="grid sm:grid-cols-2 gap-3">
                 <button type="button" onClick={() => setPaymentMethod('COD')} className={'text-left p-4 rounded-xl border-2 transition-all ' + (paymentMethod === 'COD' ? 'border-brand-gold bg-amber-50' : 'border-gray-200 hover:border-brand-gold/70')}><span className="font-semibold text-brand-charcoal block">Cash on Delivery</span><span className="text-xs text-gray-500 mt-1 block">Pay when your order arrives.</span></button>
-                <button type="button" onClick={() => setPaymentMethod('RAZORPAY')} className={'text-left p-4 rounded-xl border-2 transition-all ' + (paymentMethod === 'RAZORPAY' ? 'border-brand-gold bg-amber-50' : 'border-gray-200 hover:border-brand-gold/70')}><span className="font-semibold text-brand-charcoal flex items-center gap-2"><FiCreditCard className="text-brand-deep-red" /> Razorpay secure payment</span><span className="text-xs text-gray-500 mt-1 block">Cards, UPI, netbanking and wallets.</span></button>
+                {!razorpayConfigured ? (
+                  <button type="button" disabled className="text-left p-4 rounded-xl border-2 border-gray-300 bg-gray-50 text-gray-400 transition-all"><span className="font-semibold text-gray-600 flex items-center gap-2"><FiCreditCard className="text-gray-400" /> Razorpay secure payment</span><span className="text-xs text-gray-500 mt-1 block">Not configured on server</span></button>
+                ) : (
+                  <button type="button" onClick={() => setPaymentMethod('RAZORPAY')} className={'text-left p-4 rounded-xl border-2 transition-all ' + (paymentMethod === 'RAZORPAY' ? 'border-brand-gold bg-amber-50' : 'border-gray-200 hover:border-brand-gold/70')}<span className="font-semibold text-brand-charcoal flex items-center gap-2"><FiCreditCard className="text-brand-deep-red" /> Razorpay secure payment{isTestMode && <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded ml-2 font-bold uppercase">TEST</span>}</span><span className="text-xs text-gray-500 mt-1 block">Cards, UPI, netbanking and wallets.</span></button>
+                )}
               </div>
-              {paymentMethod === 'RAZORPAY' && <p className="mt-4 p-3 rounded-lg bg-green-50 text-green-800 text-xs flex gap-2"><FiShield className="flex-shrink-0 mt-0.5" /> Card and banking details are entered only in Razorpay’s secure checkout, never on this website.</p>}
+              {paymentMethod === 'RAZORPAY' && razorpayConfigured && <p className="mt-4 p-3 rounded-lg bg-green-50 text-green-800 text-xs flex gap-2"><FiShield className="flex-shrink-0 mt-0.5" /> Card and banking details are entered only in Razorpay’s secure checkout, never on this website.</p>}
             </div>
           </section>
           <aside><div className="bg-white rounded-2xl shadow-card p-5 sm:p-6 sticky top-24">

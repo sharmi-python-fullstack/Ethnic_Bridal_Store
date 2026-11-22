@@ -5,3 +5,6 @@ export const createRazorpayOrder = (data) =>
 
 export const verifyPayment = (data) =>
   axiosInstance.post('/api/payments/verify/', data)
+
+export const razorpayStatus = () =>
+  axiosInstance.get('/api/payments/status/')
