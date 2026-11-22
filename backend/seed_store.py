@@ -1,19 +1,22 @@
 import os
 import sys
+import json
 import django
 
-# Setup Django
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Add backend directory to Python path so Django can find settings
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, BASE_DIR)
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vegfruit_store.settings')
 django.setup()
 
 from django.contrib.auth import get_user_model
-from products.models import Category, Product, ProductImage
+from products.models import Category, Product
 from coupons.models import Coupon
 
 print("🌱 Starting idempotent seed...")
 
-# ── Superuser ──────────────────────────────────────────────────────────────
+# ── Superuser ────────────────────────────────────────────────────────────────
 User = get_user_model()
 if not User.objects.filter(email='admin@shaaz.com').exists():
     User.objects.create_superuser(
@@ -25,7 +28,7 @@ if not User.objects.filter(email='admin@shaaz.com').exists():
 else:
     print("ℹ️  Superuser already exists")
 
-# ── Coupons ────────────────────────────────────────────────────────────────
+# ── Coupons ──────────────────────────────────────────────────────────────────
 coupons = [
     {'code': 'BRIDAL10',  'discount': 10,  'active': True},
     {'code': 'FLAT500',   'discount': 500, 'active': True},
@@ -36,45 +39,17 @@ for c in coupons:
         code=c['code'],
         defaults={'discount': c['discount'], 'active': c['active']}
     )
-    if created:
-        print(f"✅ Coupon created: {c['code']}")
-    else:
-        print(f"ℹ️  Coupon already exists: {c['code']}")
+    print(f"{'✅ Created' if created else 'ℹ️  Exists'}: Coupon {c['code']}")
 
-# ── Products (idempotent via update_or_create on slug) ──────────────────────
-from django.core.management import call_command
-import json
-
-fixture_path = os.path.join(os.path.dirname(__file__), 'seed_data.json')
+# ── Products & Categories (from seed_data.json via update_or_create) ─────────
+fixture_path = os.path.join(BASE_DIR, 'seed_data.json')
 if os.path.exists(fixture_path):
     with open(fixture_path, 'r') as f:
         data = json.load(f)
 
+    # First pass: categories
     for entry in data:
-        if entry['model'] == 'products.product':
-            fields = entry['fields']
-            slug = fields.get('slug')
-            if slug:
-                # Get category object
-                cat_id = fields.get('category')
-                try:
-                    cat = Category.objects.get(pk=cat_id)
-                except Category.DoesNotExist:
-                    continue
-
-                Product.objects.update_or_create(
-                    slug=slug,
-                    defaults={
-                        'name': fields.get('name', ''),
-                        'description': fields.get('description', ''),
-                        'price': fields.get('price', 0),
-                        'stock': fields.get('stock', 0),
-                        'category': cat,
-                        'image': fields.get('image', ''),
-                        'is_available': fields.get('is_available', True),
-                    }
-                )
-        elif entry['model'] == 'products.category':
+        if entry['model'] == 'products.category':
             fields = entry['fields']
             Category.objects.update_or_create(
                 pk=entry['pk'],
@@ -84,8 +59,32 @@ if os.path.exists(fixture_path):
                 }
             )
 
+    # Second pass: products
+    for entry in data:
+        if entry['model'] == 'products.product':
+            fields = entry['fields']
+            slug = fields.get('slug')
+            if not slug:
+                continue
+            try:
+                cat = Category.objects.get(pk=fields.get('category'))
+            except Category.DoesNotExist:
+                continue
+            Product.objects.update_or_create(
+                slug=slug,
+                defaults={
+                    'name':         fields.get('name', ''),
+                    'description':  fields.get('description', ''),
+                    'price':        fields.get('price', 0),
+                    'stock':        fields.get('stock', 0),
+                    'category':     cat,
+                    'image':        fields.get('image', ''),
+                    'is_available': fields.get('is_available', True),
+                }
+            )
+
     print("✅ Products and categories seeded (idempotent)")
 else:
-    print("⚠️  seed_data.json not found, skipping product seed")
+    print("⚠️  seed_data.json not found, skipping products")
 
 print("🎉 Seed complete!")
