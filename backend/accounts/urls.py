@@ -1,5 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
+from .diagnostics import EmailStatusView
 
 from .views import (
     RegisterView, LoginView, LogoutView,
@@ -21,6 +22,7 @@ urlpatterns = [
     # Password reset
     path('forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
     path('reset-password/', ResetPasswordView.as_view(), name='reset-password'),
+    path('email-status/', EmailStatusView.as_view(), name='email-status'),
     # Addresses
     path('addresses/', UserAddressListCreateView.as_view(), name='address-list'),
     path('addresses/<int:pk>/', UserAddressDetailView.as_view(), name='address-detail'),
