@@ -203,8 +203,14 @@ EMAIL_TIMEOUT = config('EMAIL_TIMEOUT', default=20, cast=int)
 # Razorpay
 # Keep payment keys out of source control. Use Razorpay test keys locally and
 # live keys only in the production environment.
-RAZORPAY_KEY_ID = config('RAZORPAY_KEY_ID', default='')
-RAZORPAY_KEY_SECRET = config('RAZORPAY_KEY_SECRET', default='')
+# Accept the documented names plus common short aliases, and tolerate values
+# pasted into Render with surrounding quotes.
+RAZORPAY_KEY_ID = config(
+    'RAZORPAY_KEY_ID', default=config('RAZORPAY_KEY', default='')
+).strip().strip('"').strip("'")
+RAZORPAY_KEY_SECRET = config(
+    'RAZORPAY_KEY_SECRET', default=config('RAZORPAY_SECRET', default='')
+).strip().strip('"').strip("'")
 
 # Logging
 LOGGING = {
