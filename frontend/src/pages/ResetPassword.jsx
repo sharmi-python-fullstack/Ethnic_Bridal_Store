@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { GiCrown } from 'react-icons/gi'
 import { resetPasswordApi } from '../api/auth'
 import { getErrorMessage } from '../utils/helpers'
@@ -7,8 +7,15 @@ import toast from 'react-hot-toast'
 
 export default function ResetPassword() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
-  const [form, setForm] = useState({ email: searchParams.get('email') || '', otp: '', new_password: '', confirm_password: '' })
+  const resetState = location.state || {}
+  const [form, setForm] = useState({
+    email: resetState.email || searchParams.get('email') || '',
+    otp: resetState.testOtp || '',
+    new_password: '',
+    confirm_password: '',
+  })
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
 
@@ -23,10 +30,14 @@ export default function ResetPassword() {
     try {
       await resetPasswordApi(form)
       toast.success('Password reset successful! Please login.')
-      navigate('/login')
+      navigate('/login', { replace: true, state: { email: form.email, passwordReset: true } })
     } catch (err) {
       const data = err?.response?.data
-      if (typeof data === 'object') setErrors(data)
+      if (data && typeof data === 'object') {
+        setErrors(data)
+        const generalError = data.non_field_errors || data.detail || data.error
+        if (generalError) toast.error(Array.isArray(generalError) ? generalError[0] : generalError)
+      }
       else toast.error(getErrorMessage(err))
     } finally {
       setLoading(false)
@@ -41,10 +52,15 @@ export default function ResetPassword() {
             <GiCrown className="text-brand-gold text-3xl" />
           </div>
           <h1 className="font-heading text-3xl font-bold text-brand-charcoal">Reset Password</h1>
-          <p className="text-gray-500 mt-2">Enter the OTP sent to your email</p>
+          <p className="text-gray-500 mt-2">Enter your test OTP and choose a new password</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-card p-8">
+          {resetState.testOtp && (
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-4 py-3 text-sm mb-5">
+              Test mode is active. The OTP from the previous page has been filled in for you.
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-4">
             {[
               { name: 'email', label: 'Email Address', type: 'email', placeholder: 'your@email.com' },
@@ -60,6 +76,9 @@ export default function ResetPassword() {
                   onChange={(e) => setForm({ ...form, [name]: e.target.value })}
                   className={`input-field ${errors[name] ? 'border-red-400' : ''}`}
                   placeholder={placeholder}
+                  inputMode={name === 'otp' ? 'numeric' : undefined}
+                  maxLength={name === 'otp' ? 6 : undefined}
+                  autoComplete={name === 'otp' ? 'one-time-code' : name.includes('password') ? 'new-password' : 'email'}
                   required
                 />
                 {errors[name] && <p className="text-red-500 text-xs mt-1">{Array.isArray(errors[name]) ? errors[name][0] : errors[name]}</p>}

@@ -14,6 +14,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django.setup()
 
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from products.models import Category, Product, ProductImage
 from coupons.models import Coupon
 from django.utils import timezone
@@ -27,6 +28,23 @@ def run():
         print("[seed_store] Superuser created: admin@shaaz.com / Admin@123")
     else:
         print("[seed_store] Superuser admin@shaaz.com already exists.")
+
+    # Dedicated non-admin account for the public test-only password-reset flow.
+    # Never expose a real customer's or administrator's OTP in demo mode.
+    demo_email = settings.PASSWORD_RESET_TEST_EMAIL
+    if settings.PASSWORD_RESET_TEST_MODE and demo_email:
+        if not User.objects.filter(email=demo_email).exists():
+            demo_user = User(
+                email=demo_email,
+                first_name='Demo',
+                last_name='Customer',
+                is_verified=True,
+            )
+            demo_user.set_password('Customer@123')
+            demo_user.save()
+            print(f"[seed_store] Demo customer created: {demo_email}")
+        else:
+            print(f"[seed_store] Demo customer {demo_email} already exists.")
 
     # 2. Read seed_data.json
     seed_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'seed_data.json')

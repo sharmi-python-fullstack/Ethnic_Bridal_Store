@@ -14,7 +14,7 @@ export default function Login() {
   const location = useLocation()
   const from = location.state?.from?.pathname || '/'
 
-  const [form, setForm] = useState({ email: '', password: '' })
+  const [form, setForm] = useState({ email: location.state?.email || '', password: '' })
   const [showPass, setShowPass] = useState(false)
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
@@ -57,6 +57,11 @@ export default function Login() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-card p-8">
+          {location.state?.passwordReset && (
+            <div className="bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm mb-5">
+              Password reset complete. Sign in with your new password.
+            </div>
+          )}
           {errors.general && (
             <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm mb-5">
               {errors.general}

@@ -94,6 +94,7 @@ Frontend Web App will be active at: **`http://localhost:5173`**
 | Role | Email | Password | Access Area |
 | :--- | :--- | :--- | :--- |
 | **Store Administrator** | `admin@shaaz.com` | `Admin@123` | Full Storefront + Admin Dashboard |
+| **Demo Customer** | `customer@shaaz.com` | `Customer@123` initially | Storefront + test-only on-page OTP reset |
 | **New Customers** | Register any new account on `/register` | (your password) | Customer Storefront, Cart, Orders |
 
 **Admin Dashboard URL:** `http://localhost:5173/admin-dashboard`

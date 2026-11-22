@@ -45,7 +45,6 @@ class RazorpayStatusView(APIView):
 
         try:
             import razorpay
-            from razorpay.errors import BadRequestError, GatewayError, ServerError
         except ImportError:
             response['issue'] = 'sdk_unavailable'
             logger.exception('Razorpay readiness check could not import the SDK.')
@@ -56,17 +55,19 @@ class RazorpayStatusView(APIView):
             client.order.all({'count': 1}, timeout=10)
             response['credentials_valid'] = True
             response['issue'] = 'ready'
-        except BadRequestError:
-            response['issue'] = 'credentials_rejected'
-            logger.warning('Razorpay rejected the configured credentials.')
-        except (GatewayError, ServerError):
-            response['issue'] = 'razorpay_unavailable'
-            logger.warning('Razorpay readiness check failed at the gateway.')
         except RequestException:
             response['issue'] = 'network_unavailable'
             logger.warning('Razorpay readiness check could not reach Razorpay.')
         except Exception as exc:
-            response['issue'] = 'readiness_check_failed'
-            logger.warning('Unexpected Razorpay readiness failure: %s', type(exc).__name__)
+            error_name = type(exc).__name__
+            if error_name == 'BadRequestError':
+                response['issue'] = 'credentials_rejected'
+                logger.warning('Razorpay rejected the configured credentials.')
+            elif error_name in {'GatewayError', 'ServerError'}:
+                response['issue'] = 'razorpay_unavailable'
+                logger.warning('Razorpay readiness check failed at the gateway.')
+            else:
+                response['issue'] = 'readiness_check_failed'
+                logger.warning('Unexpected Razorpay readiness failure: %s', error_name)
 
         return Response(response)

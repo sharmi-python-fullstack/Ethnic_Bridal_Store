@@ -252,16 +252,6 @@ export default function Checkout() {
                 <button type="button" onClick={() => setPaymentMethod('RAZORPAY')} className={'text-left p-4 rounded-xl border-2 transition-all ' + (paymentMethod === 'RAZORPAY' ? 'border-brand-gold bg-amber-50' : 'border-gray-200 hover:border-brand-gold/70')}><span className="font-semibold text-brand-charcoal flex items-center gap-2"><FiCreditCard className="text-brand-deep-red" /> Razorpay secure payment</span><span className="text-xs text-gray-500 mt-1 block">Cards, UPI, netbanking and wallets.</span></button>
               </div>
               {paymentMethod === 'RAZORPAY' && <p className="mt-4 p-3 rounded-lg bg-green-50 text-green-800 text-xs flex gap-2"><FiShield className="flex-shrink-0 mt-0.5" /> Card and banking details are entered only in Razorpay’s secure checkout, never on this website.</p>}
-              {testMode && paymentMethod === 'RAZORPAY' && (
-                <div className="mt-4 p-3 rounded-lg bg-amber-50 text-amber-800 text-xs flex flex-col gap-1.5">
-                  <span className="flex items-center gap-2"><span className="flex-shrink-0 mt-0.5">⚠️</span> Test mode is active — payments are simulated, no real money is charged.</span>
-                  <div className="bg-amber-100 border border-amber-200 rounded-lg p-2">
-                    <p className="text-[10px] font-bold text-amber-700 mb-1 uppercase tracking-wide">Test Card Details</p>
-                    <p className="text-[11px] font-mono text-amber-800 mb-0.5">Card: {RAZORPAY_TEST_CARD.number}</p>
-                    <p className="text-[11px] font-mono text-amber-800">Expiry: {RAZORPAY_TEST_CARD.expiry} · CVV: {RAZORPAY_TEST_CARD.cvv}</p>
-                  </div>
-                </div>
-              )}
             </div>
           </section>
           <aside><div className="bg-white rounded-2xl shadow-card p-5 sm:p-6 sticky top-24">

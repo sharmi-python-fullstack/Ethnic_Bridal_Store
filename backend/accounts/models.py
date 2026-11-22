@@ -1,4 +1,4 @@
-import random
+import secrets
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -32,7 +32,7 @@ class CustomUser(AbstractUser):
         return f'{self.first_name} {self.last_name}'.strip() or self.email
 
     def generate_otp(self):
-        self.otp = str(random.randint(100000, 999999))
+        self.otp = str(secrets.randbelow(900000) + 100000)
         self.otp_created_at = timezone.now()
         self.save(update_fields=['otp', 'otp_created_at'])
         return self.otp

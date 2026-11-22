@@ -19,6 +19,7 @@ from .serializers import (
 class RegisterView(APIView):
     """Register a new user account."""
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -56,6 +57,7 @@ class RegisterView(APIView):
 class LoginView(APIView):
     """Authenticate user and return JWT tokens."""
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -145,11 +147,38 @@ class ChangePasswordView(APIView):
 class ForgotPasswordView(APIView):
     """Send OTP to user's email for password reset."""
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def post(self, request):
         serializer = ForgotPasswordSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.user
+
+            if settings.PASSWORD_RESET_TEST_MODE:
+                demo_email = settings.PASSWORD_RESET_TEST_EMAIL
+                if user.email.lower() != demo_email:
+                    return Response(
+                        {
+                            'email': (
+                                'Email delivery is disabled for this project demo. '
+                                f'Use the test customer {demo_email}.'
+                            )
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                otp = user.generate_otp()
+                return Response(
+                    {
+                        'message': 'Test OTP generated. No email was sent.',
+                        'test_mode': True,
+                        'test_otp': otp,
+                        'email': user.email,
+                        'expires_in_seconds': 600,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+
             otp = user.generate_otp()
             try:
                 send_mail(
@@ -180,6 +209,7 @@ class ForgotPasswordView(APIView):
 class ResetPasswordView(APIView):
     """Reset password using OTP."""
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def post(self, request):
         serializer = ResetPasswordSerializer(data=request.data)

@@ -196,6 +196,16 @@ DEFAULT_FROM_EMAIL = config(
 )
 EMAIL_TIMEOUT = config('EMAIL_TIMEOUT', default=20, cast=int)
 
+# Portfolio/demo password recovery. Only this dedicated non-admin account may
+# receive an OTP in the API response, so real customer reset codes are never
+# exposed. Set PASSWORD_RESET_TEST_MODE=False when real email delivery is used.
+PASSWORD_RESET_TEST_MODE = config(
+    'PASSWORD_RESET_TEST_MODE', default=True, cast=bool
+)
+PASSWORD_RESET_TEST_EMAIL = config(
+    'PASSWORD_RESET_TEST_EMAIL', default='customer@shaaz.com'
+).strip().lower()
+
 # Razorpay
 # Keep payment keys out of source control. Use Razorpay test keys locally and
 # live keys only in the production environment.
