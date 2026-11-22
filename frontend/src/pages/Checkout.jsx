@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { FiCheck, FiCreditCard, FiEdit2, FiMapPin, FiPlus, FiShield, FiTruck, FiAlertCircle, FiInfo } from 'react-icons/fi'
+import { FiCheck, FiCreditCard, FiEdit2, FiMapPin, FiPlus, FiShield, FiTruck, FiAlertCircle, FiInfo, FiSmartphone, FiGlobe, FiBank, FiWallet } from 'react-icons/fi'
 import { createOrder, getCart } from '../api/orders'
 import { getAddresses } from '../api/auth'
 import { createRazorpayOrder, verifyPayment, razorpayStatus } from '../api/payments'
@@ -20,6 +20,15 @@ const TEST_CARD = {
   expiry: '12/35',
   cvv: '123',
 }
+
+const TEST_UPI = 'success@razorpay'
+
+const RAZORPAY_METHODS = [
+  { key: 'card', label: 'Credit / Debit Card', icon: FiCreditCard, hint: TEST_CARD.number + ' / ' + TEST_CARD.expiry + ' / ' + TEST_CARD.cvv },
+  { key: 'upi', label: 'UPI', icon: FiSmartphone, hint: 'Test UPI ID: ' + TEST_UPI },
+  { key: 'wallet', label: 'Wallet (Paytm / PhonePe)', icon: FiWallet, hint: 'Test wallet OTP: any 4-digit' },
+  { key: 'netbanking', label: 'Netbanking', icon: FiBank, hint: 'Select any test bank' },
+]
 
 function loadRazorpay() {
   return new Promise((resolve, reject) => {
@@ -64,6 +73,7 @@ export default function Checkout() {
   const [razorpayStatusInfo, setRazorpayStatusInfo] = useState(null)
   const [razorpayConfigured, setRazorpayConfigured] = useState(false)
   const [razorpayMode, setRazorpayMode] = useState(null)
+  const [razorpayMethod, setRazorpayMethod] = useState(null)
 
   useEffect(() => {
     let active = true
@@ -154,17 +164,43 @@ export default function Checkout() {
     navigate('/orders/' + orderId + '/confirmation')
   }
 
-  const openRazorpay = async (order, deliveryAddress) => {
+  const openRazorpay = async (order, deliveryAddress, method = null) => {
     if (!razorpayConfigured) {
       toast.error('Online payments are not configured on the server. Please use Cash on Delivery or contact support.')
       return
     }
     setSubmitting(true)
+    setRazorpayMethod(method)
     try {
       if (!(await loadRazorpay())) throw new Error('Razorpay checkout could not load. Please check your internet connection and try again.')
       const response = await createRazorpayOrder({ order_id: order.id })
       const { amount, currency, key, razorpay_order_id } = response.data
       if (!key || !razorpay_order_id || !amount) throw new Error('Razorpay returned an incomplete order. Please try again.')
+
+      // Build method filter: if a specific method is chosen, only show that method
+      const methodConfig = {}
+      if (method === 'upi') {
+        methodConfig.card = false
+        methodConfig.upi = true
+        methodConfig.netbanking = false
+        methodConfig.wallet = false
+      } else if (method === 'wallet') {
+        methodConfig.card = false
+        methodConfig.upi = false
+        methodConfig.netbanking = false
+        methodConfig.wallet = true
+      } else if (method === 'netbanking') {
+        methodConfig.card = false
+        methodConfig.upi = false
+        methodConfig.netbanking = true
+        methodConfig.wallet = false
+      } else {
+        // card or default: show all
+        methodConfig.card = true
+        methodConfig.upi = true
+        methodConfig.netbanking = true
+        methodConfig.wallet = true
+      }
 
       const razorpay = new window.Razorpay({
         key,
@@ -177,20 +213,17 @@ export default function Checkout() {
           name: deliveryAddress.name,
           email: user?.email || '',
           contact: deliveryAddress.phone,
+          method: method || undefined,
         },
         notes: { order_number: order.order_number },
         theme: { color: '#9B1313' },
-        method: {
-          card: true,
-          upi: true,
-          netbanking: true,
-          wallet: true,
-        },
+        method: methodConfig,
         handler: async (paymentResponse) => {
           setVerifying(true)
           try {
             await verifyPayment({ order_id: order.id, ...paymentResponse })
             setPendingOrder(null)
+            setRazorpayMethod(null)
             completeOrder(order.id)
           } catch (error) {
             setPendingOrder(order)
@@ -202,17 +235,20 @@ export default function Checkout() {
         modal: {
           ondismiss: () => {
             setPendingOrder(order)
+            setRazorpayMethod(null)
             toast('Payment window closed. You can resume payment when ready.', { icon: 'ℹ️' })
           },
         },
       })
       razorpay.on('payment.failed', (response) => {
         setPendingOrder(order)
+        setRazorpayMethod(null)
         toast.error(response?.error?.description || 'Payment was not completed. You can try again.')
       })
       razorpay.open()
     } catch (error) {
       setPendingOrder(order)
+      setRazorpayMethod(null)
       toast.error(getErrorMessage(error) || 'Failed to start Razorpay checkout. Please try again.')
     } finally {
       setSubmitting(false)
@@ -258,15 +294,22 @@ export default function Checkout() {
         <h1 className="font-heading text-3xl font-bold text-brand-charcoal mb-7">Checkout</h1>
 
         {isTestMode && (
-          <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-3">
-            <FiInfo className="text-amber-600 mt-0.5" size={20} />
+          <div className="mb-6 p-5 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-4">
+            <div className="flex-shrink-0">
+              <FiInfo className="text-amber-600 mt-0.5" size={22} />
+            </div>
             <div>
-              <h3 className="font-bold text-amber-800 text-sm mb-1">🧪 Test Mode — No Real Money Deducted</h3>
-              <p className="text-amber-700 text-xs mb-2">
-                You are using Razorpay test keys. Use the test card below — <strong>no money will be deducted</strong>.
+              <h3 className="font-bold text-amber-800 text-sm mb-2">🧪 Test Mode — No Real Money Deducted</h3>
+              <p className="text-amber-700 text-xs mb-3">
+                You are using Razorpay <strong>test keys</strong>. Use any test details below — no money will be deducted.
               </p>
-              <div className="bg-amber-100 p-2 rounded text-xs font-mono text-amber-800">
-                Card: {TEST_CARD.number}&nbsp;|&nbsp;Expiry: {TEST_CARD.expiry}&nbsp;|&nbsp;CVV: {TEST_CARD.cvv}
+              <div className="space-y-2">
+                {RAZORPAY_METHODS.map((m) => (
+                  <div key={m.key} className="flex items-start gap-2 text-xs">
+                    <span className="font-mono font-bold text-amber-700 w-12">{m.label}</span>
+                    <span className="text-amber-700">{m.hint}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
