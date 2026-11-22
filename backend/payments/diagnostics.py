@@ -6,6 +6,7 @@ from django.views.decorators.cache import cache_page
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from requests.exceptions import RequestException
 
 logger = logging.getLogger(__name__)
 
@@ -44,13 +45,28 @@ class RazorpayStatusView(APIView):
 
         try:
             import razorpay
+            from razorpay.errors import BadRequestError, GatewayError, ServerError
+        except ImportError:
+            response['issue'] = 'sdk_unavailable'
+            logger.exception('Razorpay readiness check could not import the SDK.')
+            return Response(response)
 
+        try:
             client = razorpay.Client(auth=(key_id, key_secret))
-            client.order.all({'count': 1})
+            client.order.all({'count': 1}, timeout=10)
             response['credentials_valid'] = True
             response['issue'] = 'ready'
-        except Exception as exc:
+        except BadRequestError:
             response['issue'] = 'credentials_rejected'
-            logger.warning('Razorpay readiness check failed: %s', type(exc).__name__)
+            logger.warning('Razorpay rejected the configured credentials.')
+        except (GatewayError, ServerError):
+            response['issue'] = 'razorpay_unavailable'
+            logger.warning('Razorpay readiness check failed at the gateway.')
+        except RequestException:
+            response['issue'] = 'network_unavailable'
+            logger.warning('Razorpay readiness check could not reach Razorpay.')
+        except Exception as exc:
+            response['issue'] = 'readiness_check_failed'
+            logger.warning('Unexpected Razorpay readiness failure: %s', type(exc).__name__)
 
         return Response(response)

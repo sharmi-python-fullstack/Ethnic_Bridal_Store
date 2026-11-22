@@ -15,14 +15,6 @@ const FALLBACK_COUPONS = [
   { code: 'FLAT500', min_order_amount: 3000, description: '₹500 off orders above ₹3,000' },
 ]
 
-// Razorpay test card details (for test mode only — never charged)
-const RAZORPAY_TEST_CARD = {
-  number: '4111 1111 1111 1111',
-  expiry: '12/35',
-  cvv: '123',
-  name: 'Test User',
-}
-
 function loadRazorpay() {
   return new Promise((resolve) => {
     if (window.Razorpay) return resolve(true)
@@ -56,7 +48,6 @@ export default function Checkout() {
   const [submitting, setSubmitting] = useState(false)
   const [verifying, setVerifying] = useState(false)
   const [pendingOrder, setPendingOrder] = useState(null)
-  const [testMode, setTestMode] = useState(false)
   const [addressErrors, setAddressErrors] = useState({})
   const [address, setAddress] = useState({
     name: ((user?.first_name || '') + ' ' + (user?.last_name || '')).trim(),
@@ -79,13 +70,6 @@ export default function Checkout() {
       })
       .catch(() => active && toast.error('Could not load checkout details. Please refresh.'))
       .finally(() => active && setLoading(false))
-
-    fetch('/api/payment-config-check/')
-      .then((r) => r.json())
-      .then((data) => {
-        if (active) setTestMode(!!data.test_mode)
-      })
-      .catch(() => {})
 
     return () => { active = false }
   }, [dispatch])
@@ -150,31 +134,10 @@ export default function Checkout() {
   const openRazorpay = async (order, deliveryAddress) => {
     setSubmitting(true)
     try {
-      if (testMode) {
-        // Test mode: simulate Razorpay card payment without opening the checkout modal.
-        const response = await createRazorpayOrder({ order_id: order.id })
-        const { razorpay_order_id } = response.data
-        setVerifying(true)
-        try {
-          await verifyPayment({
-            order_id: order.id,
-            razorpay_order_id,
-            razorpay_payment_id: 'pay_test_' + Date.now(),
-            razorpay_signature: 'test_signature',
-          })
-          setPendingOrder(null)
-          completeOrder(order.id)
-        } catch (error) {
-          setPendingOrder(order)
-          toast.error(getErrorMessage(error) || 'Payment could not be verified. Please contact support.')
-        } finally {
-          setVerifying(false)
-        }
-        return
-      }
       if (!(await loadRazorpay())) throw new Error('Razorpay could not load. Check your connection and try again.')
       const response = await createRazorpayOrder({ order_id: order.id })
       const { amount, currency, key, razorpay_order_id } = response.data
+      if (!key || !razorpay_order_id || !amount) throw new Error('Razorpay returned an incomplete order. Please try again.')
       if (key.startsWith('rzp_test_')) {
         toast('Razorpay Test Mode is active. Use Razorpay test card: 4111 1111 1111 1111, Expiry: 12/35, CVV: 123. No real money will be charged.', { icon: 'ℹ️', duration: 10000 })
       }

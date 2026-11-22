@@ -208,10 +208,10 @@ RAZORPAY_KEY_SECRET = config(
     'RAZORPAY_KEY_SECRET', default=config('RAZORPAY_SECRET', default='')
 ).strip().strip('"').strip("'")
 
-# When True (default in development), Razorpay calls are simulated so the
-# payment flow can be tested without real Razorpay API credentials. Set to
-# False and provide real keys in production to process live payments.
-RAZORPAY_TEST_MODE = config('RAZORPAY_TEST_MODE', default=True, cast=bool)
+# Test keys must still create real orders through Razorpay's test API. This
+# compatibility flag describes the configured key type only; it must never
+# bypass Razorpay order creation or payment-signature verification.
+RAZORPAY_TEST_MODE = RAZORPAY_KEY_ID.startswith('rzp_test_')
 
 # Logging
 LOGGING = {
