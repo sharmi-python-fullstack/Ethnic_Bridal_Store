@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 set -e
 
-# Move to the project root (where manage.py lives)
-cd "$(dirname "$0")/.."
+# Move into the backend folder where manage.py and requirements.txt live
+cd backend
 
-# Install Python dependencies
+# Install dependencies
 pip install -r requirements.txt
 
 # Apply migrations
 python manage.py migrate --noinput
 
-# Run the idempotent seed script (safe to re-run, no duplicates)
+# Run idempotent seed script (no duplicate errors)
 python seed_store.py
 
 # Collect static files
