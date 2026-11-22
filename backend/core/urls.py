@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
 from django.views.static import serve
 
 from .admin_views import AdminDashboardView, AdminUserListView, AdminUserDetailView
@@ -15,7 +16,13 @@ from products.views import (
 )
 from coupons.views import AdminCouponListCreateView, AdminCouponDetailView
 
+def health_check(request):
+    """Lightweight response for Render health checks and service monitoring."""
+    return JsonResponse({'status': 'ok'})
+
+
 urlpatterns = [
+    path('', health_check, name='health-check'),
     path('admin/', admin.site.urls),
 
     # Auth & user management
