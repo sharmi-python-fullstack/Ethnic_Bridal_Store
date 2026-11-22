@@ -9,6 +9,7 @@ export default function FloralBackground() {
     <div className="site-floral-background" aria-hidden="true">
       <img src={GARLAND_SRC} alt="" className="site-garland site-garland-top" />
       <img src={GARLAND_SRC} alt="" className="site-garland site-garland-left" />
+      <img src={GARLAND_SRC} alt="" className="site-garland site-garland-left-lower hidden sm:block" />
       <img src={GARLAND_SRC} alt="" className="site-garland site-garland-right" />
       <img src={GARLAND_SRC} alt="" className="site-garland site-garland-bottom" />
       <img src={GARLAND_SRC} alt="" className="site-garland site-garland-center hidden sm:block" />

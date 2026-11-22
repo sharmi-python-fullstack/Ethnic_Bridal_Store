@@ -135,17 +135,27 @@
   transform: translateX(-50%);
 }
 .site-garland-left {
-  top: 34%;
-  left: -28vw;
-  width: min(54vw, 720px);
-  transform: rotate(90deg);
+  top: 24%;
+  left: -12rem;
+  width: min(48vw, 650px);
+  opacity: 0.14;
+  transform: rotate(82deg);
   animation-delay: -4s;
 }
+.site-garland-left-lower {
+  bottom: 2.5rem;
+  left: -13rem;
+  width: min(38vw, 510px);
+  opacity: 0.085;
+  transform: rotate(37deg);
+  animation-delay: -9s;
+}
 .site-garland-right {
-  top: 56%;
-  right: -28vw;
-  width: min(54vw, 720px);
-  transform: rotate(-90deg);
+  top: 55%;
+  right: -12rem;
+  width: min(48vw, 650px);
+  opacity: 0.14;
+  transform: rotate(-82deg);
   animation-delay: -8s;
 }
 .site-garland-bottom {
@@ -171,6 +181,8 @@
   .site-garland { opacity: 0.075; }
   .site-garland-top { top: 4.1rem; width: 105vw; }
   .site-garland-left, .site-garland-right { width: 95vw; }
+  .site-garland-left { top: 23%; left: -8rem; opacity: 0.1; }
+  .site-garland-right { top: 57%; right: -8rem; opacity: 0.1; }
   .site-garland-bottom { width: 78vw; }
 }
 @media (prefers-reduced-motion: reduce) {
