@@ -154,23 +154,15 @@ class ForgotPasswordView(APIView):
         if serializer.is_valid():
             user = serializer.user
 
-            if settings.PASSWORD_RESET_TEST_MODE:
-                demo_email = settings.PASSWORD_RESET_TEST_EMAIL
-                if user.email.lower() != demo_email:
-                    return Response(
-                        {
-                            'email': (
-                                'Email delivery is disabled for this project demo. '
-                                f'Use the test customer {demo_email}.'
-                            )
-                        },
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
+            otp = user.generate_otp()
 
-                otp = user.generate_otp()
+            if settings.PASSWORD_RESET_TEST_MODE:
+                # In test/demo mode, no real email is sent. Return the OTP in
+                # the API response so the full reset flow can be tested end-to-end
+                # for any registered customer without needing SMTP configured.
                 return Response(
                     {
-                        'message': 'Test OTP generated. No email was sent.',
+                        'message': 'Test OTP generated. No real email was sent.',
                         'test_mode': True,
                         'test_otp': otp,
                         'email': user.email,
@@ -179,7 +171,6 @@ class ForgotPasswordView(APIView):
                     status=status.HTTP_200_OK,
                 )
 
-            otp = user.generate_otp()
             try:
                 send_mail(
                     subject='Password Reset OTP - Shaaz Ethnicwear',

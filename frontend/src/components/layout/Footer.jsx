@@ -1,12 +1,23 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { GiCrown } from 'react-icons/gi'
 import { FiFacebook, FiInstagram, FiTwitter, FiYoutube, FiMapPin, FiPhone, FiMail } from 'react-icons/fi'
+import { getCategories } from '../../api/products'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
+  const [footerCategories, setFooterCategories] = useState([])
+
+  useEffect(() => {
+    getCategories()
+      .then((r) => {
+        const data = Array.isArray(r.data) ? r.data : (r.data.results || [])
+        setFooterCategories(data.filter((c) => c.is_active !== false).slice(0, 8))
+      })
+      .catch(() => {})
+  }, [])
 
   const handleSubscribe = (event) => {
     event.preventDefault()
@@ -86,26 +97,20 @@ const Footer = () => {
           <div>
             <h4 className="font-heading text-brand-gold text-lg font-semibold mb-5">Categories</h4>
             <ul className="space-y-3">
-              {[
-                'Bridal Lehengas',
-                'Designer Sarees',
-                'Anarkali Suits',
-                'Wedding Kurtis',
-                'Sharara Sets',
-                'Ethnic Gowns',
-                'Dupatta Collection',
-                'Accessories',
-              ].map((cat) => (
-                <li key={cat}>
+              {footerCategories.map((cat) => (
+                <li key={cat.id}>
                   <Link
-                    to={`/products?search=${encodeURIComponent(cat)}`}
+                    to={`/category/${cat.slug}`}
                     className="text-white/70 hover:text-brand-gold text-sm transition-colors flex items-center gap-2 group"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-brand-gold/50 group-hover:bg-brand-gold transition-colors" />
-                    {cat}
+                    {cat.name}
                   </Link>
                 </li>
               ))}
+              {footerCategories.length === 0 && (
+                <li className="text-white/50 text-sm italic">Loading categories…</li>
+              )}
             </ul>
           </div>
 
