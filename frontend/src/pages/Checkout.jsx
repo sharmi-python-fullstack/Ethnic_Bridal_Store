@@ -136,6 +136,9 @@ export default function Checkout() {
       if (!(await loadRazorpay())) throw new Error('Razorpay could not load. Check your connection and try again.')
       const response = await createRazorpayOrder({ order_id: order.id })
       const { amount, currency, key, razorpay_order_id } = response.data
+      if (key.startsWith('rzp_test_')) {
+        toast('Razorpay Test Mode is active. Use Razorpay test payment details; real cards and bank accounts will not be charged.', { icon: 'ℹ️', duration: 7000 })
+      }
       const razorpay = new window.Razorpay({
         key, amount, currency: currency || 'INR', order_id: razorpay_order_id,
         name: 'Shaaz Ethnicwear',

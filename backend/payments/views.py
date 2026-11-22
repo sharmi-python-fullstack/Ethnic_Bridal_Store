@@ -18,8 +18,8 @@ def get_razorpay_client():
     """Return Razorpay client only when complete credentials are configured."""
     try:
         import razorpay
-        key_id = getattr(settings, 'RAZORPAY_KEY_ID', '')
-        key_secret = getattr(settings, 'RAZORPAY_KEY_SECRET', '')
+        key_id = str(getattr(settings, 'RAZORPAY_KEY_ID', '')).strip()
+        key_secret = str(getattr(settings, 'RAZORPAY_KEY_SECRET', '')).strip()
         if not key_id or not key_secret:
             return None
         return razorpay.Client(auth=(key_id, key_secret))
@@ -66,13 +66,25 @@ class CreateRazorpayOrderView(APIView):
             )
 
         if order.razorpay_order_id:
-            return Response({
-                'razorpay_order_id': order.razorpay_order_id,
-                'amount': amount_paise,
-                'currency': 'INR',
-                'key': settings.RAZORPAY_KEY_ID,
-                'order_number': order.order_number,
-            })
+            # A user may retry after the merchant switches from Test to Live
+            # credentials. A Razorpay order ID belongs to its original key
+            # environment, so reuse it only when the current credentials can
+            # fetch it and its amount still matches this order.
+            try:
+                existing_order = client.order.fetch(order.razorpay_order_id)
+                if int(existing_order.get('amount', 0)) == amount_paise:
+                    return Response({
+                        'razorpay_order_id': order.razorpay_order_id,
+                        'amount': amount_paise,
+                        'currency': 'INR',
+                        'key': settings.RAZORPAY_KEY_ID,
+                        'order_number': order.order_number,
+                    })
+            except Exception:
+                logger.info('Stored Razorpay order is not valid for the current credentials; creating a new one.')
+
+            order.razorpay_order_id = ''
+            order.save(update_fields=['razorpay_order_id'])
 
         try:
             razorpay_order = client.order.create({
