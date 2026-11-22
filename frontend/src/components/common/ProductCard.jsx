@@ -17,6 +17,7 @@ const ProductCard = ({ product, onWishlistToggle }) => {
   const [inWishlist, setInWishlist] = useState(isItemInWishlist || product.in_wishlist || false)
   const [wishlistLoading, setWishlistLoading] = useState(false)
   const [cartLoading, setCartLoading] = useState(false)
+  const { addItemToCart } = useCart()
 
   // Keep heart state synced with Redux store
   useEffect(() => {
@@ -65,8 +66,11 @@ const ProductCard = ({ product, onWishlistToggle }) => {
     e.stopPropagation()
     if (!token) { toast.error('Please login to add to cart'); return }
     setCartLoading(true)
-    await addItemToCart(product.id, 1)
-    setCartLoading(false)
+    try {
+      await addItemToCart(product.id, 1)
+    } finally {
+      setCartLoading(false)
+    }
   }
 
   return (
