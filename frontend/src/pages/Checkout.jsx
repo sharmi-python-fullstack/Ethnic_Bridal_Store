@@ -15,6 +15,14 @@ const FALLBACK_COUPONS = [
   { code: 'FLAT500', min_order_amount: 3000, description: '₹500 off orders above ₹3,000' },
 ]
 
+// Razorpay test card details (for test mode only — never charged)
+const RAZORPAY_TEST_CARD = {
+  number: '4111 1111 1111 1111',
+  expiry: '12/35',
+  cvv: '123',
+  name: 'Test User',
+}
+
 function loadRazorpay() {
   return new Promise((resolve) => {
     if (window.Razorpay) return resolve(true)
@@ -143,7 +151,7 @@ export default function Checkout() {
     setSubmitting(true)
     try {
       if (testMode) {
-        // Test mode: simulate Razorpay payment without opening the checkout modal.
+        // Test mode: simulate Razorpay card payment without opening the checkout modal.
         const response = await createRazorpayOrder({ order_id: order.id })
         const { razorpay_order_id } = response.data
         setVerifying(true)
@@ -168,7 +176,7 @@ export default function Checkout() {
       const response = await createRazorpayOrder({ order_id: order.id })
       const { amount, currency, key, razorpay_order_id } = response.data
       if (key.startsWith('rzp_test_')) {
-        toast('Razorpay Test Mode is active. Use Razorpay test payment details; real cards and bank accounts will not be charged.', { icon: 'ℹ️', duration: 7000 })
+        toast('Razorpay Test Mode is active. Use Razorpay test card: 4111 1111 1111 1111, Expiry: 12/35, CVV: 123. No real money will be charged.', { icon: 'ℹ️', duration: 10000 })
       }
       const razorpay = new window.Razorpay({
         key, amount, currency: currency || 'INR', order_id: razorpay_order_id,
@@ -177,6 +185,13 @@ export default function Checkout() {
         prefill: { name: deliveryAddress.name, email: user?.email || '', contact: deliveryAddress.phone },
         notes: { order_number: order.order_number },
         theme: { color: '#9B1313' },
+        // Explicitly enable card and other payment methods
+        method: {
+          card: true,
+          upi: true,
+          netbanking: true,
+          wallet: true,
+        },
         handler: async (paymentResponse) => {
           setVerifying(true)
           try {
@@ -274,7 +289,16 @@ export default function Checkout() {
                 <button type="button" onClick={() => setPaymentMethod('RAZORPAY')} className={'text-left p-4 rounded-xl border-2 transition-all ' + (paymentMethod === 'RAZORPAY' ? 'border-brand-gold bg-amber-50' : 'border-gray-200 hover:border-brand-gold/70')}><span className="font-semibold text-brand-charcoal flex items-center gap-2"><FiCreditCard className="text-brand-deep-red" /> Razorpay secure payment</span><span className="text-xs text-gray-500 mt-1 block">Cards, UPI, netbanking and wallets.</span></button>
               </div>
               {paymentMethod === 'RAZORPAY' && <p className="mt-4 p-3 rounded-lg bg-green-50 text-green-800 text-xs flex gap-2"><FiShield className="flex-shrink-0 mt-0.5" /> Card and banking details are entered only in Razorpay’s secure checkout, never on this website.</p>}
-              {testMode && paymentMethod === 'RAZORPAY' && <p className="mt-4 p-3 rounded-lg bg-amber-50 text-amber-800 text-xs flex gap-2"><span className="flex-shrink-0 mt-0.5">⚠️</span> Test mode is active — payments are simulated, no real money is charged.</p>}
+              {testMode && paymentMethod === 'RAZORPAY' && (
+                <div className="mt-4 p-3 rounded-lg bg-amber-50 text-amber-800 text-xs flex flex-col gap-1.5">
+                  <span className="flex items-center gap-2"><span className="flex-shrink-0 mt-0.5">⚠️</span> Test mode is active — payments are simulated, no real money is charged.</span>
+                  <div className="bg-amber-100 border border-amber-200 rounded-lg p-2">
+                    <p className="text-[10px] font-bold text-amber-700 mb-1 uppercase tracking-wide">Test Card Details</p>
+                    <p className="text-[11px] font-mono text-amber-800 mb-0.5">Card: {RAZORPAY_TEST_CARD.number}</p>
+                    <p className="text-[11px] font-mono text-amber-800">Expiry: {RAZORPAY_TEST_CARD.expiry} · CVV: {RAZORPAY_TEST_CARD.cvv}</p>
+                  </div>
+                </div>
+              )}
             </div>
           </section>
           <aside><div className="bg-white rounded-2xl shadow-card p-5 sm:p-6 sticky top-24">
