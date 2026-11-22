@@ -212,6 +212,11 @@ RAZORPAY_KEY_SECRET = config(
     'RAZORPAY_KEY_SECRET', default=config('RAZORPAY_SECRET', default='')
 ).strip().strip('"').strip("'")
 
+# When True (default in development), Razorpay calls are simulated so the
+# payment flow can be tested without real Razorpay API credentials. Set to
+# False and provide real keys in production to process live payments.
+RAZORPAY_TEST_MODE = config('RAZORPAY_TEST_MODE', default=True, cast=bool)
+
 # Logging
 LOGGING = {
     'version': 1,

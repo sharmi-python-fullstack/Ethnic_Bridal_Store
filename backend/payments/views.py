@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import logging
+import uuid
 from django.conf import settings
 from django.db import transaction
 from rest_framework import status
@@ -15,17 +16,58 @@ logger = logging.getLogger(__name__)
 
 
 def get_razorpay_client():
-    """Return Razorpay client only when complete credentials are configured."""
+    """Initialize Razorpay using Django settings."""
     try:
         import razorpay
-        key_id = str(getattr(settings, 'RAZORPAY_KEY_ID', '')).strip()
-        key_secret = str(getattr(settings, 'RAZORPAY_KEY_SECRET', '')).strip()
+
+        key_id = str(
+            getattr(settings, 'RAZORPAY_KEY_ID', '')
+        ).strip()
+
+        key_secret = str(
+            getattr(settings, 'RAZORPAY_KEY_SECRET', '')
+        ).strip()
+
         if not key_id or not key_secret:
+            logger.error(
+                "Razorpay credentials are missing."
+            )
             return None
-        return razorpay.Client(auth=(key_id, key_secret))
-    except Exception as e:
-        logger.warning(f"Could not initialize Razorpay client: {e}")
+
+        client = razorpay.Client(
+            auth=(key_id, key_secret)
+        )
+
+        logger.info(
+            "Razorpay client initialized successfully."
+        )
+
+        return client
+
+    except ImportError:
+        logger.exception(
+            "Razorpay Python SDK is not installed."
+        )
         return None
+
+    except Exception:
+        logger.exception(
+            "Razorpay client initialization failed."
+        )
+        return None
+
+# def get_razorpay_client():
+#     """Return Razorpay client only when complete credentials are configured."""
+#     try:
+#         import razorpay
+#         key_id = str(getattr(settings, 'RAZORPAY_KEY_ID', '')).strip()
+#         key_secret = str(getattr(settings, 'RAZORPAY_KEY_SECRET', '')).strip()
+#         if not key_id or not key_secret:
+#             return None
+#         return razorpay.Client(auth=(key_id, key_secret))
+#     except Exception as e:
+#         logger.warning(f"Could not initialize Razorpay client: {e}")
+#         return None
 
 
 class CreateRazorpayOrderView(APIView):
@@ -57,6 +99,25 @@ class CreateRazorpayOrderView(APIView):
             )
 
         amount_paise = int(order.total * 100)
+
+        if getattr(settings, 'RAZORPAY_TEST_MODE', False):
+            # Test mode: simulate a Razorpay order without calling the gateway.
+            razorpay_order_id = f'order_test_{uuid.uuid4().hex[:12]}'
+            order.razorpay_order_id = razorpay_order_id
+            order.save(update_fields=['razorpay_order_id'])
+            logger.info(
+                'Test mode: simulated Razorpay order %s for order %s.',
+                razorpay_order_id, order.id,
+            )
+            return Response({
+                'razorpay_order_id': razorpay_order_id,
+                'amount': amount_paise,
+                'currency': 'INR',
+                'key': settings.RAZORPAY_KEY_ID or 'rzp_test_mock',
+                'order_number': order.order_number,
+                'test_mode': True,
+            })
+
         client = get_razorpay_client()
 
         if not client:
@@ -146,6 +207,42 @@ class VerifyPaymentView(APIView):
         key_secret = getattr(settings, 'RAZORPAY_KEY_SECRET', '')
         if not key_secret or order.payment_method != 'RAZORPAY':
             return Response({'error': 'Online payment verification is unavailable.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if getattr(settings, 'RAZORPAY_TEST_MODE', False):
+            # Test mode: accept the payment without real Razorpay HMAC verification.
+            if order.payment_status == 'PAID':
+                if order.razorpay_payment_id == razorpay_payment_id:
+                    return Response({'message': 'Payment is already verified.', 'order_number': order.order_number, 'order_id': order.id})
+                return Response({'error': 'This order has already been paid.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            if order.razorpay_order_id != razorpay_order_id:
+                return Response({'error': 'Razorpay order does not match this order.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Update order only after the test payment response has been received.
+            order.razorpay_payment_id = razorpay_payment_id or f'pay_test_{uuid.uuid4().hex[:12]}'
+            order.payment_status = 'PAID'
+            order.status = 'CONFIRMED'
+            order.save(update_fields=['razorpay_payment_id', 'payment_status', 'status'])
+
+            # The online order retained the cart until payment succeeded.
+            from orders.models import Cart
+            cart = Cart.objects.filter(user=request.user).first()
+            if cart:
+                cart.items.all().delete()
+
+            OrderTracking.objects.create(
+                order=order,
+                status='CONFIRMED',
+                description=f'Test payment of ₹{order.total} received via Razorpay ({order.razorpay_payment_id}). Order confirmed.',
+                updated_by=None,
+            )
+
+            return Response({
+                'message': 'Test payment verified successfully! Order is confirmed.',
+                'order_number': order.order_number,
+                'order_id': order.id,
+                'test_mode': True,
+            })
 
         if order.payment_status == 'PAID':
             if order.razorpay_payment_id == razorpay_payment_id:

@@ -26,6 +26,7 @@ def payment_config_check(request):
         "razorpay_secret_configured": bool(
             getattr(settings, "RAZORPAY_KEY_SECRET", "")
         ),
+        "test_mode": bool(getattr(settings, "RAZORPAY_TEST_MODE", False)),
     })
 
 

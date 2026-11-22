@@ -48,6 +48,7 @@ export default function Checkout() {
   const [submitting, setSubmitting] = useState(false)
   const [verifying, setVerifying] = useState(false)
   const [pendingOrder, setPendingOrder] = useState(null)
+  const [testMode, setTestMode] = useState(false)
   const [addressErrors, setAddressErrors] = useState({})
   const [address, setAddress] = useState({
     name: ((user?.first_name || '') + ' ' + (user?.last_name || '')).trim(),
@@ -70,6 +71,14 @@ export default function Checkout() {
       })
       .catch(() => active && toast.error('Could not load checkout details. Please refresh.'))
       .finally(() => active && setLoading(false))
+
+    fetch('/api/payment-config-check/')
+      .then((r) => r.json())
+      .then((data) => {
+        if (active) setTestMode(!!data.test_mode)
+      })
+      .catch(() => {})
+
     return () => { active = false }
   }, [dispatch])
 
@@ -133,6 +142,28 @@ export default function Checkout() {
   const openRazorpay = async (order, deliveryAddress) => {
     setSubmitting(true)
     try {
+      if (testMode) {
+        // Test mode: simulate Razorpay payment without opening the checkout modal.
+        const response = await createRazorpayOrder({ order_id: order.id })
+        const { razorpay_order_id } = response.data
+        setVerifying(true)
+        try {
+          await verifyPayment({
+            order_id: order.id,
+            razorpay_order_id,
+            razorpay_payment_id: 'pay_test_' + Date.now(),
+            razorpay_signature: 'test_signature',
+          })
+          setPendingOrder(null)
+          completeOrder(order.id)
+        } catch (error) {
+          setPendingOrder(order)
+          toast.error(getErrorMessage(error) || 'Payment could not be verified. Please contact support.')
+        } finally {
+          setVerifying(false)
+        }
+        return
+      }
       if (!(await loadRazorpay())) throw new Error('Razorpay could not load. Check your connection and try again.')
       const response = await createRazorpayOrder({ order_id: order.id })
       const { amount, currency, key, razorpay_order_id } = response.data
@@ -243,6 +274,7 @@ export default function Checkout() {
                 <button type="button" onClick={() => setPaymentMethod('RAZORPAY')} className={'text-left p-4 rounded-xl border-2 transition-all ' + (paymentMethod === 'RAZORPAY' ? 'border-brand-gold bg-amber-50' : 'border-gray-200 hover:border-brand-gold/70')}><span className="font-semibold text-brand-charcoal flex items-center gap-2"><FiCreditCard className="text-brand-deep-red" /> Razorpay secure payment</span><span className="text-xs text-gray-500 mt-1 block">Cards, UPI, netbanking and wallets.</span></button>
               </div>
               {paymentMethod === 'RAZORPAY' && <p className="mt-4 p-3 rounded-lg bg-green-50 text-green-800 text-xs flex gap-2"><FiShield className="flex-shrink-0 mt-0.5" /> Card and banking details are entered only in Razorpay’s secure checkout, never on this website.</p>}
+              {testMode && paymentMethod === 'RAZORPAY' && <p className="mt-4 p-3 rounded-lg bg-amber-50 text-amber-800 text-xs flex gap-2"><span className="flex-shrink-0 mt-0.5">⚠️</span> Test mode is active — payments are simulated, no real money is charged.</p>}
             </div>
           </section>
           <aside><div className="bg-white rounded-2xl shadow-card p-5 sm:p-6 sticky top-24">
