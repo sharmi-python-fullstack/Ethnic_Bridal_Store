@@ -1,4 +1,6 @@
 import logging
+import smtplib
+import socket
 
 from django.conf import settings
 from django.core.mail import get_connection
@@ -41,8 +43,14 @@ class EmailStatusView(APIView):
             connection.open()
             result['smtp_ready'] = True
             result['issue'] = 'ready'
+        except smtplib.SMTPAuthenticationError as exc:
+            result['issue'] = 'smtp_authentication_failed'
+            logger.warning('SMTP readiness check failed: %s', type(exc).__name__)
+        except (socket.timeout, TimeoutError, OSError) as exc:
+            result['issue'] = 'smtp_connection_failed'
+            logger.warning('SMTP readiness check failed: %s', type(exc).__name__)
         except Exception as exc:
-            result['issue'] = 'smtp_authentication_or_connection_failed'
+            result['issue'] = 'smtp_configuration_failed'
             logger.warning('SMTP readiness check failed: %s', type(exc).__name__)
         finally:
             if connection:
