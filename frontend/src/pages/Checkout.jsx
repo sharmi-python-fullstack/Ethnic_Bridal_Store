@@ -16,9 +16,12 @@ const FALLBACK_COUPONS = [
 ]
 
 const TEST_CARD = {
-  number: '4111 1111 1111 1111',
-  expiry: '12/35',
+  // Razorpay's current domestic Visa test card. International test cards
+  // are rejected when international payments are not enabled on the account.
+  number: '4100 2800 0000 1007',
+  expiry: '12/30',
   cvv: '123',
+  otp: '1234',
 }
 
 function loadRazorpay() {
@@ -264,7 +267,10 @@ export default function Checkout() {
                 You are using Razorpay <strong>test keys</strong>. Use any test details below — no money will be deducted.
               </p>
               <p className="text-xs text-amber-700">
-                Test card: <span className="font-mono font-bold">{TEST_CARD.number} / {TEST_CARD.expiry} / {TEST_CARD.cvv}</span>
+                Domestic Visa test card: <span className="font-mono font-bold">{TEST_CARD.number} / {TEST_CARD.expiry} / {TEST_CARD.cvv}</span>
+              </p>
+              <p className="text-xs text-amber-700 mt-1">
+                On Razorpay&apos;s mock bank page, enter any 4–10 digit OTP (for example, <span className="font-mono font-bold">{TEST_CARD.otp}</span>) to complete a successful test payment.
               </p>
             </div>
           </div>
