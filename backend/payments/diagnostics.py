@@ -1,17 +1,9 @@
-import logging
-
 from django.conf import settings
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from requests.exceptions import RequestException
-
-logger = logging.getLogger(__name__)
 
 
-@method_decorator(cache_page(60), name='dispatch')
 class RazorpayStatusView(APIView):
     """Report safe Razorpay readiness information without exposing credentials."""
 
@@ -36,8 +28,8 @@ class RazorpayStatusView(APIView):
             'key_id_present': bool(key_id),
             'key_secret_present': bool(key_secret),
             'mode': mode,
-            'credentials_valid': False,
-            'issue': 'missing_key_id' if not key_id else 'missing_key_secret' if not key_secret else 'checking',
+            'sdk_available': False,
+            'issue': 'missing_key_id' if not key_id else 'missing_key_secret' if not key_secret else 'checking_sdk',
         }
 
         if not response['configured']:
@@ -47,27 +39,12 @@ class RazorpayStatusView(APIView):
             import razorpay
         except ImportError:
             response['issue'] = 'sdk_unavailable'
-            logger.exception('Razorpay readiness check could not import the SDK.')
             return Response(response)
 
-        try:
-            client = razorpay.Client(auth=(key_id, key_secret))
-            client.order.all({'count': 1}, timeout=10)
-            response['credentials_valid'] = True
-            response['issue'] = 'ready'
-        except RequestException:
-            response['issue'] = 'network_unavailable'
-            logger.warning('Razorpay readiness check could not reach Razorpay.')
-        except Exception as exc:
-            error_name = type(exc).__name__
-            if error_name == 'BadRequestError':
-                response['issue'] = 'credentials_rejected'
-                logger.warning('Razorpay rejected the configured credentials.')
-            elif error_name in {'GatewayError', 'ServerError'}:
-                response['issue'] = 'razorpay_unavailable'
-                logger.warning('Razorpay readiness check failed at the gateway.')
-            else:
-                response['issue'] = 'readiness_check_failed'
-                logger.warning('Unexpected Razorpay readiness failure: %s', error_name)
+        # Do not make a billable/remote API request here. This public endpoint
+        # should only report local readiness; order creation validates the
+        # configured key pair with Razorpay immediately before checkout opens.
+        response['sdk_available'] = True
+        response['issue'] = 'ready'
 
         return Response(response)
