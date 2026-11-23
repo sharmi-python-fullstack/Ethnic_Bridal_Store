@@ -9,5 +9,6 @@ python-decouple==3.8
 dj-database-url==2.1.0
 whitenoise==6.6.0
 gunicorn==21.2.0
-setuptools>=65.0.0
+# razorpay 1.x imports pkg_resources, which setuptools removed in v81.
+setuptools>=65.0.0,<81
 psycopg2-binary==2.9.9
