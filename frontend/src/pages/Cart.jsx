@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { FiMinus, FiPlus, FiTrash2, FiShoppingBag, FiTag, FiArrowRight } from 'react-icons/fi'
@@ -12,20 +12,37 @@ import toast from 'react-hot-toast'
 export default function Cart() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { items, discount, couponCode, isLoading } = useSelector((s) => s.cart)
+  const { items, discount, couponCode } = useSelector((s) => s.cart)
   const { updateCartItemQty, removeCartItem } = useCart()
   const [couponInput, setCouponInput] = useState('')
   const [couponLoading, setCouponLoading] = useState(false)
   const [pageLoading, setPageLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
 
-  useEffect(() => {
-    getCart()
-      .then((r) => dispatch(setCart(r.data)))
-      .catch(() => {})
-      .finally(() => setPageLoading(false))
+  const loadCart = useCallback(async () => {
+    setPageLoading(true)
+    setLoadError('')
+    try {
+      const response = await getCart()
+      dispatch(setCart(response.data))
+    } catch (error) {
+      setLoadError(getErrorMessage(error) || 'We could not load your cart.')
+    } finally {
+      setPageLoading(false)
+    }
   }, [dispatch])
 
-  const subtotal = items.reduce((acc, item) => acc + parseFloat(item.unit_price) * item.quantity, 0)
+  useEffect(() => {
+    loadCart()
+  }, [loadCart])
+
+  const getItemPrice = (item) => Number(
+    item.unit_price ?? item.product?.effective_price ?? item.product?.discount_price ?? item.product?.price ?? 0
+  )
+  const getItemImage = (item) => (
+    item.product?.primary_image?.image_url || item.product?.images?.[0]?.image_url || item.image_url || ''
+  )
+  const subtotal = items.reduce((acc, item) => acc + getItemPrice(item) * Number(item.quantity || 0), 0)
   const shipping = subtotal >= 999 ? 0 : (subtotal > 0 ? 99 : 0)
   const grandTotal = subtotal + shipping - (discount || 0)
 
@@ -50,6 +67,15 @@ export default function Cart() {
     </div>
   )
 
+  if (loadError) return (
+    <div className="min-h-screen bg-brand-cream flex flex-col items-center justify-center gap-4 px-4 text-center">
+      <FiShoppingBag className="text-6xl text-gray-300" />
+      <h2 className="font-heading text-2xl font-bold text-gray-700">Your cart could not be loaded</h2>
+      <p className="max-w-md text-gray-500">{loadError}</p>
+      <button type="button" onClick={loadCart} className="btn-primary">Try again</button>
+    </div>
+  )
+
   if (items.length === 0) return (
     <div className="min-h-screen bg-brand-cream flex flex-col items-center justify-center py-20 px-4 text-center">
       <FiShoppingBag className="text-7xl text-gray-300 mb-5" />
@@ -67,20 +93,28 @@ export default function Cart() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {items.map((item) => (
+            {items.map((item) => {
+              const product = item.product || {}
+              const productName = item.product_name || product.name || 'Product unavailable'
+              const productUrl = product.slug ? `/products/${product.slug}` : '/products'
+              const unitPrice = getItemPrice(item)
+              const imageUrl = getItemImage(item)
+              const stock = product.stock
+
+              return (
               <div key={item.id} className="bg-white rounded-2xl shadow-card p-5 flex gap-4">
-                <Link to={`/products/${item.product?.slug}`} className="flex-shrink-0">
+                <Link to={productUrl} className="flex-shrink-0">
                   <img
-                    src={getImageUrl(item.product?.primary_image?.image_url)}
-                    alt={item.product?.name}
+                    src={getImageUrl(imageUrl)}
+                    alt={productName}
                     className="w-24 h-32 object-cover rounded-xl"
                     onError={(e) => { e.target.src = '/placeholder-bridal.svg' }}
                   />
                 </Link>
                 <div className="flex-1 min-w-0">
-                  <Link to={`/products/${item.product?.slug}`}>
+                  <Link to={productUrl}>
                     <h3 className="font-heading font-semibold text-brand-charcoal leading-tight hover:text-brand-red transition-colors line-clamp-2">
-                      {item.product_name || item.product?.name}
+                      {productName}
                     </h3>
                   </Link>
                   {(item.size || item.color) && (
@@ -88,12 +122,12 @@ export default function Cart() {
                       {item.size && `Size: ${item.size}`}{item.size && item.color && ' | '}{item.color && `Color: ${item.color}`}
                     </p>
                   )}
-                  <p className="text-brand-deep-red font-bold mt-2">{formatPrice(item.unit_price)}</p>
+                  <p className="text-brand-deep-red font-bold mt-2">{formatPrice(unitPrice)}</p>
                   {/* Stock warning */}
-                  {item.product?.stock != null && item.product.stock <= 5 && item.product.stock > 0 && (
+                  {stock != null && stock <= 5 && stock > 0 && (
                     <p className="text-xs text-orange-500 font-medium mt-1">⚠ Only {item.product.stock} left in stock</p>
                   )}
-                  {item.product?.stock === 0 && (
+                  {stock === 0 && (
                     <p className="text-xs text-red-500 font-medium mt-1">❌ Out of stock — please remove</p>
                   )}
 
@@ -109,14 +143,14 @@ export default function Cart() {
                       <span className="px-4 py-1.5 font-semibold text-sm">{item.quantity}</span>
                       <button
                         onClick={() => updateCartItemQty(item.id, item.quantity + 1)}
-                        disabled={item.quantity >= (item.product?.stock || 99)}
+                        disabled={stock != null && item.quantity >= stock}
                         className="px-2.5 py-1.5 hover:bg-gray-50 disabled:opacity-40"
                       >
                         <FiPlus size={14} />
                       </button>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-brand-charcoal">{formatPrice(parseFloat(item.unit_price) * item.quantity)}</span>
+                      <span className="font-bold text-brand-charcoal">{formatPrice(unitPrice * item.quantity)}</span>
                       <button
                         onClick={() => removeCartItem(item.id)}
                         className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
@@ -127,7 +161,8 @@ export default function Cart() {
                   </div>
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>
 
           {/* Summary */}
