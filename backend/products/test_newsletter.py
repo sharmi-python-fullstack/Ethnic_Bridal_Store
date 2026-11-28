@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.cache import cache
-from django.test import override_settings
+from django.test import Client, override_settings
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import AccessToken
@@ -78,3 +78,25 @@ class NewsletterTests(APITestCase):
         response = self.client.post('/api/chat/', {'message': 'track my order'}, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['orders'][0]['order_number'], order.order_number)
+
+    def test_newsletter_forms_retain_csrf_protection_over_https(self):
+        subscriber = NewsletterSubscriber.objects.create(email='secure@example.com')
+        client = Client(enforce_csrf_checks=True)
+        confirm = reverse('newsletter-confirm', args=[subscriber.confirmation_token])
+        page = client.get(confirm, secure=True)
+        self.assertEqual(page.status_code, 200)
+        self.assertContains(page, 'name="referrer" content="same-origin"')
+        token = client.cookies['csrftoken'].value
+        self.assertEqual(client.post(confirm, secure=True, HTTP_REFERER=f'https://testserver{confirm}').status_code, 403)
+        self.assertEqual(client.post(confirm, {'csrfmiddlewaretoken': token}, secure=True, HTTP_ORIGIN='https://untrusted.example').status_code, 403)
+        response = client.post(confirm, {'csrfmiddlewaretoken': token}, secure=True, HTTP_REFERER=f'https://testserver{confirm}')
+        self.assertEqual(response.status_code, 200)
+        subscriber.refresh_from_db()
+        self.assertTrue(subscriber.is_confirmed)
+
+        unsubscribe = reverse('newsletter-unsubscribe', args=[subscriber.unsubscribe_token])
+        self.assertEqual(client.get(unsubscribe, secure=True).status_code, 200)
+        response = client.post(unsubscribe, {'csrfmiddlewaretoken': client.cookies['csrftoken'].value}, secure=True, HTTP_REFERER=f'https://testserver{unsubscribe}')
+        self.assertEqual(response.status_code, 200)
+        subscriber.refresh_from_db()
+        self.assertFalse(subscriber.is_confirmed)
