@@ -183,10 +183,10 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-# Email delivery. SMTP credentials are supplied through environment variables;
-# no credential is ever stored in the repository. The console backend remains
-# useful for local development, but password reset only succeeds when a real
-# SMTP sender is configured.
+# Select Brevo's HTTPS API on Render Free, or SMTP where it is reachable.
+# Credentials must be supplied through environment variables.
+EMAIL_PROVIDER = config('EMAIL_PROVIDER', default='smtp').strip().lower()
+BREVO_API_KEY = config('BREVO_API_KEY', default='').strip()
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
@@ -205,7 +205,7 @@ DEFAULT_FROM_EMAIL = config(
 EMAIL_TIMEOUT = config('EMAIL_TIMEOUT', default=20, cast=int)
 EMAIL_DELIVERY_ENABLED = config(
     'EMAIL_DELIVERY_ENABLED',
-    default=bool(EMAIL_HOST_USER and EMAIL_HOST_PASSWORD),
+    default=bool(BREVO_API_KEY if EMAIL_PROVIDER == 'brevo' else EMAIL_HOST_USER and EMAIL_HOST_PASSWORD),
     cast=bool,
 )
 

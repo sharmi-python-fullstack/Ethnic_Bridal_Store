@@ -186,6 +186,15 @@ git push -u origin main
 
 The password-reset page sends a six-digit OTP only after a real email provider is configured; it never displays a production OTP in the browser.
 
+Render's free web service blocks SMTP ports. To send from a free service, use the Brevo HTTPS API:
+
+1. Create a Brevo account, set up and verify a sender, and obtain an API key. Your Brevo account may need transactional email enabled before sending.
+2. In the Render backend service's **Environment** page, set `EMAIL_PROVIDER=brevo`, `EMAIL_DELIVERY_ENABLED=True`, `BREVO_API_KEY` to your Brevo API key, `DEFAULT_FROM_EMAIL` to your verified sender (for example, `Shaaz Ethnicwear <sender@example.com>`), and `PASSWORD_RESET_TEST_MODE=False`.
+3. Save and deploy the backend. `/api/auth/email-status/` reports whether settings are present; it does not prove the provider accepted or delivered mail. Request a password reset for a registered email address to test actual delivery and inspect Brevo's email logs if needed.
+4. Store the API key only in Render's environment settings or your ignored local `.env`, never in Git. Brevo may replace free-mail sender addresses to improve deliverability; a verified custom domain is recommended for a live store.
+
+For local SMTP or a paid Render web service where SMTP ports are open:
+
 1. Copy `backend/.env.example` to `backend/.env` for local use, then replace the sample sender values. Keep `backend/.env` private—it is ignored by Git.
 2. For a Gmail sender, turn on 2-Step Verification and create a dedicated App Password. Use that 16-character App Password for `EMAIL_HOST_PASSWORD`, not the normal Gmail password.
 3. Confirm these values: `EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend`, `EMAIL_DELIVERY_ENABLED=True`, `EMAIL_HOST=smtp.gmail.com`, `EMAIL_PORT=587`, `EMAIL_USE_TLS=True`, your sender address in `EMAIL_HOST_USER`, and the same address in `DEFAULT_FROM_EMAIL`.

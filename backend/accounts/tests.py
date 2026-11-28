@@ -1,3 +1,7 @@
+import json
+from unittest.mock import patch
+from urllib.error import HTTPError
+
 from django.test import override_settings
 from django.core import mail
 from rest_framework import status
@@ -81,13 +85,55 @@ class PasswordResetEmailTests(APITestCase):
         self.assertTrue(self.demo_user.check_password(new_password))
         self.assertIsNone(self.demo_user.otp)
 
+
+@override_settings(
+    PASSWORD_RESET_TEST_MODE=False,
+    EMAIL_PROVIDER='brevo',
+    EMAIL_DELIVERY_ENABLED=True,
+    BREVO_API_KEY='test-api-key',
+    DEFAULT_FROM_EMAIL='Shaaz Ethnicwear <sender@example.com>',
+)
+class BrevoPasswordResetTests(APITestCase):
+    def setUp(self):
+        self.user = CustomUser(email='registered@example.com', first_name='Customer')
+        self.user.set_password('Customer@123')
+        self.user.save()
+
+    @patch('core.emailing.urlopen')
+    def test_otp_is_sent_to_registered_address_over_https(self, urlopen):
+        urlopen.return_value.__enter__.return_value.status = 201
+        response = self.client.post('/api/auth/forgot-password/', {'email': self.user.email}, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('test_otp', response.data)
+        request = urlopen.call_args.args[0]
+        self.assertEqual(request.full_url, 'https://api.brevo.com/v3/smtp/email')
+        payload = json.loads(request.data)
+        self.user.refresh_from_db()
+        self.assertEqual(payload['to'], [{'email': self.user.email}])
+        self.assertIn(self.user.otp, payload['textContent'])
+
+    @patch('core.emailing.urlopen')
+    def test_failed_provider_request_invalidates_otp(self, urlopen):
+        urlopen.side_effect = HTTPError('https://api.brevo.com/v3/smtp/email', 403, 'Forbidden', {}, None)
+        response = self.client.post('/api/auth/forgot-password/', {'email': self.user.email}, format='json')
+        self.assertEqual(response.status_code, 500)
+        self.user.refresh_from_db()
+        self.assertIsNone(self.user.otp)
+
+    def test_status_does_not_claim_delivery_has_been_verified(self):
+        response = self.client.get('/api/auth/email-status/')
+        self.assertEqual(response.data['provider'], 'brevo')
+        self.assertTrue(response.data['configured'])
+        self.assertFalse(response.data['delivery_verified'])
+        self.assertEqual(response.data['issue'], 'not_tested')
+
     @override_settings(EMAIL_DELIVERY_ENABLED=False)
     def test_reset_refuses_to_claim_delivery_when_email_is_not_configured(self):
         response = self.client.post(
             '/api/auth/forgot-password/',
-            {'email': self.demo_user.email},
+            {'email': self.user.email},
             format='json',
         )
         self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
-        self.demo_user.refresh_from_db()
-        self.assertIsNone(self.demo_user.otp)
+        self.user.refresh_from_db()
+        self.assertIsNone(self.user.otp)

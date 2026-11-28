@@ -21,6 +21,23 @@ class EmailStatusView(APIView):
     authentication_classes = []
 
     def get(self, request):
+        provider = getattr(settings, 'EMAIL_PROVIDER', 'smtp')
+        if provider == 'brevo':
+            key_present = bool(getattr(settings, 'BREVO_API_KEY', '').strip())
+            sender_present = bool(getattr(settings, 'DEFAULT_FROM_EMAIL', '').strip())
+            enabled = bool(getattr(settings, 'EMAIL_DELIVERY_ENABLED', False))
+            configured = key_present and sender_present and enabled
+            return Response({
+                'provider': 'brevo',
+                'api_key_present': key_present,
+                'sender_present': sender_present,
+                'delivery_enabled': enabled,
+                'configured': configured,
+                'delivery_verified': False,
+                'issue': 'not_tested' if configured else 'missing_configuration',
+                'message': 'Configuration present; send a reset email to verify delivery.' if configured else 'Check the Brevo API key, sender, and delivery setting.',
+            })
+
         backend = str(getattr(settings, 'EMAIL_BACKEND', ''))
         user_present = bool(str(getattr(settings, 'EMAIL_HOST_USER', '')).strip())
         password_present = bool(str(getattr(settings, 'EMAIL_HOST_PASSWORD', '')).strip())
