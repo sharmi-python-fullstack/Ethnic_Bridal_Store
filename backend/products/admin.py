@@ -1,7 +1,14 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Category, Product, ProductImage, ProductReview, Wishlist
+from .models import Category, Product, ProductImage, ProductReview, Wishlist, SocialMediaLink
+
+
+@admin.register(SocialMediaLink)
+class SocialMediaLinkAdmin(admin.ModelAdmin):
+    list_display = ['platform', 'url', 'is_active', 'display_order']
+    list_editable = ['is_active', 'display_order']
+    ordering = ['display_order', 'platform']
 
 
 @admin.register(Category)

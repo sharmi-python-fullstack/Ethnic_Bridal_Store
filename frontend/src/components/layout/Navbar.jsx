@@ -96,7 +96,6 @@ const Navbar = () => {
             {/* Logo */}
             <Link to="/" className="flex flex-col items-center gap-0.5 group flex-shrink-0" aria-label="Shaaz Ethnicwear home">
               <BrandLogo size="sm" className="group-hover:scale-105 transition-transform" />
-              <span className="font-heading text-white text-xs sm:text-sm font-bold leading-tight whitespace-nowrap">Shaaz Ethnicwear</span>
             </Link>
 
             {/* Desktop Nav Links */}

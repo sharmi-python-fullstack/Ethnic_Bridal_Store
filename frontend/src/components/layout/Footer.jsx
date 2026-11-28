@@ -2,13 +2,22 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { FiFacebook, FiInstagram, FiTwitter, FiYoutube, FiMapPin, FiPhone, FiMail } from 'react-icons/fi'
 import { getCategories } from '../../api/products'
+import axiosInstance from '../../api/axios'
 import BrandLogo from '../common/BrandLogo'
+
+const SOCIAL_PLATFORMS = {
+  facebook: { icon: FiFacebook, label: 'Facebook' },
+  instagram: { icon: FiInstagram, label: 'Instagram' },
+  x: { icon: FiTwitter, label: 'X' },
+  youtube: { icon: FiYoutube, label: 'YouTube' },
+}
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
   const [footerCategories, setFooterCategories] = useState([])
+  const [socialLinks, setSocialLinks] = useState([])
 
   useEffect(() => {
     getCategories()
@@ -17,6 +26,9 @@ const Footer = () => {
         setFooterCategories(data.filter((c) => c.is_active !== false).slice(0, 8))
       })
       .catch(() => {})
+    axiosInstance.get('/api/social-links/')
+      .then((response) => setSocialLinks(Array.isArray(response.data) ? response.data : []))
+      .catch(() => setSocialLinks([]))
   }, [])
 
   const handleSubscribe = (event) => {
@@ -33,9 +45,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand Section */}
           <div className="lg:col-span-1">
-            <Link to="/" className="flex flex-col items-start gap-1 mb-4 w-fit" aria-label="Shaaz Ethnicwear home">
+            <Link to="/" className="flex flex-col items-center gap-1 mb-4 w-fit" aria-label="Shaaz Ethnicwear home">
               <BrandLogo size="md" />
-              <div className="font-heading text-xl font-bold text-white leading-tight">Shaaz Ethnicwear</div>
               <div className="text-brand-gold text-xs tracking-widest uppercase">The Complete Bridal Store</div>
             </Link>
             <p className="text-white/70 text-sm leading-relaxed mb-5">
@@ -44,15 +55,14 @@ const Footer = () => {
             </p>
             {/* Social Icons */}
             <div className="flex items-center gap-3">
-              {[
-                { icon: FiFacebook, href: 'https://www.facebook.com/', label: 'Facebook' },
-                { icon: FiInstagram, href: 'https://www.instagram.com/', label: 'Instagram' },
-                { icon: FiTwitter, href: 'https://x.com/', label: 'X' },
-                { icon: FiYoutube, href: 'https://www.youtube.com/', label: 'YouTube' },
-              ].map(({ icon: Icon, href, label }) => (
+              {socialLinks.map(({ platform, url }) => {
+                const item = SOCIAL_PLATFORMS[platform]
+                if (!item || !url.startsWith('https://')) return null
+                const { icon: Icon, label } = item
+                return (
                 <a
-                  key={label}
-                  href={href}
+                  key={platform}
+                  href={url}
                   target="_blank"
                   rel="noreferrer"
                   aria-label={label}
@@ -60,7 +70,7 @@ const Footer = () => {
                 >
                   <Icon size={16} />
                 </a>
-              ))}
+              )})}
             </div>
           </div>
 

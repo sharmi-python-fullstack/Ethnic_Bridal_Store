@@ -1,7 +1,34 @@
 from django.db import models
 from django.utils.text import slugify
 from django.conf import settings
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, URLValidator
+
+
+class StoredMedia(models.Model):
+    """Uploaded image bytes persisted in the configured Django database."""
+    name = models.CharField(max_length=500, unique=True)
+    content = models.BinaryField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class SocialMediaLink(models.Model):
+    """Store-owned profile links displayed in the storefront footer."""
+    PLATFORM_CHOICES = [
+        ('facebook', 'Facebook'), ('instagram', 'Instagram'),
+        ('x', 'X'), ('youtube', 'YouTube'),
+    ]
+    platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES, unique=True)
+    url = models.URLField(max_length=500, validators=[URLValidator(schemes=['https'])], help_text='Full HTTPS link to the store profile.')
+    is_active = models.BooleanField(default=True, help_text='Only active links appear in the footer.')
+    display_order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ['display_order', 'platform']
+        verbose_name = 'Social media link'
+        verbose_name_plural = 'Social media links'
+
+    def __str__(self):
+        return self.get_platform_display()
 
 
 class Category(models.Model):

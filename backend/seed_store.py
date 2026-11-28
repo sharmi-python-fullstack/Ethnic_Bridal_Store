@@ -64,7 +64,7 @@ def run():
     cat_map = {}
     for item in categories:
         fields = item['fields']
-        cat, _ = Category.objects.update_or_create(
+        cat, _ = Category.objects.get_or_create(
             slug=fields['slug'],
             defaults={
                 'name': fields['name'],
@@ -80,7 +80,7 @@ def run():
     for item in products:
         fields = item['fields']
         cat = cat_map.get(fields.get('category'))
-        prod, _ = Product.objects.update_or_create(
+        prod, _ = Product.objects.get_or_create(
             slug=fields['slug'],
             defaults={
                 'name': fields['name'],
@@ -108,11 +108,12 @@ def run():
             prod = Product.objects.filter(id=fields.get('product')).first()
         if prod:
             img_path = fields['image']
-            ProductImage.objects.update_or_create(
+            ProductImage.objects.get_or_create(
                 product=prod,
                 image=img_path,
                 defaults={
-                    'is_primary': fields.get('is_primary', False),
+                    # Never replace a primary photo chosen by the store admin.
+                    'is_primary': fields.get('is_primary', False) and not prod.images.filter(is_primary=True).exists(),
                     'alt_text': fields.get('alt_text', prod.name),
                 }
             )

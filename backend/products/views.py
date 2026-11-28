@@ -5,9 +5,11 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
+from django.db import transaction
 from django.db.models import Avg, Count, Q
+from rest_framework import serializers
 
-from .models import Category, Product, ProductReview, Wishlist
+from .models import Category, Product, ProductImage, ProductReview, Wishlist
 from .serializers import (
     CategorySerializer, ProductListSerializer, ProductDetailSerializer,
     ProductReviewSerializer, CreateReviewSerializer, WishlistSerializer,
@@ -230,12 +232,24 @@ class AdminProductListView(generics.ListCreateAPIView):
     def get_queryset(self):
         return Product.objects.all().select_related('category').prefetch_related('images')
 
+    @transaction.atomic
+    def perform_create(self, serializer):
+        files = validated_product_images(self.request)
+        product = serializer.save()
+        save_product_images(product, files)
+
 
 class AdminProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     """Admin: Retrieve, update or delete a product."""
     permission_classes = [IsAdminUser]
     serializer_class = AdminProductSerializer
     queryset = Product.objects.all()
+
+    @transaction.atomic
+    def perform_update(self, serializer):
+        files = validated_product_images(self.request)
+        product = serializer.save()
+        save_product_images(product, files)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -244,6 +258,26 @@ class AdminProductDetailView(generics.RetrieveUpdateDestroyAPIView):
         return Response(
             {'message': f'Product "{name}" deleted successfully.'},
             status=status.HTTP_200_OK
+        )
+
+
+def validated_product_images(request):
+    """Accept the numbered image files submitted by the custom admin forms."""
+    files = []
+    image_field = serializers.ImageField()
+    for index in range(6):
+        uploaded = request.FILES.get(f'image_{index}')
+        if uploaded:
+            files.append(image_field.run_validation(uploaded))
+    return files
+
+
+def save_product_images(product, files):
+    # The first newly uploaded photo becomes the storefront's primary image.
+    for index, uploaded in enumerate(files):
+        ProductImage.objects.create(
+            product=product, image=uploaded, is_primary=(index == 0),
+            alt_text=product.name,
         )
 
 

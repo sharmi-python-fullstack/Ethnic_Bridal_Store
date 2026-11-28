@@ -194,6 +194,12 @@ The password-reset page sends a six-digit OTP only after a real email provider i
 
 The application also sends non-blocking welcome, order-confirmation, payment-confirmation, cancellation, and admin status-update emails when SMTP is ready.
 
+### Persistent product and category images
+
+New images uploaded through Django admin or the store's admin dashboard are stored in the configured database, so they survive Render service restarts and deploys. Existing images bundled in `backend/media/` continue to work. The first new image added on the product create/edit page becomes the primary image. Uploaded images consume database storage, so monitor the database plan's capacity and backups.
+
+Apply migrations locally with `python manage.py migrate`. The Render build script runs migrations on deploy. After the new version is live, re-upload any missing old images: image files previously lost from Render's temporary filesystem cannot be recovered from database paths alone. Check that the backend has its persistent `DATABASE_URL` configured; a local SQLite file on Render's temporary filesystem is not durable.
+
 ---
 
 ## 📦 Features Checklist & Architecture

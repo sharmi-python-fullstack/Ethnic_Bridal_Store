@@ -48,7 +48,7 @@ export default function ResetPassword() {
     <div className="min-h-screen bg-brand-cream flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <BrandLogo size="lg" className="mx-auto mb-3" />
+          <BrandLogo size="lg" className="brand-logo--dark mx-auto mb-3" />
           <h1 className="font-heading text-3xl font-bold text-brand-charcoal">Reset Password</h1>
           <p className="text-gray-500 mt-2">Enter the OTP from your email and choose a new password.</p>
         </div>

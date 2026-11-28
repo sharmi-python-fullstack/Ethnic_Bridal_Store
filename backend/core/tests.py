@@ -3,10 +3,22 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from orders.models import Order, OrderTracking
-from products.models import Category, Product
+from products.models import Category, Product, SocialMediaLink
 
 
 User = get_user_model()
+
+
+class SocialMediaLinkTests(APITestCase):
+    def test_only_active_links_are_public_and_updates_are_not(self):
+        SocialMediaLink.objects.filter(platform='instagram').update(url='https://www.instagram.com/shaaz/', is_active=True)
+        SocialMediaLink.objects.filter(platform='facebook').update(is_active=False)
+
+        response = self.client.get('/api/social-links/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn({'platform': 'instagram', 'url': 'https://www.instagram.com/shaaz/'}, response.data)
+        self.assertNotIn('facebook', [link['platform'] for link in response.data])
+        self.assertEqual(self.client.post('/api/social-links/', {}, format='json').status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class StoreChatTests(APITestCase):

@@ -177,6 +177,7 @@ class AdminProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+        extra_kwargs = {'slug': {'required': False, 'allow_blank': True}}
 
 
 class AdminCategorySerializer(serializers.ModelSerializer):

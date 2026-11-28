@@ -13,6 +13,8 @@ from django.views.static import serve
 
 from .admin_views import AdminDashboardView, AdminUserListView, AdminUserDetailView
 from .chatbot_views import StoreChatView
+from .social_views import SocialMediaLinksView
+from .media_views import database_media
 from orders.views import (
     AdminOrderListView, AdminOrderDetailView,
     AdminOrderTrackingListCreateView, AdminOrderTrackingDetailView,
@@ -58,6 +60,8 @@ urlpatterns = [
 
     # Store-only support assistant
     path('api/chat/', StoreChatView.as_view(), name='store-chat'),
+    path('api/social-links/', SocialMediaLinksView.as_view(), name='social-links'),
+    path('api/media/<path:name>', database_media, name='database-media'),
 
     # Cart & orders
     path('api/orders/', include('orders.urls')),
