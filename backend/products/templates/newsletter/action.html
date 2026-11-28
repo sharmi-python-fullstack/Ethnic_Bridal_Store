@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer"><title>{{ title }} | Shaaz Ethnicwear</title>
+  <style>
+    body { margin: 0; padding: 2rem 1rem; background: #fff8f0; color: #261a17; font: 16px/1.6 system-ui, sans-serif; }
+    main { max-width: 32rem; margin: 4rem auto; padding: 2rem; border-radius: 1rem; background: white; box-shadow: 0 8px 28px #0002; }
+    h1 { font-family: Georgia, serif; color: #9b1313; }
+    button { background: #9b1313; color: white; border: 0; padding: .85rem 1.2rem; border-radius: .5rem; font: inherit; cursor: pointer; }
+  </style>
+</head>
+<body><main>
+  <p>Shaaz Ethnicwear</p><h1>{{ title }}</h1>
+  {% if completed %}<p role="status">{{ success }}</p><p>You may close this page.</p>
+  {% else %}<p>{{ description }}</p><form method="post">{% csrf_token %}<button type="submit">{{ button }}</button></form>{% endif %}
+</main></body></html>

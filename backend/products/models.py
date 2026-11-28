@@ -2,6 +2,43 @@ from django.db import models
 from django.utils.text import slugify
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator, URLValidator
+import uuid
+
+
+class NewsletterSubscriber(models.Model):
+    email = models.EmailField(unique=True)
+    is_confirmed = models.BooleanField(default=False)
+    confirmation_token = models.UUIDField(default=uuid.uuid4, unique=True, null=True, blank=True)
+    unsubscribe_token = models.UUIDField(default=uuid.uuid4, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    confirmed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.email
+
+
+class NewsletterIssue(models.Model):
+    subject = models.CharField(max_length=200)
+    body = models.TextField(help_text='Plain-text newsletter content.')
+    created_at = models.DateTimeField(auto_now_add=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    is_sending = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.subject
+
+
+class NewsletterDelivery(models.Model):
+    issue = models.ForeignKey(NewsletterIssue, on_delete=models.CASCADE, related_name='deliveries')
+    subscriber = models.ForeignKey(NewsletterSubscriber, on_delete=models.CASCADE, related_name='deliveries')
+    status = models.CharField(max_length=12, choices=[('pending', 'Pending'), ('sending', 'Sending'), ('sent', 'Sent'), ('failed', 'Failed'), ('skipped', 'Skipped')], default='pending')
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['issue', 'subscriber'], name='unique_newsletter_delivery')]
 
 
 class StoredMedia(models.Model):

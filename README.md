@@ -209,6 +209,12 @@ New images uploaded through Django admin or the store's admin dashboard are stor
 
 Apply migrations locally with `python manage.py migrate`. The Render build script runs migrations on deploy. After the new version is live, re-upload any missing old images: image files previously lost from Render's temporary filesystem cannot be recovered from database paths alone. Check that the backend has its persistent `DATABASE_URL` configured; a local SQLite file on Render's temporary filesystem is not durable.
 
+### Newsletter
+
+The footer sends a confirmation email to each subscriber. Recipients must open the link and press the confirmation button before being included in newsletters. Opening a confirmation or unsubscribe link alone does not change the subscription; each page asks for confirmation. Subscribers can unsubscribe using the link included in every newsletter.
+
+In Django admin, view confirmed subscribers under **Products → Newsletter subscribers**. Create a plain-text draft under **Products → Newsletter issues**, save it, then select **Review and send a batch**. The first confirmed send snapshots the subscriber list and locks the issue's subject and body. Each explicit confirmation sends at most 25 emails; return to the review page to see pending, accepted, failed, skipped, or uncertain deliveries and send another batch if necessary. Accepted means the email provider accepted the request, not that the message reached the inbox. Failed or uncertain deliveries are not retried automatically to avoid duplicate emails. Check Brevo's current plan limits and delivery logs before sending. No campaign is sent automatically on deployment or subscription.
+
 ---
 
 ## 📦 Features Checklist & Architecture

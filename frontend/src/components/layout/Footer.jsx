@@ -16,6 +16,8 @@ const Footer = () => {
   const currentYear = new Date().getFullYear()
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
+  const [subscribing, setSubscribing] = useState(false)
+  const [subscribeError, setSubscribeError] = useState('')
   const [footerCategories, setFooterCategories] = useState([])
   const [socialLinks, setSocialLinks] = useState([])
 
@@ -31,11 +33,21 @@ const Footer = () => {
       .catch(() => setSocialLinks([]))
   }, [])
 
-  const handleSubscribe = (event) => {
+  const handleSubscribe = async (event) => {
     event.preventDefault()
     if (!email.trim()) return
-    setSubscribed(true)
-    setEmail('')
+    setSubscribeError('')
+    setSubscribed(false)
+    setSubscribing(true)
+    try {
+      await axiosInstance.post('/api/newsletter/subscribe/', { email: email.trim() })
+      setSubscribed(true)
+      setEmail('')
+    } catch (error) {
+      setSubscribeError(error?.response?.data?.error || 'Unable to subscribe right now. Please try again.')
+    } finally {
+      setSubscribing(false)
+    }
   }
 
   return (
@@ -158,11 +170,13 @@ const Footer = () => {
                   aria-label="Email address for newsletter"
                   className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white placeholder-white/50 focus:outline-none focus:border-brand-gold"
                 />
-                <button type="submit" className="bg-brand-gold text-brand-charcoal px-3 py-2 rounded-lg text-sm font-semibold hover:bg-yellow-400 transition-all">
-                  Go
+                <button type="submit" disabled={subscribing} className="bg-brand-gold text-brand-charcoal px-3 py-2 rounded-lg text-sm font-semibold hover:bg-yellow-400 transition-all disabled:opacity-60">
+                  {subscribing ? 'Sending…' : 'Go'}
                 </button>
               </form>
-              {subscribed && <p className="text-brand-gold text-xs mt-2" role="status">Thanks — you’re on the list!</p>}
+              <p className="text-white/70 text-xs mt-2">Receive Shaaz news and offers. You can unsubscribe at any time.</p>
+              {subscribed && <p className="text-brand-gold text-xs mt-2" role="status">Please check your email for a confirmation link. If already subscribed, no action is needed.</p>}
+              {subscribeError && <p className="text-white text-xs mt-2" role="alert">{subscribeError}</p>}
             </div>
           </div>
         </div>

@@ -15,6 +15,7 @@ from .admin_views import AdminDashboardView, AdminUserListView, AdminUserDetailV
 from .chatbot_views import StoreChatView
 from .social_views import SocialMediaLinksView
 from .media_views import database_media
+from .newsletter_views import NewsletterSubscribeView, newsletter_confirmation, newsletter_unsubscribe
 from orders.views import (
     AdminOrderListView, AdminOrderDetailView,
     AdminOrderTrackingListCreateView, AdminOrderTrackingDetailView,
@@ -62,6 +63,9 @@ urlpatterns = [
     path('api/chat/', StoreChatView.as_view(), name='store-chat'),
     path('api/social-links/', SocialMediaLinksView.as_view(), name='social-links'),
     path('api/media/<path:name>', database_media, name='database-media'),
+    path('api/newsletter/subscribe/', NewsletterSubscribeView.as_view(), name='newsletter-subscribe'),
+    path('newsletter/confirm/<uuid:token>/', newsletter_confirmation, name='newsletter-confirm'),
+    path('newsletter/unsubscribe/<uuid:token>/', newsletter_unsubscribe, name='newsletter-unsubscribe'),
 
     # Cart & orders
     path('api/orders/', include('orders.urls')),

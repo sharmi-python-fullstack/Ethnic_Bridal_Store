@@ -10,6 +10,7 @@ from django.db.models import Q
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from orders.models import Order
 from products.models import Product
@@ -34,7 +35,7 @@ STORE_TERMS = {
 
 class StoreChatView(APIView):
     permission_classes = [AllowAny]
-    authentication_classes = []
+    authentication_classes = [JWTAuthentication]
 
     def post(self, request):
         message = str(request.data.get('message', '')).strip()

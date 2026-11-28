@@ -1,0 +1,15 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>Review newsletter</h1>
+<h2>{{ issue.subject }}</h2>
+<p style="white-space: pre-wrap">{{ issue.body }}</p>
+{% if issue.started_at %}
+  <p>Pending: {{ counts.pending }} · Accepted: {{ counts.sent }} · Failed: {{ counts.failed }} · Skipped: {{ counts.skipped }} · Uncertain/in progress: {{ counts.sending }}</p>
+{% else %}
+  <p>Currently confirmed subscribers: {{ subscriber_count }}. The recipient list is fixed when the first batch starts.</p>
+{% endif %}
+<p>Each click sends up to 25 emails. Only confirmed subscribers are eligible; each email includes an unsubscribe link. Check your Brevo plan limits before sending.</p>
+{% if issue.is_sending %}<p>A batch is in progress. Do not submit another request.</p>
+{% else %}<form method="post">{% csrf_token %}<button type="submit">Confirm and send next batch</button></form>{% endif %}
+<p><a href="{% url 'admin:products_newsletterissue_change' issue.id %}">Back to newsletter</a></p>
+{% endblock %}

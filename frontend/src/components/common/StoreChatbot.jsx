@@ -31,7 +31,7 @@ export default function StoreChatbot() {
     setLoading(true)
     try {
       const response = await axiosInstance.post('/api/chat/', { message: cleanQuestion })
-      setMessages((current) => [...current, { role: 'assistant', ...response.data }])
+      setMessages((current) => [...current, { role: 'assistant', ...response.data, text: response.data.reply || 'I could not find an answer. Please ask another store-related question.' }])
     } catch (error) {
       const detail = error?.response?.data?.error || 'I could not reach the Shaaz support service. Please try again.'
       setMessages((current) => [...current, { role: 'assistant', text: detail }])
