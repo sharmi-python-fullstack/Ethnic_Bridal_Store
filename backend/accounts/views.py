@@ -1,4 +1,3 @@
-from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework import status, generics
 from rest_framework.response import Response
@@ -14,6 +13,7 @@ from .serializers import (
     ForgotPasswordSerializer, ResetPasswordSerializer,
     UserAddressSerializer,
 )
+from core.emailing import email_delivery_ready, send_store_email
 
 
 class RegisterView(APIView):
@@ -26,22 +26,18 @@ class RegisterView(APIView):
         if serializer.is_valid():
             user = serializer.save()
             refresh = RefreshToken.for_user(user)
-            # Send welcome email (console backend in dev)
-            try:
-                send_mail(
-                    subject='Welcome to Shaaz Ethnicwear!',
-                    message=(
-                        f'Dear {user.get_full_name()},\n\n'
-                        'Thank you for registering at Shaaz Ethnicwear - The Complete Bridal Store.\n\n'
-                        'Explore our exquisite collection of bridal lehengas, sarees, and ethnic wear.\n\n'
-                        'Happy Shopping!\nTeam Shaaz Ethnicwear'
-                    ),
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[user.email],
-                    fail_silently=True,
-                )
-            except Exception:
-                pass  # Don't fail registration if email fails
+            # Welcome email is a convenience notification; registration stays
+            # successful if an email provider is temporarily unavailable.
+            send_store_email(
+                subject='Welcome to Shaaz Ethnicwear!',
+                recipient=user.email,
+                text_body=(
+                    f'Dear {user.get_full_name()},\n\n'
+                    'Thank you for registering at Shaaz Ethnicwear - The Complete Bridal Store.\n\n'
+                    'Explore our exquisite collection of bridal lehengas, sarees, and ethnic wear.\n\n'
+                    'Happy Shopping!\nTeam Shaaz Ethnicwear'
+                ),
+            )
 
             return Response({
                 'message': 'Registration successful! Welcome to Shaaz Ethnicwear.',
@@ -154,12 +150,9 @@ class ForgotPasswordView(APIView):
         if serializer.is_valid():
             user = serializer.user
 
-            otp = user.generate_otp()
-
             if settings.PASSWORD_RESET_TEST_MODE:
-                # In test/demo mode, no real email is sent. Return the OTP in
-                # the API response so the full reset flow can be tested end-to-end
-                # for any registered customer without needing SMTP configured.
+                # This branch is intentionally for automated local tests only.
+                otp = user.generate_otp()
                 return Response(
                     {
                         'message': 'Test OTP generated. No real email was sent.',
@@ -171,21 +164,33 @@ class ForgotPasswordView(APIView):
                     status=status.HTTP_200_OK,
                 )
 
+            if not email_delivery_ready():
+                return Response(
+                    {
+                        'error': (
+                            'Password reset email is not configured yet. '
+                            'Please contact the store or try again later.'
+                        )
+                    },
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                )
+
+            otp = user.generate_otp()
             try:
-                send_mail(
+                send_store_email(
                     subject='Password Reset OTP - Shaaz Ethnicwear',
-                    message=(
+                    recipient=user.email,
+                    text_body=(
                         f'Dear {user.get_full_name()},\n\n'
                         f'Your OTP for password reset is: {otp}\n\n'
                         'This OTP is valid for 10 minutes.\n'
                         'If you did not request this, please ignore this email.\n\n'
                         'Team Shaaz Ethnicwear'
                     ),
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[user.email],
-                    fail_silently=False,
+                    strict=True,
                 )
-            except Exception as e:
+            except Exception:
+                user.clear_otp()
                 return Response(
                     {'error': 'Failed to send OTP. Please try again.'},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR

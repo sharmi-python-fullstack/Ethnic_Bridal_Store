@@ -12,7 +12,11 @@ from django.http import JsonResponse
 from django.views.static import serve
 
 from .admin_views import AdminDashboardView, AdminUserListView, AdminUserDetailView
-from orders.views import AdminOrderListView, AdminOrderDetailView
+from .chatbot_views import StoreChatView
+from orders.views import (
+    AdminOrderListView, AdminOrderDetailView,
+    AdminOrderTrackingListCreateView, AdminOrderTrackingDetailView,
+)
 from products.views import (
     AdminProductListView, AdminProductDetailView,
     AdminCategoryListView, AdminCategoryDetailView,
@@ -52,6 +56,9 @@ urlpatterns = [
     # Products, categories, wishlist, reviews
     path('api/products/', include('products.urls')),
 
+    # Store-only support assistant
+    path('api/chat/', StoreChatView.as_view(), name='store-chat'),
+
     # Cart & orders
     path('api/orders/', include('orders.urls')),
 
@@ -69,6 +76,8 @@ urlpatterns = [
     # Admin orders
     path('api/admin/orders/', AdminOrderListView.as_view(), name='admin-orders'),
     path('api/admin/orders/<int:pk>/', AdminOrderDetailView.as_view(), name='admin-order'),
+    path('api/admin/orders/<int:pk>/tracking/', AdminOrderTrackingListCreateView.as_view(), name='admin-order-tracking'),
+    path('api/admin/orders/<int:pk>/tracking/<int:tracking_id>/', AdminOrderTrackingDetailView.as_view(), name='admin-order-tracking-detail'),
 
     # Admin products & categories
     path('api/admin/products/', AdminProductListView.as_view(), name='admin-product-list'),

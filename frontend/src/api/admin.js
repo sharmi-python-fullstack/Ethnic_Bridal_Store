@@ -43,6 +43,15 @@ export const getAdminOrders = (params = {}) =>
 export const updateOrderStatus = (orderId, status) =>
   axiosInstance.patch(`/api/admin/orders/${orderId}/`, { status })
 
+export const createOrderTracking = (orderId, data) =>
+  axiosInstance.post(`/api/admin/orders/${orderId}/tracking/`, data)
+
+export const updateOrderTracking = (orderId, trackingId, data) =>
+  axiosInstance.patch(`/api/admin/orders/${orderId}/tracking/${trackingId}/`, data)
+
+export const deleteOrderTracking = (orderId, trackingId) =>
+  axiosInstance.delete(`/api/admin/orders/${orderId}/tracking/${trackingId}/`)
+
 // Users
 export const getAdminUsers = (params = {}) =>
   axiosInstance.get('/api/admin/users/', { params })

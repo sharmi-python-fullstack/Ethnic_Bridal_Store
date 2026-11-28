@@ -44,12 +44,12 @@ services:
         sync: false
       - key: DEFAULT_FROM_EMAIL
         sync: false
-      # Public project demo: show an OTP only for the dedicated demo customer.
-      # Switch this off before enabling real password-reset email delivery.
+      # Real password-reset codes are delivered only by SMTP, never exposed in
+      # an API response. Add sender credentials securely in the Render panel.
       - key: PASSWORD_RESET_TEST_MODE
+        value: "False"
+      - key: EMAIL_DELIVERY_ENABLED
         value: "True"
-      - key: PASSWORD_RESET_TEST_EMAIL
-        value: "customer@shaaz.com"
       - key: CORS_ALLOWED_ORIGINS
         value: "https://shaaz-ethnicwear.onrender.com,http://localhost:5173"
       - key: CSRF_TRUSTED_ORIGINS

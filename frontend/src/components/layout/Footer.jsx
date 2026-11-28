@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { GiCrown } from 'react-icons/gi'
 import { FiFacebook, FiInstagram, FiTwitter, FiYoutube, FiMapPin, FiPhone, FiMail } from 'react-icons/fi'
 import { getCategories } from '../../api/products'
+import BrandLogo from '../common/BrandLogo'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
@@ -33,14 +33,10 @@ const Footer = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand Section */}
           <div className="lg:col-span-1">
-            <Link to="/" className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-brand-gold flex items-center justify-center">
-                <GiCrown className="text-brand-deep-red text-2xl" />
-              </div>
-              <div>
-                <div className="font-heading text-xl font-bold text-white leading-tight">Shaaz Ethnicwear</div>
-                <div className="text-brand-gold text-xs tracking-widest uppercase">The Complete Bridal Store</div>
-              </div>
+            <Link to="/" className="flex flex-col items-start gap-1 mb-4 w-fit" aria-label="Shaaz Ethnicwear home">
+              <BrandLogo size="md" />
+              <div className="font-heading text-xl font-bold text-white leading-tight">Shaaz Ethnicwear</div>
+              <div className="text-brand-gold text-xs tracking-widest uppercase">The Complete Bridal Store</div>
             </Link>
             <p className="text-white/70 text-sm leading-relaxed mb-5">
               Discover exquisite bridal collections crafted with love and tradition. 
@@ -79,6 +75,7 @@ const Footer = () => {
                 { label: 'Sale Items', to: '/products?has_discount=true' },
                 { label: 'My Orders', to: '/orders' },
                 { label: 'My Wishlist', to: '/wishlist' },
+                { label: 'FAQs', to: '/faq' },
               ].map(({ label, to }) => (
                 <li key={label}>
                   <Link

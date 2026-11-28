@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { FiArrowLeft, FiMapPin, FiPackage } from 'react-icons/fi'
-import { updateOrderStatus } from '../../api/admin'
+import { FiArrowLeft, FiEdit2, FiMapPin, FiPackage, FiPlus, FiTrash2, FiX } from 'react-icons/fi'
+import { createOrderTracking, deleteOrderTracking, updateOrderTracking } from '../../api/admin'
 import axiosInstance from '../../api/axios'
 import { formatPrice, formatDate, formatDateTime, getStatusColor, getStatusDotColor } from '../../utils/helpers'
 import AdminLayout from '../../components/admin/AdminLayout'
@@ -17,6 +17,8 @@ export default function AdminOrderDetail() {
   const [updating, setUpdating] = useState(false)
   const [newStatus, setNewStatus] = useState('')
   const [newPayStatus, setNewPayStatus] = useState('')
+  const [trackingForm, setTrackingForm] = useState({ status: '', description: '', sync_order_status: true })
+  const [editingTrackingId, setEditingTrackingId] = useState(null)
 
   const load = () => {
     axiosInstance.get(`/api/admin/orders/${id}/`)
@@ -24,6 +26,7 @@ export default function AdminOrderDetail() {
         setOrder(r.data)
         setNewStatus(r.data.status)
         setNewPayStatus(r.data.payment_status)
+        if (!editingTrackingId) setTrackingForm((current) => ({ ...current, status: current.status || r.data.status }))
       })
       .catch(() => {})
       .finally(() => setLoading(false))
@@ -34,12 +37,63 @@ export default function AdminOrderDetail() {
   const handleUpdate = async () => {
     setUpdating(true)
     try {
-      await updateOrderStatus(id, newStatus)
-      await axiosInstance.patch(`/api/admin/orders/${id}/`, { payment_status: newPayStatus })
+      await axiosInstance.patch(`/api/admin/orders/${id}/`, { status: newStatus, payment_status: newPayStatus })
       toast.success('Order updated!')
       load()
     } catch {
       toast.error('Failed to update')
+    } finally {
+      setUpdating(false)
+    }
+  }
+
+  const resetTrackingForm = () => {
+    setEditingTrackingId(null)
+    setTrackingForm({ status: order?.status || 'PENDING', description: '', sync_order_status: true })
+  }
+
+  const handleTrackingSubmit = async (event) => {
+    event.preventDefault()
+    if (!trackingForm.description.trim()) {
+      toast.error('Please enter a tracking message for the customer.')
+      return
+    }
+    setUpdating(true)
+    try {
+      if (editingTrackingId) {
+        await updateOrderTracking(id, editingTrackingId, {
+          status: trackingForm.status,
+          description: trackingForm.description,
+        })
+        toast.success('Tracking update edited!')
+      } else {
+        await createOrderTracking(id, trackingForm)
+        toast.success('Tracking update added!')
+      }
+      resetTrackingForm()
+      load()
+    } catch (error) {
+      toast.error(error?.response?.data?.description?.[0] || 'Unable to save the tracking update.')
+    } finally {
+      setUpdating(false)
+    }
+  }
+
+  const editTracking = (tracking) => {
+    setEditingTrackingId(tracking.id)
+    setTrackingForm({ status: tracking.status, description: tracking.description, sync_order_status: false })
+  }
+
+  const removeTracking = async (trackingId) => {
+    if (!window.confirm('Remove this tracking update? This cannot be undone.')) return
+    setUpdating(true)
+    try {
+      await deleteOrderTracking(id, trackingId)
+      toast.success('Tracking update removed.')
+      if (editingTrackingId === trackingId) resetTrackingForm()
+      load()
+    } catch {
+      toast.error('Unable to remove the tracking update.')
     } finally {
       setUpdating(false)
     }
@@ -107,6 +161,45 @@ export default function AdminOrderDetail() {
         </div>
       </div>
 
+      {/* Customer-visible tracking controls */}
+      <div className="bg-white rounded-2xl shadow-card p-5 mb-5">
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div>
+            <h3 className="font-semibold text-brand-charcoal">Customer Tracking Updates</h3>
+            <p className="text-xs text-gray-500 mt-1">Add or correct the messages customers see in their tracking timeline.</p>
+          </div>
+          {editingTrackingId && (
+            <button type="button" onClick={resetTrackingForm} className="text-xs font-semibold text-gray-500 hover:text-brand-deep-red inline-flex items-center gap-1">
+              <FiX /> Cancel edit
+            </button>
+          )}
+        </div>
+        <form onSubmit={handleTrackingSubmit} className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-3">
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">Tracking status</label>
+            <select value={trackingForm.status} onChange={(event) => setTrackingForm({ ...trackingForm, status: event.target.value })} className="input-field text-sm" required>
+              {STATUSES.map((status) => <option key={status} value={status}>{status}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">Message for customer</label>
+            <input value={trackingForm.description} onChange={(event) => setTrackingForm({ ...trackingForm, description: event.target.value })} className="input-field text-sm" placeholder="Example: Parcel handed to BlueDart, tracking ID will follow." maxLength={600} required />
+          </div>
+          {!editingTrackingId && (
+            <label className="md:col-span-2 inline-flex items-center gap-2 text-xs text-gray-600 cursor-pointer w-fit">
+              <input type="checkbox" checked={trackingForm.sync_order_status} onChange={(event) => setTrackingForm({ ...trackingForm, sync_order_status: event.target.checked })} className="accent-brand-deep-red" />
+              Update the current order status to match this tracking event and email the customer
+            </label>
+          )}
+          <div className="md:col-span-2 flex justify-end">
+            <button type="submit" disabled={updating} className="btn-primary text-sm inline-flex items-center gap-2">
+              {editingTrackingId ? <FiEdit2 /> : <FiPlus />}
+              {updating ? 'Saving…' : editingTrackingId ? 'Save Tracking Edit' : 'Add Tracking Update'}
+            </button>
+          </div>
+        </form>
+      </div>
+
       {/* Shipping Address */}
       {order.shipping_address && (
         <div className="bg-white rounded-2xl shadow-card p-5 mb-5">
@@ -139,22 +232,26 @@ export default function AdminOrderDetail() {
       </div>
 
       {/* Tracking */}
-      {order.tracking_history?.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-card p-5">
-          <h3 className="font-semibold text-brand-charcoal mb-4">Tracking History</h3>
+      <div className="bg-white rounded-2xl shadow-card p-5">
+        <h3 className="font-semibold text-brand-charcoal mb-4">Tracking History</h3>
+        {order.tracking_history?.length > 0 ? (
           <div className="space-y-3">
             {order.tracking_history.map((t) => (
-              <div key={t.id} className="flex gap-3">
+              <div key={t.id} className="flex gap-3 group">
                 <div className={`w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 ${getStatusDotColor(t.status)}`} />
-                <div>
+                <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-brand-charcoal">{t.description}</p>
                   <p className="text-xs text-gray-400">{formatDateTime(t.timestamp)} · {t.updated_by_name}</p>
+                </div>
+                <div className="flex items-start gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                  <button type="button" onClick={() => editTracking(t)} className="p-1.5 text-gray-500 hover:text-brand-deep-red hover:bg-red-50 rounded" aria-label="Edit tracking update"><FiEdit2 size={15} /></button>
+                  <button type="button" onClick={() => removeTracking(t.id)} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded" aria-label="Delete tracking update"><FiTrash2 size={15} /></button>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      )}
+        ) : <p className="text-sm text-gray-500">No tracking events yet. Add the first update above.</p>}
+      </div>
     </AdminLayout>
   )
 }

@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { GiCrown } from 'react-icons/gi'
 import { resetPasswordApi } from '../api/auth'
 import { getErrorMessage } from '../utils/helpers'
 import toast from 'react-hot-toast'
+import BrandLogo from '../components/common/BrandLogo'
 
 export default function ResetPassword() {
   const navigate = useNavigate()
@@ -12,7 +12,7 @@ export default function ResetPassword() {
   const resetState = location.state || {}
   const [form, setForm] = useState({
     email: resetState.email || searchParams.get('email') || '',
-    otp: resetState.testOtp || '',
+    otp: '',
     new_password: '',
     confirm_password: '',
   })
@@ -48,19 +48,12 @@ export default function ResetPassword() {
     <div className="min-h-screen bg-brand-cream flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-full bg-brand-deep-red flex items-center justify-center mx-auto mb-4">
-            <GiCrown className="text-brand-gold text-3xl" />
-          </div>
+          <BrandLogo size="lg" className="mx-auto mb-3" />
           <h1 className="font-heading text-3xl font-bold text-brand-charcoal">Reset Password</h1>
-          <p className="text-gray-500 mt-2">Enter your test OTP and choose a new password</p>
+          <p className="text-gray-500 mt-2">Enter the OTP from your email and choose a new password.</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-card p-8">
-          {resetState.testOtp && (
-            <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-4 py-3 text-sm mb-5">
-              Test mode is active. The OTP from the previous page has been filled in for you.
-            </div>
-          )}
           <form onSubmit={handleSubmit} className="space-y-4">
             {[
               { name: 'email', label: 'Email Address', type: 'email', placeholder: 'your@email.com' },

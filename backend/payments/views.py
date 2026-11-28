@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 
 from orders.models import Order, OrderTracking
+from core.emailing import send_order_update_email
 
 logger = logging.getLogger(__name__)
 
@@ -227,6 +228,11 @@ class VerifyPaymentView(APIView):
             status='CONFIRMED',
             description=f'Payment of ₹{order.total} received via Razorpay ({razorpay_payment_id}). Order confirmed.',
             updated_by=None,
+        )
+        send_order_update_email(
+            order,
+            'Your Razorpay payment was received and your order is confirmed. We will update you again when it is packed and dispatched.',
+            subject_prefix='Payment received',
         )
 
         return Response({

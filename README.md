@@ -94,7 +94,7 @@ Frontend Web App will be active at: **`http://localhost:5173`**
 | Role | Email | Password | Access Area |
 | :--- | :--- | :--- | :--- |
 | **Store Administrator** | `admin@shaaz.com` | `Admin@123` | Full Storefront + Admin Dashboard |
-| **Demo Customer** | `customer@shaaz.com` | `Customer@123` initially | Storefront + test-only on-page OTP reset |
+| **Demo Customer** | `customer@shaaz.com` | `Customer@123` initially | Storefront, cart, orders, and real-email OTP reset once SMTP is configured |
 | **New Customers** | Register any new account on `/register` | (your password) | Customer Storefront, Cart, Orders |
 
 **Admin Dashboard URL:** `http://localhost:5173/admin-dashboard`
@@ -142,6 +142,7 @@ Frontend Web App will be active at: **`http://localhost:5173`**
 - **Login**: `http://localhost:5173/login`
 - **Register**: `http://localhost:5173/register`
 - **Forgot Password (OTP)**: `http://localhost:5173/forgot-password`
+- **FAQs**: `http://localhost:5173/faq`
 
 ### Admin Management Back-Office
 - **Admin Dashboard**: `http://localhost:5173/admin-dashboard`
@@ -181,17 +182,30 @@ git push -u origin main
 6. The backend build script (`build.sh`) will run migrations, seed data, and link all product images automatically.
 7. Your live website URL will be: `https://shaaz-ethnicwear.onrender.com`
 
+### Enable real OTP and order emails
+
+The password-reset page sends a six-digit OTP only after a real email provider is configured; it never displays a production OTP in the browser.
+
+1. Copy `backend/.env.example` to `backend/.env` for local use, then replace the sample sender values. Keep `backend/.env` private—it is ignored by Git.
+2. For a Gmail sender, turn on 2-Step Verification and create a dedicated App Password. Use that 16-character App Password for `EMAIL_HOST_PASSWORD`, not the normal Gmail password.
+3. Confirm these values: `EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend`, `EMAIL_DELIVERY_ENABLED=True`, `EMAIL_HOST=smtp.gmail.com`, `EMAIL_PORT=587`, `EMAIL_USE_TLS=True`, your sender address in `EMAIL_HOST_USER`, and the same address in `DEFAULT_FROM_EMAIL`.
+4. On Render, open the **shaaz-ethnicwear-backend** service → **Environment** and securely add `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, and `DEFAULT_FROM_EMAIL`. Keep `PASSWORD_RESET_TEST_MODE=False` and `EMAIL_DELIVERY_ENABLED=True`.
+5. Redeploy the backend. Visit `/api/auth/email-status/` to confirm `smtp_ready: true`, then request a reset using a registered email address and check its inbox/spam folder.
+
+The application also sends non-blocking welcome, order-confirmation, payment-confirmation, cancellation, and admin status-update emails when SMTP is ready.
+
 ---
 
 ## 📦 Features Checklist & Architecture
 
-- [x] **Responsive UI**: Aesthetic bridal palette with animations, mobile hamburger navigation, announcement bar, and hero sliders.
-- [x] **Full Authentication**: JWT (SimpleJWT) with access/refresh rotation, OTP password recovery, and role-based route guards (`ProtectedRoute`, `AdminRoute`).
+- [x] **Responsive UI**: Aesthetic bridal palette, animated S-and-crown brand mark, slow announcement carousel, mobile navigation, and hero sliders.
+- [x] **Store-only Support Assistant & FAQs**: A scoped chatbot answers only Shaaz Ethnicwear product, policy, account, and signed-in customer-order questions, with a dedicated FAQ page.
+- [x] **Full Authentication**: JWT (SimpleJWT) with access/refresh rotation, real-email OTP password recovery, and role-based route guards (`ProtectedRoute`, `AdminRoute`).
 - [x] **Catalog Browsing**: Full-text search, multi-faceted filtering (category, color, occasion, price range, in-stock), and sorting.
 - [x] **Stock Management**: Atomic stock reduction upon order placement, out-of-stock badge, and stock restoration on cancellation.
 - [x] **Cart & Wishlist**: Real-time quantity updates, cart totals calculation, item removal, and synchronized wishlist state.
 - [x] **Checkout & Addresses**: Multiple saved addresses support, new address entry with inline validation.
 - [x] **Payment Integration**: Cash on Delivery and Razorpay Checkout with server-side HMAC signature verification.
-- [x] **Order Tracking**: Visual status timeline (`PENDING` → `CONFIRMED` → `PROCESSING` → `SHIPPED` → `DELIVERED`).
+- [x] **Order Tracking**: Visual status timeline plus admin controls to add, edit, delete, and optionally sync customer-visible tracking updates with the current order status.
 - [x] **Customer Reviews**: Star ratings, title, comment, and verified customer review breakdown.
 - [x] **Complete Admin Dashboard**: Revenue, total orders, low-stock warnings, user role updates, product CRUD, and coupon management.

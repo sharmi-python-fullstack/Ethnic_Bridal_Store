@@ -107,6 +107,18 @@ class OrderTrackingSerializer(serializers.ModelSerializer):
         return 'System'
 
 
+class OrderTrackingWriteSerializer(serializers.Serializer):
+    """Validated payload for staff-maintained order tracking events."""
+    status = serializers.ChoiceField(choices=Order.STATUS_CHOICES)
+    description = serializers.CharField(max_length=600, trim_whitespace=True)
+    sync_order_status = serializers.BooleanField(default=True, write_only=True)
+
+    def validate_description(self, value):
+        if not value.strip():
+            raise serializers.ValidationError('Please add a tracking update for the customer.')
+        return value.strip()
+
+
 class OrderItemSerializer(serializers.ModelSerializer):
     total_price = serializers.DecimalField(
         max_digits=10, decimal_places=2, read_only=True

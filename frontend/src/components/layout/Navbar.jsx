@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { FiShoppingCart, FiHeart, FiUser, FiSearch, FiMenu, FiX, FiChevronDown, FiLogOut, FiPackage, FiSettings } from 'react-icons/fi'
-import { GiCrown } from 'react-icons/gi'
+import BrandLogo from '../common/BrandLogo'
 import { logout } from '../../store/slices/authSlice'
 import { clearCart } from '../../store/slices/cartSlice'
 import { setWishlist } from '../../store/slices/wishlistSlice'
@@ -22,6 +22,7 @@ const Navbar = () => {
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [announcementIndex, setAnnouncementIndex] = useState(0)
 
   const userMenuRef = useRef(null)
   const categoryMenuRef = useRef(null)
@@ -38,6 +39,19 @@ const Navbar = () => {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  const announcements = [
+    <>Free Shipping on Orders Above ₹999</>,
+    <>Use Code <span className="announcement-code">BRIDAL10</span> for 10% Off</>,
+    <>New Year 2027 Collection: Coming Soon!</>,
+  ]
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setAnnouncementIndex((current) => (current + 1) % announcements.length)
+    }, 5000)
+    return () => window.clearInterval(interval)
+  }, [announcements.length])
 
   const handleLogout = async () => {
     try {
@@ -65,29 +79,24 @@ const Navbar = () => {
   return (
     <header className="sticky top-0 z-50 shadow-lg">
       {/* Announcement Bar */}
-      <div className="bg-brand-gold text-brand-charcoal text-center py-2 px-4 text-xs font-semibold tracking-wide">
-        🎊 Free Shipping on Orders Above ₹999 &nbsp;|&nbsp; Use Code{' '}
-        <span className="bg-brand-deep-red text-white px-2 py-0.5 rounded font-bold">BRIDAL10</span>{' '}
-        for 10% Off &nbsp;|&nbsp; ✨ New Year 2027 Collection: Coming Soon!
+      <div className="announcement-bar" aria-live="polite">
+        <div className="announcement-bar__viewport">
+          <div className="announcement-bar__track" style={{ transform: `translateX(-${announcementIndex * 100}%)` }}>
+            {announcements.map((announcement, index) => (
+              <div className="announcement-bar__slide" key={index}>🎊&nbsp; {announcement}</div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Main Navbar */}
       <nav className="bg-brand-deep-red">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between min-h-[4.5rem] py-1">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
-              <div className="w-10 h-10 rounded-full bg-brand-gold flex items-center justify-center group-hover:scale-110 transition-transform">
-                <GiCrown className="text-brand-deep-red text-xl" />
-              </div>
-              <div className="hidden sm:block">
-                <div className="font-heading text-white text-xl font-bold leading-tight">
-                  Shaaz Ethnicwear
-                </div>
-                <div className="text-brand-gold text-xs tracking-widest uppercase">
-                  The Complete Bridal Store
-                </div>
-              </div>
+            <Link to="/" className="flex flex-col items-center gap-0.5 group flex-shrink-0" aria-label="Shaaz Ethnicwear home">
+              <BrandLogo size="sm" className="group-hover:scale-105 transition-transform" />
+              <span className="font-heading text-white text-xs sm:text-sm font-bold leading-tight whitespace-nowrap">Shaaz Ethnicwear</span>
             </Link>
 
             {/* Desktop Nav Links */}
@@ -137,6 +146,12 @@ const Navbar = () => {
               >
                 New Year 2027
               </Link>
+              <Link
+                to="/faq"
+                className="text-white/90 hover:text-brand-gold px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/10 transition-all"
+              >
+                FAQs
+              </Link>
             </div>
 
             {/* Right Side Icons */}
@@ -163,7 +178,6 @@ const Navbar = () => {
                   </span>
                 )}
               </Link>
-
               {/* Cart */}
               <Link
                 to={token ? '/cart' : '/login'}
@@ -312,6 +326,13 @@ const Navbar = () => {
                     {wishlistItems.length}
                   </span>
                 )}
+              </Link>
+              <Link
+                to="/faq"
+                onClick={() => setMobileOpen(false)}
+                className="block px-4 py-3 text-white/90 hover:bg-white/10 rounded-lg text-sm font-medium"
+              >
+                FAQs
               </Link>
               {categories.slice(0, 6).map((cat) => (
                 <Link

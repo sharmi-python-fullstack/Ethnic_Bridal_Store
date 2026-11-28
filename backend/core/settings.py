@@ -177,8 +177,10 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-# Email delivery. Use the console locally when no credentials are present,
-# and switch to SMTP automatically on Render once credentials are supplied.
+# Email delivery. SMTP credentials are supplied through environment variables;
+# no credential is ever stored in the repository. The console backend remains
+# useful for local development, but password reset only succeeds when a real
+# SMTP sender is configured.
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
@@ -195,12 +197,17 @@ DEFAULT_FROM_EMAIL = config(
     default=f'Shaaz Ethnicwear <{EMAIL_HOST_USER}>' if EMAIL_HOST_USER else 'Shaaz Ethnicwear <noreply@shaaz.com>',
 )
 EMAIL_TIMEOUT = config('EMAIL_TIMEOUT', default=20, cast=int)
+EMAIL_DELIVERY_ENABLED = config(
+    'EMAIL_DELIVERY_ENABLED',
+    default=bool(EMAIL_HOST_USER and EMAIL_HOST_PASSWORD),
+    cast=bool,
+)
 
-# Portfolio/demo password recovery. Only this dedicated non-admin account may
-# receive an OTP in the API response, so real customer reset codes are never
-# exposed. Set PASSWORD_RESET_TEST_MODE=False when real email delivery is used.
+# Test mode is disabled by default. It exists only for automated local tests;
+# production password reset codes are always delivered by email and never
+# returned in an API response.
 PASSWORD_RESET_TEST_MODE = config(
-    'PASSWORD_RESET_TEST_MODE', default=True, cast=bool
+    'PASSWORD_RESET_TEST_MODE', default=False, cast=bool
 )
 PASSWORD_RESET_TEST_EMAIL = config(
     'PASSWORD_RESET_TEST_EMAIL', default='customer@shaaz.com'

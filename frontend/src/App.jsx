@@ -18,6 +18,7 @@ import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import Legal from './pages/Legal'
+import FAQ from './pages/FAQ'
 
 // Protected pages
 import Cart from './pages/Cart'
@@ -76,6 +77,7 @@ function App() {
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="reset-password" element={<ResetPassword />} />
         <Route path="legal/:page" element={<Legal />} />
+        <Route path="faq" element={<FAQ />} />
         <Route path="wishlist" element={<Wishlist />} />
 
         {/* Protected Routes */}

@@ -10,8 +10,9 @@ from .models import Cart, CartItem, Order, OrderItem, OrderTracking
 from .serializers import (
     CartSerializer, CartItemSerializer, AddToCartSerializer,
     UpdateCartItemSerializer, OrderSerializer, OrderDetailSerializer,
-    CreateOrderSerializer,
+    CreateOrderSerializer, OrderTrackingWriteSerializer,
 )
+from core.emailing import send_order_update_email
 
 
 # ─── Cart Views ──────────────────────────────────────────────────────────────
@@ -217,6 +218,13 @@ class OrderCreateView(APIView):
             ),
             updated_by=None,
         )
+        transaction.on_commit(
+            lambda: send_order_update_email(
+                order,
+                'Your order has been placed successfully. We will keep you updated as it moves through our bridal studio.',
+                subject_prefix='Order confirmed',
+            )
+        )
 
         return Response({
             'message': 'Order placed successfully!',
@@ -264,6 +272,13 @@ class OrderCancelView(APIView):
             description='Order cancelled by customer.',
             updated_by=request.user,
         )
+        transaction.on_commit(
+            lambda: send_order_update_email(
+                order,
+                'Your order has been cancelled. If payment was completed, our team will contact you about the refund process.',
+                subject_prefix='Order cancelled',
+            )
+        )
         return Response({'message': 'Order cancelled successfully.'})
 
 
@@ -304,6 +319,7 @@ class AdminOrderDetailView(APIView):
         new_status = request.data.get('status')
         payment_status = request.data.get('payment_status')
 
+        status_description = None
         if new_status and new_status in dict(Order.STATUS_CHOICES):
             old_status = order.status
             order.status = new_status
@@ -317,10 +333,11 @@ class AdminOrderDetailView(APIView):
                 'CANCELLED': 'Order cancelled by admin.',
                 'REFUNDED': 'Refund initiated for this order.',
             }
+            status_description = status_descriptions.get(new_status, f'Status updated to {new_status}.')
             OrderTracking.objects.create(
                 order=order,
                 status=new_status,
-                description=status_descriptions.get(new_status, f'Status updated to {new_status}.'),
+                description=status_description,
                 updated_by=request.user,
             )
 
@@ -328,7 +345,77 @@ class AdminOrderDetailView(APIView):
             order.payment_status = payment_status
             order.save(update_fields=['payment_status'])
 
+        if status_description and old_status != new_status:
+            transaction.on_commit(
+                lambda: send_order_update_email(
+                    order,
+                    status_description,
+                    subject_prefix='Order status updated',
+                )
+            )
+
         return Response({
             'message': 'Order updated.',
             'order': OrderDetailSerializer(order, context={'request': request}).data,
         })
+
+
+class AdminOrderTrackingListCreateView(APIView):
+    """Staff can add a customer-visible tracking event to an order."""
+    permission_classes = [IsAdminUser]
+
+    @transaction.atomic
+    def post(self, request, pk):
+        order = get_object_or_404(Order, pk=pk)
+        serializer = OrderTrackingWriteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        tracking = OrderTracking.objects.create(
+            order=order,
+            status=serializer.validated_data['status'],
+            description=serializer.validated_data['description'],
+            updated_by=request.user,
+        )
+
+        if serializer.validated_data['sync_order_status'] and order.status != tracking.status:
+            order.status = tracking.status
+            order.save(update_fields=['status'])
+            transaction.on_commit(
+                lambda: send_order_update_email(
+                    order,
+                    tracking.description,
+                    subject_prefix='Order tracking update',
+                )
+            )
+
+        return Response({
+            'message': 'Tracking update added.',
+            'tracking': OrderDetailSerializer(order, context={'request': request}).data['tracking_history'][0],
+            'order': OrderDetailSerializer(order, context={'request': request}).data,
+        }, status=status.HTTP_201_CREATED)
+
+
+class AdminOrderTrackingDetailView(APIView):
+    """Staff can correct or remove a previously entered tracking event."""
+    permission_classes = [IsAdminUser]
+
+    def patch(self, request, pk, tracking_id):
+        tracking = get_object_or_404(OrderTracking, id=tracking_id, order_id=pk)
+        serializer = OrderTrackingWriteSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+
+        changed_fields = []
+        for field in ('status', 'description'):
+            if field in serializer.validated_data:
+                setattr(tracking, field, serializer.validated_data[field])
+                changed_fields.append(field)
+        if changed_fields:
+            tracking.updated_by = request.user
+            changed_fields.append('updated_by')
+            tracking.save(update_fields=changed_fields)
+
+        return Response({'message': 'Tracking update saved.'})
+
+    def delete(self, request, pk, tracking_id):
+        tracking = get_object_or_404(OrderTracking, id=tracking_id, order_id=pk)
+        tracking.delete()
+        return Response({'message': 'Tracking update deleted.'}, status=status.HTTP_200_OK)
