@@ -33,6 +33,7 @@ class OrderTrackingInline(admin.TabularInline):
     model = OrderTracking
     extra = 0
     readonly_fields = ['timestamp']
+    verbose_name_plural = 'Order tracking history (changing the latest status updates the order)'
 
 
 @admin.register(Order)
@@ -60,3 +61,25 @@ class OrderAdmin(admin.ModelAdmin):
             }[obj.status]
             OrderTracking.objects.create(order=obj, status=obj.status, description=description, updated_by=request.user)
             transaction.on_commit(lambda: send_order_update_email(obj, description, subject_prefix='Order status updated'))
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        # The explicit order-status field takes precedence if changed in the
+        # same save. Editing an older history item must not roll an order back.
+        if 'status' in form.changed_data:
+            return
+
+        changed_ids = set()
+        for formset in formsets:
+            if formset.model is OrderTracking:
+                changed_ids.update(obj.pk for obj in formset.new_objects)
+                changed_ids.update(obj.pk for obj, fields in formset.changed_objects if 'status' in fields)
+        if not changed_ids:
+            return
+
+        order = form.instance
+        latest = order.tracking_history.order_by('-timestamp', '-pk').first()
+        if latest and latest.pk in changed_ids and latest.status != order.status:
+            order.status = latest.status
+            order.save(update_fields=['status', 'updated_at'])
+            transaction.on_commit(lambda: send_order_update_email(order, latest.description, subject_prefix='Order tracking update'))

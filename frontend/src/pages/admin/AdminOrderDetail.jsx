@@ -174,6 +174,7 @@ export default function AdminOrderDetail() {
             </button>
           )}
         </div>
+        {editingTrackingId && <p className="text-xs text-gray-500 mb-3">Changing the status of the latest tracking update also updates the current order status. Editing an older update leaves the order status unchanged.</p>}
         <form onSubmit={handleTrackingSubmit} className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-3">
           <div>
             <label className="block text-xs font-semibold text-gray-600 mb-1">Tracking status</label>

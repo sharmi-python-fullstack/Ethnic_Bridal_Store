@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { FiArrowLeft, FiMapPin, FiPackage, FiTruck, FiCheck, FiX } from 'react-icons/fi'
+import { FiArrowLeft, FiMapPin, FiPackage, FiTruck, FiCheck, FiX, FiRefreshCw } from 'react-icons/fi'
 import { getOrderDetail, cancelOrder } from '../api/orders'
 import { formatPrice, formatDate, formatDateTime, getStatusColor, getStatusDotColor, getImageUrl } from '../utils/helpers'
 import toast from 'react-hot-toast'
@@ -12,6 +12,7 @@ export default function OrderDetail() {
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
   const [cancelling, setCancelling] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
 
   /* Legacy simulated-payment flow retained below only as a migration note.
     setPaying(true)
@@ -32,11 +33,41 @@ export default function OrderDetail() {
   */
 
   useEffect(() => {
-    getOrderDetail(id)
-      .then((r) => setOrder(r.data))
-      .catch(() => {})
-      .finally(() => setLoading(false))
+    let active = true
+    const loadOrder = async (initial = false) => {
+      try {
+        const response = await getOrderDetail(id)
+        if (active) setOrder(response.data)
+      } catch {
+        // Keep the last known order visible if a background refresh fails.
+      } finally {
+        if (active && initial) setLoading(false)
+      }
+    }
+    setLoading(true)
+    loadOrder(true)
+    const refreshVisible = () => { if (document.visibilityState === 'visible') loadOrder() }
+    const timer = window.setInterval(refreshVisible, 30000)
+    document.addEventListener('visibilitychange', refreshVisible)
+    return () => {
+      active = false
+      window.clearInterval(timer)
+      document.removeEventListener('visibilitychange', refreshVisible)
+    }
   }, [id])
+
+  const refreshOrder = async () => {
+    setRefreshing(true)
+    try {
+      const response = await getOrderDetail(id)
+      setOrder(response.data)
+      toast.success('Order status refreshed')
+    } catch {
+      toast.error('Unable to refresh your order. Please try again.')
+    } finally {
+      setRefreshing(false)
+    }
+  }
 
   const handleCancel = async () => {
     if (!window.confirm('Are you sure you want to cancel this order?')) return
@@ -78,6 +109,9 @@ export default function OrderDetail() {
               <p className="text-sm text-gray-400 mt-0.5">Placed on {formatDate(order.created_at)}</p>
             </div>
             <div className="flex items-center gap-3">
+              <button type="button" onClick={refreshOrder} disabled={refreshing} className="text-sm text-brand-deep-red border border-brand-deep-red/30 px-3 py-1.5 rounded-lg hover:bg-red-50 disabled:opacity-60 flex items-center gap-1.5" aria-label="Refresh order status">
+                <FiRefreshCw className={refreshing ? 'animate-spin' : ''} /> Refresh
+              </button>
               <span className={`badge border ${getStatusColor(order.status)}`}>
                 <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${getStatusDotColor(order.status)}`} />
                 {order.status_display}

@@ -320,7 +320,7 @@ class AdminOrderDetailView(APIView):
         payment_status = request.data.get('payment_status')
 
         status_description = None
-        if new_status and new_status in dict(Order.STATUS_CHOICES):
+        if new_status and new_status in dict(Order.STATUS_CHOICES) and new_status != order.status:
             old_status = order.status
             order.status = new_status
             order.save(update_fields=['status'])
@@ -398,12 +398,15 @@ class AdminOrderTrackingDetailView(APIView):
     """Staff can correct or remove a previously entered tracking event."""
     permission_classes = [IsAdminUser]
 
+    @transaction.atomic
     def patch(self, request, pk, tracking_id):
-        tracking = get_object_or_404(OrderTracking, id=tracking_id, order_id=pk)
+        order = get_object_or_404(Order.objects.select_for_update(), pk=pk)
+        tracking = get_object_or_404(OrderTracking, id=tracking_id, order=order)
         serializer = OrderTrackingWriteSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
 
         changed_fields = []
+        status_provided = 'status' in serializer.validated_data
         for field in ('status', 'description'):
             if field in serializer.validated_data:
                 setattr(tracking, field, serializer.validated_data[field])
@@ -413,7 +416,13 @@ class AdminOrderTrackingDetailView(APIView):
             changed_fields.append('updated_by')
             tracking.save(update_fields=changed_fields)
 
-        return Response({'message': 'Tracking update saved.'})
+        latest = order.tracking_history.order_by('-timestamp', '-pk').first()
+        if status_provided and latest and latest.pk == tracking.pk and order.status != tracking.status:
+            order.status = tracking.status
+            order.save(update_fields=['status', 'updated_at'])
+            transaction.on_commit(lambda: send_order_update_email(order, tracking.description, subject_prefix='Order tracking update'))
+
+        return Response({'message': 'Tracking update saved.', 'order': OrderDetailSerializer(order, context={'request': request}).data})
 
     def delete(self, request, pk, tracking_id):
         tracking = get_object_or_404(OrderTracking, id=tracking_id, order_id=pk)
